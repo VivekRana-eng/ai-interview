@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SelectAI — Find Your Internship</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0F2744;
+      --navy-mid: #1a3a5c;
+      --teal: #1D9E75;
+      --teal-light: #e6f7f2;
+      --blue-light: #E8F4FD;
+      --text-primary: #0F2744;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #e2e8f0;
+      --surface: #ffffff;
+      --bg: #f7f9fc;
+
+      /* Domain colours */
+      --ai: #1D9E75;
+      --ai-bg: #e6f7f2;
+      --software: #2563eb;
+      --software-bg: #eff6ff;
+      --cyber: #dc2626;
+      --cyber-bg: #fef2f2;
+      --journalism: #d97706;
+      --journalism-bg: #fffbeb;
+      --pr: #7c3aed;
+      --pr-bg: #f5f3ff;
+      --finance: #0e7490;
+      --finance-bg: #ecfeff;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--surface);
+      border-top: 3px solid var(--navy);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      background: var(--navy);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-mark svg {
+      width: 22px;
+      height: 22px;
+    }
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+    .logo-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.01em;
+    }
+    .logo-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    nav a {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+    nav a.nav-jobs {
+      color: var(--teal);
+      background: var(--teal-light);
+    }
+    nav a.nav-jobs:hover {
+      background: #d0f0e6;
+    }
+    nav a.nav-admin {
+      color: var(--navy);
+      border: 1px solid var(--border);
+      background: transparent;
+    }
+    nav a.nav-admin:hover {
+      background: var(--blue-light);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--navy);
+      padding: 56px 24px 48px;
+    }
+    .hero-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 16px;
+    }
+    .hero-eyebrow span {
+      width: 6px;
+      height: 6px;
+      background: var(--teal);
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+    .hero p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    /* ── SEARCH BAR ── */
+    .search-row {
+      display: flex;
+      gap: 10px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .search-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-wrap input {
+      width: 100%;
+      padding: 13px 16px 13px 42px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.10);
+      color: #fff;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border 0.15s, background 0.15s;
+    }
+    .search-wrap input::placeholder { color: rgba(255,255,255,0.45); }
+    .search-wrap input:focus {
+      border-color: var(--teal);
+      background: rgba(255,255,255,0.14);
+    }
+    .filter-select {
+      padding: 13px 16px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.10);
+      color: #fff;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      cursor: pointer;
+      min-width: 180px;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.6)' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      transition: border 0.15s;
+    }
+    .filter-select option { background: var(--navy); }
+    .filter-select:focus { border-color: var(--teal); }
+
+    /* ── RESULTS BAR ── */
+    .results-bar {
+      max-width: 1200px;
+      margin: 32px auto 20px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .results-count {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .results-count strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    .sort-select {
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 28px 6px 10px;
+      background: #fff;
+      color: var(--text-secondary);
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23718096' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    /* ── GRID ── */
+    .grid-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    /* ── JOB CARD ── */
+    .job-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+      cursor: pointer;
+    }
+    .job-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(15, 39, 68, 0.09);
+      border-color: #c8d6e5;
+    }
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .domain-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 9px;
+      border-radius: 20px;
+    }
+    .badge-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+    .badge-ai    { color: var(--ai);         background: var(--ai-bg); }
+    .badge-ai    .badge-dot { background: var(--ai); }
+    .badge-sw    { color: var(--software);   background: var(--software-bg); }
+    .badge-sw    .badge-dot { background: var(--software); }
+    .badge-cy    { color: var(--cyber);      background: var(--cyber-bg); }
+    .badge-cy    .badge-dot { background: var(--cyber); }
+    .badge-jo    { color: var(--journalism); background: var(--journalism-bg); }
+    .badge-jo    .badge-dot { background: var(--journalism); }
+    .badge-pr    { color: var(--pr);         background: var(--pr-bg); }
+    .badge-pr    .badge-dot { background: var(--pr); }
+    .badge-fi    { color: var(--finance);    background: var(--finance-bg); }
+    .badge-fi    .badge-dot { background: var(--finance); }
+
+    .seats-tag {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+    .card-org {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-org::before {
+      content: '';
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .card-meta {
+      display: flex;
+      gap: 16px;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .meta-item svg {
+      flex-shrink: 0;
+      color: var(--text-muted);
+    }
+    .card-screening {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+    .card-screening strong {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .btn-apply {
+      margin-top: auto;
+      width: 100%;
+      padding: 10px;
+      border: 1.5px solid var(--navy);
+      border-radius: 7px;
+      background: transparent;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .btn-apply:hover {
+      background: var(--navy);
+      color: #fff;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 20px 24px;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .footer-left .sep { color: var(--border); }
+    .footer-ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--teal);
+      background: var(--teal-light);
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .footer-right {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .jobs-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .search-row { flex-direction: column; }
+      .filter-select { min-width: 0; }
+      .jobs-grid { grid-template-columns: 1fr; }
+      .results-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.9"/>
+            <rect x="12" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.5"/>
+            <rect x="3" y="12" width="7" height="7" rx="1.5" fill="white" opacity="0.5"/>
+            <rect x="12" y="12" width="7" height="7" rx="1.5" fill="#1D9E75"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">SelectAI</span>
+          <span class="logo-subtitle">Govt. of India</span>
+        </div>
+      </a>
+      <nav>
+        <a href="#" class="nav-jobs">Jobs</a>
+        <a href="#" class="nav-admin">Admin Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow"><span></span>AI-Evaluated Internships</div>
+      <h1>Find Your Internship</h1>
+      <p>AI-evaluated selection across Software Development, Artificial Intelligence,<br>Cybersecurity and more across government organisations.</p>
+      <div class="search-row">
+        <div class="search-wrap">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <input type="text" placeholder="Search roles, organisations…" id="searchInput" oninput="filterCards()" />
+        </div>
+        <select class="filter-select" id="domainFilter" onchange="filterCards()">
+          <option value="">All Domains</option>
+          <option value="ai">Artificial Intelligence</option>
+          <option value="sw">Software Development</option>
+          <option value="cy">Cybersecurity</option>
+          <option value="jo">Journalism</option>
+          <option value="pr">Public Relations</option>
+          <option value="fi">Financial Management</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS BAR -->
+  <div class="results-bar">
+    <div class="results-count"><strong id="resultCount">9</strong> internships available</div>
+    <select class="sort-select">
+      <option>Sort: Deadline (Soonest)</option>
+      <option>Sort: Seats Available</option>
+      <option>Sort: Recently Added</option>
+    </select>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid-wrap">
+    <div class="jobs-grid" id="jobsGrid">
+
+      <!-- Card 1 -->
+      <div class="job-card" data-domain="ai">
+        <div class="card-top">
+          <span class="domain-badge badge-ai"><span class="badge-dot"></span>Artificial Intelligence</span>
+          <span class="seats-tag">4 seats</span>
+        </div>
+        <div class="card-title">AI Research Intern</div>
+        <div class="card-org">Ministry of Electronics &amp; IT</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1v4M11 1v4M2 7h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Deadline: 30 May 2026
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            8 weeks
+          </div>
+        </div>
+        <div class="card-screening"><strong>Screening:</strong> NLP aptitude test + AI video interview</div>
+        <button class="btn-apply">View &amp; Apply</button>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="job-card" data-domain="sw">
+        <div class="card-top">
+          <span class="domain-badge badge-sw"><span class="badge-dot"></span>Software Development</span>
+          <span class="seats-tag">6 seats</span>
+        </div>
+        <div class="card-title">Full-Stack Developer Intern</div>
+        <div class="card-org">National Informatics Centre</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1v4M11 1v4M2 7h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Deadline: 15 Jun 2026
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            12 weeks
+          </div>
+        </div>
+        <div class="card-screening"><strong>Screening:</strong> Coding challenge + technical AI interview</div>
+        <button class="btn-apply">View &amp; Apply</button>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="job-card" data-domain="cy">
+        <div class="card-top">
+          <span class="domain-badge badge-cy"><span class="badge-dot"></span>Cybersecurity</span>
+          <span class="seats-tag">3 seats</span>
+        </div>
+        <div class="card-title">Security Analyst Intern</div>
+        <div class="card-org">CERT-In, MeitY</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1v4M11 1v4M2 7h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Deadline: 22 May 2026
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            10 weeks
+          </div>
+        </div>
+        <div class="card-screening"><strong>Screening:</strong> Aptitude MCQ + scenario-based AI interview</div>
+        <button class="btn-apply">View &amp; Apply</button>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="job-card" data-domain="ai">
+        <div class="card-top">
+          <span class="domain-badge badge-ai"><span class="badge-dot"></span>Artificial Intelligence</span>
+          <span class="seats-tag">2 seats</span>
+        </div>
+        <div class="card-title">ML Engineering Intern</div>
+        <div class="card-org">C-DAC, Pune</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1v4M11 1v4M2 7h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Deadline: 10 Jun 2026
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            8 weeks
+          </div>
+        </div>
+        <div class="card-screening"><strong>Screening:</strong> Python/ML test + AI-moderated interview</div>
+        <button class="btn-apply">View &amp; Apply</button>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="job-card" data-domain="jo">
+        <div class="card-top">
+          <span class="domain-badge badge-jo"><span class="badge-dot"></span>Journalism</span>
+          <span class="seats-tag">5 seats</span>
+        </div>
+        <div class="card-title">Digital Media Intern</div>
+        <div class="card-org">Press Information Bureau</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1v4M11 1v4M2 7h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Deadline: 5 Jun 2026
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            6 weeks
+          </div>
+        </div>
+        <div class="card-screening"><strong>Screening:</strong> Writing sample + communication AI interview</div>
+        <button class="btn-apply">View &amp; Apply</button>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="job-card" data-domain="pr">
+        <div class="card-top">
+          <span class="domain-badge badge-pr"><span class="badge-dot"></span>Public Relations</span>
+          <span class="seats-tag">3 seats</span>
+        </div>
+        <div class="card-title">Communications Intern</div>
+        <div class="card-org">Ministry of External Affairs</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1v4M11 1v4M2 7h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Deadline: 20 Jun 2026
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            8 weeks
+          </div>
+        </div>
+        <div class="card-screening"><strong>Screening:</strong> Aptitude test + personality AI interview</div>
+        <button class="btn-apply">View &amp; Apply</button>
+      </div>
+
+      <!-- Card 7 -->
+      <div class="job-card" data-domain="fi">
+        <div class="card-top">
+          <span class="domain-badge badge-fi"><span class="badge-dot"></span>Financial Management</span>
+          <span class="seats-tag">4 seats</span>
+        </div>
+        <div class="card-title">Finance &amp; Audit Intern</div>
+        <div class="card-org">Controller General of Accounts</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1v4M11 1v4M2 7h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Deadline: 28 May 2026
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            10 weeks
+          </div>
+        </div>
+        <div class="card-screening"><strong>Screening:</strong> Quantitative test + structured AI interview</div>
+        <button class="btn-apply">View &amp; Apply</button>
+      </div>
+
+      <!-- Card 8 -->
+      <div class="job-card" data-domain="sw">
+        <div class="card-top">
+          <span class="domain-badge badge-sw"><span class="badge-dot"></span>Software Development</span>
+          <span class="seats-tag">8 seats</span>
+        </div>
+        <div class="card-title">Backend Systems Intern</div>
+        <div class="card-org">UIDAI, New Delhi</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1v4M11 1v4M2 7h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Deadline: 18 Jun 2026
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            12 weeks
+          </div>
+        </div>
+        <div class="card-screening"><strong>Screening:</strong> DSA assessment + technical AI interview</div>
+        <button class="btn-apply">View &amp; Apply</button>
+      </div>
+
+      <!-- Card 9 -->
+      <div class="job-card" data-domain="cy">
+        <div class="card-top">
+          <span class="domain-badge badge-cy"><span class="badge-dot"></span>Cybersecurity</span>
+          <span class="seats-tag">2 seats</span>
+        </div>
+        <div class="card-title">Network Security Intern</div>
+        <div class="card-org">DRDO, Hyderabad</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 1v4M11 1v4M2 7h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Deadline: 12 May 2026
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            10 weeks
+          </div>
+        </div>
+        <div class="card-screening"><strong>Screening:</strong> Network fundamentals MCQ + AI interview</div>
+        <button class="btn-apply">View &amp; Apply</button>
+      </div>
+
+    </div><!-- /jobs-grid -->
+
+    <!-- Empty state -->
+    <div id="emptyState" style="display:none; text-align:center; padding: 64px 0;">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="margin:0 auto 16px; display:block;">
+        <circle cx="24" cy="24" r="22" stroke="#e2e8f0" stroke-width="2"/>
+        <path d="M16 24h16M24 16v16" stroke="#cbd5e0" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <p style="font-size:15px; color:#718096;">No internships match your search.</p>
+      <p style="font-size:13px; color:#a0aec0; margin-top:4px;">Try adjusting your filters.</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span class="footer-ai-badge">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#1D9E75" stroke-width="1.2"/><circle cx="5" cy="5" r="1.5" fill="#1D9E75"/></svg>
+          Powered by AI
+        </span>
+        <span class="sep">·</span>
+        <span>Hosted on NIC Infrastructure</span>
+      </div>
+      <div class="footer-right">Government of India &nbsp;·&nbsp; © 2026 SelectAI</div>
+    </div>
+  </footer>
+
+  <script>
+    function filterCards() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const domain = document.getElementById('domainFilter').value;
+      const cards = document.querySelectorAll('.job-card');
+      let visible = 0;
+
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        const cardDomain = card.getAttribute('data-domain');
+        const matchesText = !query || text.includes(query);
+        const matchesDomain = !domain || cardDomain === domain;
+        if (matchesText && matchesDomain) {
+          card.style.display = '';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      document.getElementById('resultCount').textContent = visible;
+      document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
+    }
+  </script>
+
+</body>
+</html>

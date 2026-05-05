@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apply — Full-Stack Developer Intern · SelectAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0F2744;
+      --navy-mid: #1a3a5c;
+      --teal: #1D9E75;
+      --teal-light: #e6f7f2;
+      --blue-light: #E8F4FD;
+      --text-primary: #0F2744;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #e2e8f0;
+      --border-focus: #0F2744;
+      --surface: #ffffff;
+      --bg: #f7f9fc;
+      --error: #dc2626;
+      --error-bg: #fef2f2;
+      --error-border: #fca5a5;
+      --success: #1D9E75;
+      --success-bg: #e6f7f2;
+      --success-border: #6ee7c4;
+      --software: #2563eb;
+      --software-bg: #eff6ff;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--surface);
+      border-top: 3px solid var(--navy);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      background: var(--navy);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .logo-title { font-size: 14px; font-weight: 700; color: var(--navy); }
+    .logo-subtitle { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+    nav { display: flex; align-items: center; gap: 8px; }
+    nav a {
+      text-decoration: none; font-size: 14px; font-weight: 500;
+      padding: 8px 16px; border-radius: 6px; transition: background 0.15s, color 0.15s;
+    }
+    nav a.nav-jobs { color: var(--teal); background: var(--teal-light); }
+    nav a.nav-jobs:hover { background: #d0f0e6; }
+    nav a.nav-admin { color: var(--navy); border: 1px solid var(--border); }
+    nav a.nav-admin:hover { background: var(--blue-light); }
+
+    /* ── BREADCRUMB ── */
+    .breadcrumb-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .breadcrumb-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .breadcrumb-inner a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .breadcrumb-inner a:hover { color: var(--navy); }
+    .bc-sep { color: var(--border); font-size: 16px; }
+    .bc-current { color: var(--text-primary); font-weight: 500; }
+
+    /* ── PAGE LAYOUT ── */
+    .page-wrap {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 24px 64px;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── FORM COLUMN ── */
+    .form-col { display: flex; flex-direction: column; gap: 24px; }
+
+    .form-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-num {
+      width: 26px; height: 26px;
+      background: var(--navy);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+    .section-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--teal);
+      background: var(--teal-light);
+    }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .upload-icon {
+      width: 48px; height: 48px;
+      background: var(--blue-light);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+    }
+    .upload-main { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .upload-main span { color: var(--teal); }
+    .upload-hint { font-size: 12px; color: var(--text-muted); }
+
+    .upload-success {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      border-radius: 8px;
+    }
+    .upload-success.visible { display: flex; }
+    .upload-success-icon {
+      width: 32px; height: 32px;
+      background: var(--teal);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .upload-filename { font-size: 13px; font-weight: 600; color: var(--text-primary); flex: 1; }
+    .upload-remove {
+      font-size: 12px; color: var(--error);
+      background: none; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-weight: 500;
+      padding: 4px 0;
+    }
+    .upload-remove:hover { text-decoration: underline; }
+
+    /* ── FORM FIELDS ── */
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-size: 13px; font-weight: 600; color: var(--text-primary);
+    }
+    .field label .req { color: var(--error); margin-left: 2px; }
+    .field input, .field textarea {
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field input:focus, .field textarea:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(15,39,68,0.07);
+    }
+    .field input.valid { border-color: var(--success-border); background: var(--success-bg); }
+    .field input.invalid { border-color: var(--error-border); background: var(--error-bg); }
+    .field-hint { font-size: 11px; color: var(--text-muted); }
+    .field-error { font-size: 11px; color: var(--error); display: none; }
+    .field input.invalid ~ .field-error { display: block; }
+    .field textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+
+    /* ── WORD COUNT ── */
+    .wc-row {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; color: var(--text-muted);
+    }
+    .wc-num { font-weight: 600; }
+    .wc-num.ok { color: var(--success); }
+    .wc-num.low { color: var(--error); }
+
+    /* ── TAG INPUT ── */
+    .tag-field {
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 8px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      cursor: text;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      min-height: 46px;
+    }
+    .tag-field:focus-within {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(15,39,68,0.07);
+    }
+    .tag-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--blue-light);
+      color: var(--navy);
+      font-size: 12px; font-weight: 500;
+      padding: 3px 10px 3px 10px;
+      border-radius: 20px;
+    }
+    .tag-remove {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 14px; line-height: 1;
+      padding: 0; display: flex; align-items: center;
+    }
+    .tag-remove:hover { color: var(--error); }
+    .tag-input {
+      border: none; outline: none;
+      font-size: 13px; font-family: 'Inter', sans-serif;
+      color: var(--text-primary); background: transparent;
+      flex: 1; min-width: 120px;
+    }
+    .tag-hint { font-size: 11px; color: var(--text-muted); }
+
+    /* ── SUBMIT ── */
+    .submit-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.01em;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { background: var(--navy-mid); }
+    .btn-submit:active { transform: scale(0.99); }
+    .submit-note {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+
+    /* ── STICKY SIDEBAR ── */
+    .sidebar-col { display: flex; flex-direction: column; gap: 16px; }
+    .job-summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      position: sticky;
+      top: 84px;
+    }
+    .jsc-header {
+      background: var(--navy);
+      padding: 20px;
+    }
+    .jsc-domain {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 20px;
+      color: var(--software); background: #fff;
+      margin-bottom: 10px;
+    }
+    .jsc-domain-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--software); }
+    .jsc-title { font-size: 18px; font-weight: 700; color: #fff; line-height: 1.25; margin-bottom: 4px; }
+    .jsc-org { font-size: 13px; color: rgba(255,255,255,0.6); }
+    .jsc-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .jsc-row { display: flex; flex-direction: column; gap: 4px; }
+    .jsc-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+    .jsc-value { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .jsc-value.deadline { color: var(--error); }
+    .jsc-divider { height: 1px; background: var(--border); }
+    .skills-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .skill-tag {
+      font-size: 11px; font-weight: 500;
+      background: var(--blue-light); color: var(--navy);
+      padding: 3px 9px; border-radius: 4px;
+    }
+
+    .progress-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+    .progress-title { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+    .progress-steps { display: flex; flex-direction: column; gap: 8px; }
+    .progress-step {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .progress-step.done { color: var(--teal); }
+    .progress-step.active { color: var(--navy); font-weight: 600; }
+    .step-dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 10px; font-weight: 700;
+    }
+    .progress-step.done .step-dot { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .progress-step.active .step-dot { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 20px 24px;
+    }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+    .footer-left { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+    .footer-ai-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600; color: var(--teal);
+      background: var(--teal-light); padding: 2px 8px; border-radius: 20px;
+    }
+    .footer-right { font-size: 12px; color: var(--text-muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      .sidebar-col { order: -1; }
+      .job-summary-card { position: static; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .page-wrap { padding: 0 16px 48px; margin-top: 20px; }
+      .section-body { padding: 18px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <a href="jobs.html" class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 22 22" fill="none">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.9"/>
+            <rect x="12" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.5"/>
+            <rect x="3" y="12" width="7" height="7" rx="1.5" fill="white" opacity="0.5"/>
+            <rect x="12" y="12" width="7" height="7" rx="1.5" fill="#1D9E75"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">SelectAI</span>
+          <span class="logo-subtitle">Govt. of India</span>
+        </div>
+      </a>
+      <nav>
+        <a href="jobs.html" class="nav-jobs">Jobs</a>
+        <a href="#" class="nav-admin">Admin Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb-bar">
+    <div class="breadcrumb-inner">
+      <a href="jobs.html">Jobs</a>
+      <span class="bc-sep">›</span>
+      <a href="#">Full-Stack Developer Intern</a>
+      <span class="bc-sep">›</span>
+      <span class="bc-current">Apply</span>
+    </div>
+  </div>
+
+  <!-- PAGE BODY -->
+  <div class="page-wrap">
+
+    <!-- FORM COLUMN -->
+    <div class="form-col">
+
+      <!-- Section 1: Resume Upload -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-num">1</div>
+          <div class="section-title">Resume Upload</div>
+        </div>
+        <div class="section-body">
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" accept=".pdf" id="fileInput" />
+            <div class="upload-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 3v12M7 8l5-5 5 5" stroke="#0F2744" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="#0F2744" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="upload-main">Drop your resume here or <span>click to browse</span></div>
+            <div class="upload-hint">PDF only · Max 5MB</div>
+          </div>
+          <div class="upload-success" id="uploadSuccess">
+            <div class="upload-success-icon">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8l3.5 3.5 6.5-7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="upload-filename" id="uploadFilename">resume.pdf</span>
+            <button class="upload-remove" id="uploadRemove">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Your Details -->
+      <div class="form-section">
+        <div class="section-header">
+          <div class="section-num">2</div>
+          <div class="section-title">Your Details</div>
+        </div>
+        <div class="section-body">
+
+          <div class="field-row">
+            <div class="field">
+              <label>Full Name <span class="req">*</span></label>
+              <input type="text" id="fullName" placeholder="As on official documents" autocomplete="name" />
+              <span class="field-error">Please enter your full name.</span>
+            </div>
+            <div class="field">
+              <label>Email Address <span class="req">*</span></label>
+              <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+              <span class="field-error">Please enter a valid email address.</span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Phone Number <span class="req">*</span></label>
+              <input type="tel" id="phone" placeholder="+91 98765 43210" autocomplete="tel" />
+              <span class="field-error">Please enter a valid phone number.</span>
+            </div>
+            <div class="field">
+              <label>Institution Name <span class="req">*</span></label>
+              <input type="text" id="institution" placeholder="Your college or university" />
+              <span class="field-error">Please enter your institution name.</span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Degree / Programme <span class="req">*</span></label>
+              <input type="text" id="degree" placeholder="e.g. B.Tech Computer Science" />
+              <span class="field-error">Please enter your degree or programme.</span>
+            </div>
+            <div class="field">
+              <label>CGPA <span class="req">*</span></label>
+              <input type="number" id="cgpa" placeholder="e.g. 8.5" min="0" max="10" step="0.1" />
+              <span class="field-hint">Out of 10</span>
+              <span class="field-error">Please enter a valid CGPA (0–10).</span>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Years of Experience</label>
+              <input type="number" id="experience" placeholder="0" min="0" max="10" step="1" />
+              <span class="field-hint">Enter 0 if currently a student</span>
+            </div>
+            <div class="field" style="grid-column: 1 / -1;">
+              <label>Certifications</label>
+              <div class="tag-field" id="tagField">
+                <input class="tag-input" id="tagInput" type="text" placeholder="Type a certification and press Enter…" />
+              </div>
+              <span class="tag-hint">Press Enter after each certification to add it as a tag</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Statement of Purpose <span class="req">*</span></label>
+            <textarea id="sop" placeholder="Tell us why you are the right candidate for this domain. Minimum 150 words." rows="7"></textarea>
+            <div class="wc-row">
+              <span class="field-hint">Describe your motivation, relevant skills, and goals.</span>
+              <span><span class="wc-num low" id="wcNum">0</span> / 150 words minimum</span>
+            </div>
+            <span class="field-error" id="sopError" style="display:none;">Please write at least 150 words.</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="submit-section">
+        <button class="btn-submit" id="submitBtn" onclick="handleSubmit()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 8h12M9 4l4 4-4 4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Submit Application
+        </button>
+        <div class="submit-note">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="6" stroke="#718096" stroke-width="1.4"/>
+            <path d="M8 7v5M8 5.5v.5" stroke="#718096" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          You will receive a confirmation email with your application status link.
+        </div>
+      </div>
+
+    </div><!-- /form-col -->
+
+    <!-- SIDEBAR -->
+    <div class="sidebar-col">
+
+      <!-- Job Summary Card -->
+      <div class="job-summary-card">
+        <div class="jsc-header">
+          <div class="jsc-domain">
+            <span class="jsc-domain-dot"></span> Software Development
+          </div>
+          <div class="jsc-title">Full-Stack Developer Intern</div>
+          <div class="jsc-org">National Informatics Centre</div>
+        </div>
+        <div class="jsc-body">
+          <div class="jsc-row">
+            <div class="jsc-label">Seats Available</div>
+            <div class="jsc-value">6 seats</div>
+          </div>
+          <div class="jsc-divider"></div>
+          <div class="jsc-row">
+            <div class="jsc-label">Application Deadline</div>
+            <div class="jsc-value deadline">15 June 2026</div>
+          </div>
+          <div class="jsc-divider"></div>
+          <div class="jsc-row">
+            <div class="jsc-label">Duration</div>
+            <div class="jsc-value">12 weeks</div>
+          </div>
+          <div class="jsc-divider"></div>
+          <div class="jsc-row">
+            <div class="jsc-label">Required Skills</div>
+            <div class="skills-row" style="margin-top: 6px;">
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">REST APIs</span>
+              <span class="skill-tag">SQL</span>
+              <span class="skill-tag">Git</span>
+              <span class="skill-tag">HTML/CSS</span>
+            </div>
+          </div>
+          <div class="jsc-divider"></div>
+          <div class="jsc-row">
+            <div class="jsc-label">Screening Process</div>
+            <div class="jsc-value" style="font-size:12px; font-weight:400; color: var(--text-secondary); line-height:1.5;">Coding challenge + AI-moderated technical interview</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Card -->
+      <div class="progress-card">
+        <div class="progress-title">Application Steps</div>
+        <div class="progress-steps">
+          <div class="progress-step active">
+            <div class="step-dot">1</div>
+            Fill Application
+          </div>
+          <div class="progress-step">
+            <div class="step-dot">2</div>
+            Aptitude Screening
+          </div>
+          <div class="progress-step">
+            <div class="step-dot">3</div>
+            AI Video Interview
+          </div>
+          <div class="progress-step">
+            <div class="step-dot">4</div>
+            Results &amp; Offer
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sidebar-col -->
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span class="footer-ai-badge">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#1D9E75" stroke-width="1.2"/><circle cx="5" cy="5" r="1.5" fill="#1D9E75"/></svg>
+          Powered by AI
+        </span>
+        <span style="color:var(--border)">·</span>
+        <span>Hosted on NIC Infrastructure</span>
+      </div>
+      <div class="footer-right">Government of India · © 2026 SelectAI</div>
+    </div>
+  </footer>
+
+  <script>
+    // ── UPLOAD ──
+    const zone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadSuccess = document.getElementById('uploadSuccess');
+    const uploadFilename = document.getElementById('uploadFilename');
+    const uploadRemove = document.getElementById('uploadRemove');
+
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+    uploadRemove.addEventListener('click', () => {
+      zone.style.display = '';
+      uploadSuccess.classList.remove('visible');
+      fileInput.value = '';
+    });
+    function handleFile(file) {
+      if (!file.name.endsWith('.pdf')) { alert('Please upload a PDF file.'); return; }
+      if (file.size > 5 * 1024 * 1024) { alert('File exceeds 5MB limit.'); return; }
+      uploadFilename.textContent = file.name;
+      zone.style.display = 'none';
+      uploadSuccess.classList.add('visible');
+    }
+
+    // ── TAG INPUT ──
+    const tagField = document.getElementById('tagField');
+    const tagInput = document.getElementById('tagInput');
+    const tags = [];
+
+    tagInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const val = tagInput.value.trim().replace(/,$/, '');
+        if (val && !tags.includes(val)) {
+          tags.push(val);
+          renderTags();
+        }
+        tagInput.value = '';
+      } else if (e.key === 'Backspace' && tagInput.value === '' && tags.length) {
+        tags.pop();
+        renderTags();
+      }
+    });
+    tagField.addEventListener('click', () => tagInput.focus());
+
+    function renderTags() {
+      Array.from(tagField.querySelectorAll('.tag-pill')).forEach(el => el.remove());
+      tags.forEach((tag, i) => {
+        const pill = document.createElement('span');
+        pill.className = 'tag-pill';
+        pill.innerHTML = `${tag}<button class="tag-remove" data-i="${i}" tabindex="-1">×</button>`;
+        tagField.insertBefore(pill, tagInput);
+      });
+      tagField.querySelectorAll('.tag-remove').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          tags.splice(parseInt(btn.dataset.i), 1);
+          renderTags();
+        });
+      });
+    }
+
+    // ── WORD COUNT ──
+    const sop = document.getElementById('sop');
+    const wcNum = document.getElementById('wcNum');
+    sop.addEventListener('input', () => {
+      const words = sop.value.trim().split(/\s+/).filter(Boolean).length;
+      wcNum.textContent = words;
+      wcNum.className = 'wc-num ' + (words >= 150 ? 'ok' : 'low');
+    });
+
+    // ── INLINE VALIDATION ──
+    function validateField(input, validator) {
+      input.addEventListener('blur', () => {
+        if (input.value.trim() === '') { input.classList.remove('valid', 'invalid'); return; }
+        if (validator(input.value)) {
+          input.classList.add('valid'); input.classList.remove('invalid');
+        } else {
+          input.classList.add('invalid'); input.classList.remove('valid');
+        }
+      });
+      input.addEventListener('input', () => {
+        if (input.classList.contains('invalid') && validator(input.value)) {
+          input.classList.add('valid'); input.classList.remove('invalid');
+        }
+      });
+    }
+
+    validateField(document.getElementById('fullName'), v => v.trim().length >= 2);
+    validateField(document.getElementById('email'), v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+    validateField(document.getElementById('phone'), v => /^[\d\s\+\-\(\)]{8,}$/.test(v));
+    validateField(document.getElementById('institution'), v => v.trim().length >= 2);
+    validateField(document.getElementById('degree'), v => v.trim().length >= 2);
+    validateField(document.getElementById('cgpa'), v => {
+      const n = parseFloat(v); return !isNaN(n) && n >= 0 && n <= 10;
+    });
+
+    // ── SUBMIT ──
+    function handleSubmit() {
+      const required = [
+        { id: 'fullName', v: v => v.trim().length >= 2 },
+        { id: 'email', v: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+        { id: 'phone', v: v => /^[\d\s\+\-\(\)]{8,}$/.test(v) },
+        { id: 'institution', v: v => v.trim().length >= 2 },
+        { id: 'degree', v: v => v.trim().length >= 2 },
+        { id: 'cgpa', v: v => { const n = parseFloat(v); return !isNaN(n) && n >= 0 && n <= 10; } },
+      ];
+      let valid = true;
+      required.forEach(({ id, v }) => {
+        const el = document.getElementById(id);
+        if (!v(el.value)) {
+          el.classList.add('invalid'); el.classList.remove('valid');
+          valid = false;
+        }
+      });
+      const words = sop.value.trim().split(/\s+/).filter(Boolean).length;
+      const sopError = document.getElementById('sopError');
+      if (words < 150) {
+        sop.classList.add('invalid'); sopError.style.display = 'block'; valid = false;
+      } else {
+        sop.classList.remove('invalid'); sop.classList.add('valid'); sopError.style.display = 'none';
+      }
+      if (!valid) {
+        const firstInvalid = document.querySelector('.invalid');
+        if (firstInvalid) {
+          const top = firstInvalid.getBoundingClientRect().top + window.scrollY - 120;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+        return;
+      }
+      // Success state
+      const btn = document.getElementById('submitBtn');
+      btn.textContent = '✓ Application Submitted';
+      btn.style.background = 'var(--teal)';
+      btn.disabled = true;
+    }
+  </script>
+
+</body>
+</html>

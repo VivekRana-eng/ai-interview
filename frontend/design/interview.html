@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Interview · SelectAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #0F2744;
+      --navy-hover:  #1a3a5c;
+      --teal:        #1D9E75;
+      --teal-light:  #e6f7f2;
+      --amber:       #d97706;
+      --amber-bg:    #fffbeb;
+      --red:         #dc2626;
+      --red-bg:      #fef2f2;
+      --text-primary:   #0F2744;
+      --text-secondary: #4a5568;
+      --text-muted:     #94a3b8;
+      --border:      #e2e8f0;
+      --surface:     #ffffff;
+      --bg:          #f7f9fc;
+      --ai-bubble:   #f1f5f9;
+      --user-bubble: #ffffff;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-size: 15px;
+      line-height: 1.5;
+      overflow: hidden;
+    }
+
+    /* ── TOP BAR ── */
+    #topBar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .top-bar-inner {
+      height: 56px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+    }
+    .tb-org {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .tb-logo-mark {
+      width: 30px; height: 30px;
+      background: var(--navy); border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .tb-org-name { font-size: 13px; font-weight: 600; color: var(--navy); }
+    .tb-org-sub  { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+    .tb-progress-info {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; font-weight: 600; color: var(--text-primary);
+      white-space: nowrap;
+    }
+    .q-pips {
+      display: flex; gap: 4px;
+    }
+    .q-pip {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border); transition: background 0.3s;
+    }
+    .q-pip.done    { background: var(--teal); }
+    .q-pip.current { background: var(--navy); }
+
+    .tb-timer-wrap {
+      display: flex; justify-content: flex-end;
+    }
+    .tb-timer {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums;
+      color: var(--text-primary);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 12px;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
+    }
+    .tb-timer.amber { color: var(--amber); background: var(--amber-bg); border-color: #fde68a; }
+    .tb-timer.red   { color: var(--red);   background: var(--red-bg);   border-color: #fca5a5; animation: tick 1s steps(1) infinite; }
+    @keyframes tick { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+    /* Progress bar */
+    .progress-bar-track {
+      height: 3px;
+      background: var(--border);
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--teal);
+      transition: width 0.6s ease;
+    }
+
+    /* ── CHAT AREA ── */
+    #chatArea {
+      position: fixed;
+      top: 59px; /* topbar 56px + 3px bar */
+      bottom: 172px; /* input area height */
+      left: 0; right: 0;
+      overflow-y: auto;
+      padding: 28px 24px;
+      scroll-behavior: smooth;
+    }
+    .chat-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── HISTORY ITEM (muted) ── */
+    .history-pair {
+      display: flex; flex-direction: column; gap: 8px;
+      opacity: 0.45;
+    }
+    .history-pair:last-of-type { opacity: 0.6; }
+
+    /* ── MESSAGE BUBBLES ── */
+    .msg-group { display: flex; flex-direction: column; gap: 4px; }
+    .msg-label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .msg-label .bot-icon {
+      width: 18px; height: 18px;
+      background: var(--navy); border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .msg-label .user-icon {
+      width: 18px; height: 18px;
+      background: var(--teal); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 9px; font-weight: 700; color: #fff;
+    }
+
+    .bubble {
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-primary);
+      max-width: 100%;
+    }
+    .bubble-ai {
+      background: var(--ai-bubble);
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+    .bubble-user {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+      max-width: 88%;
+    }
+    .bubble-timestamp {
+      font-size: 10px; color: var(--text-muted); margin-top: 4px;
+    }
+
+    /* Current question — animated in */
+    .current-q {
+      animation: fadeSlideIn 0.4s ease both;
+    }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fadeOut {
+      animation: fadeSlideOut 0.3s ease forwards;
+    }
+    @keyframes fadeSlideOut {
+      to { opacity: 0; transform: translateY(-8px); }
+    }
+
+    /* ── INPUT AREA ── */
+    #inputArea {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 16px 24px 20px;
+      z-index: 50;
+    }
+    .input-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .textarea-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    #answerBox {
+      flex: 1;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      background: var(--bg);
+      resize: none;
+      min-height: 90px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      line-height: 1.6;
+    }
+    #answerBox:focus {
+      border-color: var(--navy);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(15,39,68,0.07);
+    }
+    #answerBox:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    #submitBtn {
+      padding: 12px 22px;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, opacity 0.15s;
+      display: flex; align-items: center; gap: 7px;
+      min-width: 130px; justify-content: center;
+      align-self: flex-end;
+      height: 44px;
+      flex-shrink: 0;
+    }
+    #submitBtn:disabled {
+      opacity: 0.38; cursor: not-allowed;
+    }
+    #submitBtn:not(:disabled):hover { background: var(--navy-hover); }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .input-meta {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .wc-hint { font-size: 11px; color: var(--text-muted); }
+    .wc-hint strong { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+    .input-disclaimer {
+      font-size: 11px; color: var(--text-muted);
+      display: flex; align-items: center; gap: 5px;
+    }
+
+    /* ── COMPLETE SCREEN ── */
+    #completeScreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .complete-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 44px;
+      max-width: 540px;
+      width: 100%;
+      text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      box-shadow: 0 4px 40px rgba(15,39,68,0.08);
+    }
+    .complete-icon {
+      width: 64px; height: 64px;
+      background: var(--teal-light);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .complete-title {
+      font-size: 22px; font-weight: 700; color: var(--navy); letter-spacing: -0.02em; line-height: 1.2;
+    }
+    .complete-sub {
+      font-size: 14px; color: var(--text-secondary); line-height: 1.7; max-width: 400px;
+    }
+    .complete-divider { width: 48px; height: 2px; background: var(--border); border-radius: 2px; }
+    .complete-detail {
+      font-size: 13px; color: var(--text-muted); line-height: 1.6;
+    }
+    .complete-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600;
+      color: var(--teal); background: var(--teal-light);
+      padding: 5px 14px; border-radius: 20px;
+    }
+    .complete-org {
+      font-size: 12px; color: var(--text-muted); margin-top: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .top-bar-inner { padding: 0 14px; }
+      .q-pips { display: none; }
+      #chatArea { padding: 20px 14px; }
+      #inputArea { padding: 12px 14px 16px; }
+      .complete-card { padding: 32px 20px; }
+      .tb-org-sub { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <div id="topBar">
+    <div class="top-bar-inner">
+      <!-- Left: org -->
+      <div class="tb-org">
+        <div class="tb-logo-mark">
+          <svg viewBox="0 0 22 22" fill="none" width="18" height="18">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.9"/>
+            <rect x="12" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.5"/>
+            <rect x="3" y="12" width="7" height="7" rx="1.5" fill="white" opacity="0.5"/>
+            <rect x="12" y="12" width="7" height="7" rx="1.5" fill="#1D9E75"/>
+          </svg>
+        </div>
+        <div>
+          <div class="tb-org-name">SelectAI</div>
+          <div class="tb-org-sub">National Informatics Centre</div>
+        </div>
+      </div>
+      <!-- Centre: progress -->
+      <div class="tb-progress-info">
+        <div class="q-pips" id="qPips"></div>
+        <span id="qLabel">Question 1 of 10</span>
+      </div>
+      <!-- Right: timer -->
+      <div class="tb-timer-wrap">
+        <div class="tb-timer" id="timer">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <span id="timerText">20:00</span>
+        </div>
+      </div>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- CHAT AREA -->
+  <div id="chatArea">
+    <div class="chat-inner" id="chatInner"></div>
+  </div>
+
+  <!-- INPUT AREA -->
+  <div id="inputArea">
+    <div class="input-inner">
+      <div class="textarea-row">
+        <textarea id="answerBox" placeholder="Type your answer here…" rows="4"></textarea>
+        <button id="submitBtn" disabled onclick="submitAnswer()">
+          <span id="btnText">Submit</span>
+          <svg id="btnArrow" width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="spinner" id="btnSpinner"></div>
+        </button>
+      </div>
+      <div class="input-meta">
+        <div class="wc-hint">Aim for 50–150 words · <strong id="wcDisplay">0</strong> words typed</div>
+        <div class="input-disclaimer">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+            <circle cx="6" cy="6" r="5" stroke="#94a3b8" stroke-width="1.2"/>
+            <path d="M6 5.5v3M6 4v.5" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          Take your time. You cannot go back.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPLETE SCREEN -->
+  <div id="completeScreen">
+    <div class="complete-card">
+      <div class="complete-icon">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+          <path d="M6 16l7 7 13-13" stroke="#1D9E75" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="complete-title">Interview Complete</div>
+      <div class="complete-sub">
+        Thank you, <strong>Priya</strong>. Your responses have been recorded and submitted for evaluation.
+      </div>
+      <div class="complete-divider"></div>
+      <div class="complete-detail">
+        Results will be communicated via email within <strong>7 working days</strong>.<br/>
+        You may close this window.
+      </div>
+      <div class="complete-badge">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+          <circle cx="6" cy="6" r="5" stroke="#1D9E75" stroke-width="1.2"/>
+          <circle cx="6" cy="6" r="2" fill="#1D9E75"/>
+        </svg>
+        10 of 10 responses recorded
+      </div>
+      <div class="complete-org">SelectAI · National Informatics Centre · Government of India</div>
+    </div>
+  </div>
+
+  <script>
+    // ── QUESTION BANK ──
+    const questions = [
+      "Tell us briefly about yourself and why you applied for the Full-Stack Developer Internship at NIC.",
+      "Describe a project where you built or contributed to a web application. What was your role and what technologies did you use?",
+      "Explain the difference between REST and GraphQL APIs. In what scenarios would you choose one over the other?",
+      "How do you approach debugging a production issue where you cannot reproduce it locally? Walk us through your process.",
+      "Describe your experience with version control. How do you handle merge conflicts in a team environment?",
+      "What does 'responsive design' mean to you? How have you implemented it in your previous work?",
+      "Explain the concept of database indexing. When would you add an index and when might it cause problems?",
+      "How do you ensure the security of a web application? Name at least three practices you would implement.",
+      "Describe a situation where you had to learn a new technology quickly under a deadline. How did you handle it?",
+      "If selected, what specific contribution do you hope to make to NIC during this internship, and what do you hope to learn?"
+    ];
+
+    const TOTAL_Q   = questions.length;
+    const DURATION  = 20 * 60; // 20 minutes in seconds
+
+    let currentQ   = 0;
+    let answers    = [];
+    let timeLeft   = DURATION;
+    let timerInterval;
+
+    const chatInner  = document.getElementById('chatInner');
+    const answerBox  = document.getElementById('answerBox');
+    const submitBtn  = document.getElementById('submitBtn');
+    const qLabel     = document.getElementById('qLabel');
+    const progressBar= document.getElementById('progressBar');
+    const qPips      = document.getElementById('qPips');
+    const timerEl    = document.getElementById('timer');
+    const timerText  = document.getElementById('timerText');
+    const wcDisplay  = document.getElementById('wcDisplay');
+
+    // ── BUILD PIPS ──
+    function buildPips() {
+      qPips.innerHTML = '';
+      for (let i = 0; i < TOTAL_Q; i++) {
+        const pip = document.createElement('div');
+        pip.className = 'q-pip';
+        if (i < currentQ) pip.classList.add('done');
+        else if (i === currentQ) pip.classList.add('current');
+        qPips.appendChild(pip);
+      }
+    }
+
+    // ── RENDER QUESTION ──
+    function renderQuestion(idx, animate = true) {
+      qLabel.textContent = `Question ${idx + 1} of ${TOTAL_Q}`;
+      progressBar.style.width = `${(idx / TOTAL_Q) * 100}%`;
+      buildPips();
+
+      // Build history pairs (all answered questions)
+      chatInner.innerHTML = '';
+
+      answers.forEach((ans, i) => {
+        const pair = document.createElement('div');
+        pair.className = 'history-pair';
+        pair.innerHTML = `
+          <div class="msg-group">
+            <div class="msg-label">
+              <div class="bot-icon">
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                  <rect x="2" y="3" width="8" height="6" rx="1.5" stroke="white" stroke-width="1.2"/>
+                  <path d="M4 3V2M8 3V2M2 6h1M9 6h1" stroke="white" stroke-width="1.1" stroke-linecap="round"/>
+                </svg>
+              </div>
+              AI Interviewer
+            </div>
+            <div class="bubble bubble-ai">${questions[i]}</div>
+          </div>
+          <div class="msg-group" style="align-items:flex-end">
+            <div class="msg-label" style="justify-content:flex-end">
+              You
+              <div class="user-icon">P</div>
+            </div>
+            <div class="bubble bubble-user">${ans}</div>
+          </div>
+        `;
+        chatInner.appendChild(pair);
+      });
+
+      // Current question
+      if (idx < TOTAL_Q) {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        const curDiv = document.createElement('div');
+        curDiv.className = 'msg-group current-q';
+        curDiv.id = 'currentQ';
+        curDiv.innerHTML = `
+          <div class="msg-label">
+            <div class="bot-icon">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                <rect x="2" y="3" width="8" height="6" rx="1.5" stroke="white" stroke-width="1.2"/>
+                <path d="M4 3V2M8 3V2M2 6h1M9 6h1" stroke="white" stroke-width="1.1" stroke-linecap="round"/>
+              </svg>
+            </div>
+            AI Interviewer
+          </div>
+          <div class="bubble bubble-ai">${questions[idx]}</div>
+          <div class="bubble-timestamp">${timeStr}</div>
+        `;
+        chatInner.appendChild(curDiv);
+
+        // Scroll to bottom
+        setTimeout(() => {
+          chatArea.scrollTop = chatArea.scrollHeight;
+        }, 50);
+      }
+
+      answerBox.value = '';
+      answerBox.disabled = false;
+      answerBox.focus();
+      submitBtn.disabled = true;
+      wcDisplay.textContent = '0';
+    }
+
+    // ── SUBMIT ──
+    function submitAnswer() {
+      const answer = answerBox.value.trim();
+      if (!answer) return;
+
+      // Loading state
+      submitBtn.disabled = true;
+      answerBox.disabled = true;
+      document.getElementById('btnText').style.display = 'none';
+      document.getElementById('btnArrow').style.display = 'none';
+      document.getElementById('btnSpinner').style.display = 'block';
+
+      // Fade out current question
+      const curQ = document.getElementById('currentQ');
+      if (curQ) curQ.classList.add('fadeOut');
+
+      setTimeout(() => {
+        answers.push(answer);
+        document.getElementById('btnText').style.display = '';
+        document.getElementById('btnArrow').style.display = '';
+        document.getElementById('btnSpinner').style.display = 'none';
+
+        currentQ++;
+
+        if (currentQ >= TOTAL_Q) {
+          // Done!
+          progressBar.style.width = '100%';
+          clearInterval(timerInterval);
+          document.getElementById('completeScreen').style.display = 'flex';
+        } else {
+          renderQuestion(currentQ);
+        }
+      }, 800);
+    }
+
+    // ── TEXTAREA ──
+    answerBox.addEventListener('input', () => {
+      const words = answerBox.value.trim().split(/\s+/).filter(Boolean).length;
+      wcDisplay.textContent = words;
+      submitBtn.disabled = answerBox.value.trim().length === 0;
+    });
+
+    answerBox.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+        if (!submitBtn.disabled) submitAnswer();
+      }
+    });
+
+    // ── TIMER ──
+    function updateTimer() {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        timeLeft = 0;
+        // Auto-submit remaining
+        if (currentQ < TOTAL_Q) {
+          if (answerBox.value.trim()) submitAnswer();
+          else {
+            answers.push('[No response — time expired]');
+            currentQ++;
+            if (currentQ >= TOTAL_Q) {
+              progressBar.style.width = '100%';
+              document.getElementById('completeScreen').style.display = 'flex';
+            } else {
+              renderQuestion(currentQ);
+            }
+          }
+        }
+      }
+
+      const m = Math.floor(timeLeft / 60);
+      const s = timeLeft % 60;
+      timerText.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+      timerEl.className = 'tb-timer';
+      if (timeLeft < 120)      timerEl.classList.add('red');
+      else if (timeLeft < 300) timerEl.classList.add('amber');
+    }
+
+    // ── INIT ──
+    const chatArea = document.getElementById('chatArea');
+    renderQuestion(0);
+    timerInterval = setInterval(updateTimer, 1000);
+
+  </script>
+</body>
+</html>
