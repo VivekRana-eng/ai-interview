@@ -1,0 +1,43 @@
+# SelectAI — Government Internship Selection Platform
+# Read this before every single task. No exceptions.
+
+## What this is
+An AI-powered internship selection platform for a Government of India organisation.
+Two audiences: candidates (public portal) and admins (JWT-protected dashboard).
+Full spec lives in: AI_Selection_System_Design.md — read the relevant section before any module.
+
+---
+
+## !! CURRENT MODE: MOCK (Phase 0) !!
+- Frontend only — Next.js + Supabase
+- All AI responses are MOCKED with realistic hardcoded data
+- Resume storage: Supabase Storage bucket "resumes"
+- Database: Supabase (3 tables: job_profiles, applications, interview_answers)
+- Admin auth: Supabase Auth
+- Do NOT build FastAPI backend yet
+- Do NOT make real Groq or HuggingFace API calls yet
+- Goal: working clickable demo that replicates the full UI workflow end-to-end
+
+## When switching to LIVE (Phase 1) — update this line and follow Section 14 of the MD
+
+---
+
+## Absolute rules — never break these regardless of mode
+1. Never change function signatures in lib/api.ts — only swap implementations inside mock blocks
+2. Never change visual design of HTML files in frontend/design/ — they are the visual reference
+3. Adapt HTML designs to match actual system logic — if the HTML shows 6 pipeline stages
+   but the system only has 4, use 4. HTML is visual reference, not spec.
+4. S_final = (S_screen × 0.40) + (S_interview × 0.60) — formula locked
+5. Screening threshold = 55/100 — never change
+6. Every status change writes to audit trail (in mock: Supabase audit_log table)
+7. Keep all files under 300 lines — split if longer
+8. TypeScript strict mode always — no `any` types
+
+---
+
+## Detailed rules
+- Backend conventions: .windsurf/rules/backend.md
+- Frontend conventions: .windsurf/rules/frontend.md
+- AI model assignments: .windsurf/rules/ai-models.md
+- Database conventions: .windsurf/rules/database.md
+- Mock vs live pattern: .windsurf/rules/mock-live.md
