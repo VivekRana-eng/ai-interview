@@ -57,7 +57,7 @@ export const KpiCards: React.FC = () => {
       trendUp: true,
       sparkData: [10, 12, 11, 14, 13, 15, 15],
       sparkColor: '#3b82f6', // blue
-      iconColor: 'bg-indigo-50 text-indigo-600 border-indigo-100',
+      iconColor: 'bg-indigo-50 text-indigo-650 border-indigo-100',
     },
     {
       title: 'Total Candidates',
@@ -100,8 +100,8 @@ export const KpiCards: React.FC = () => {
           <div
             key={card.title}
             className="
-              relative p-5 rounded-2xl bg-white border border-slate-100/80
-              shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between h-[130px]
+              relative p-5 rounded-[15px] bg-white border border-[#EEF1F6]
+              shadow-[0_4px_16px_rgba(15,23,42,0.04)] flex flex-col justify-between h-[130px]
             "
           >
             {/* Top row */}
@@ -110,7 +110,7 @@ export const KpiCards: React.FC = () => {
                 <div className={`p-1.5 rounded-lg border flex items-center justify-center ${card.iconColor}`}>
                   <Icon className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="text-xs font-semibold text-[#7B8AA3]">
                   {card.title}
                 </span>
               </div>
@@ -128,7 +128,7 @@ export const KpiCards: React.FC = () => {
                 <span className="text-2xl font-extrabold text-slate-900 tracking-tight leading-none">
                   {card.value}
                 </span>
-                <span className="text-[10px] text-slate-400 font-semibold mt-1">
+                <span className="text-[10px] text-[#7B8AA3] font-semibold mt-1">
                   vs previous month
                 </span>
               </div>

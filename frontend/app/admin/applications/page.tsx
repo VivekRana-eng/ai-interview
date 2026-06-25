@@ -20,6 +20,7 @@ export default function AdminApplicationsPage() {
   const [applications, setApplications] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({ status: '', minScore: '', maxScore: '' })
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     async function loadApplications() {
@@ -39,12 +40,44 @@ export default function AdminApplicationsPage() {
     if (filters.status && app.status !== filters.status) return false
     if (filters.minScore && app.final_score && app.final_score < parseFloat(filters.minScore)) return false
     if (filters.maxScore && app.final_score && app.final_score > parseFloat(filters.maxScore)) return false
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase()
+      const matchesName = app.candidate_name?.toLowerCase().includes(q)
+      const matchesEmail = app.email?.toLowerCase().includes(q)
+      if (!matchesName && !matchesEmail) return false
+    }
     return true
   })
 
   const sortedApplications = [...filteredApplications].sort((a, b) => {
     return (b.final_score || 0) - (a.final_score || 0)
   })
+
+  function handleExportCSV() {
+    if (sortedApplications.length === 0) {
+      alert('No data to export')
+      return
+    }
+    const headers = ['Candidate Name', 'Email', 'Job Title', 'Screening Score', 'Interview Score', 'Final Score', 'Status']
+    const rows = sortedApplications.map(app => [
+      app.candidate_name,
+      app.email,
+      app.job_profiles?.title || '',
+      app.screening_score ?? '',
+      app.interview_score ?? '',
+      app.final_score ?? '',
+      app.status
+    ])
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(','), ...rows.map(e => e.map(val => `"${val}"`).join(','))].join('\n')
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", `applications_export_${new Date().toISOString().slice(0, 10)}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   if (loading) {
     return (
@@ -62,7 +95,13 @@ export default function AdminApplicationsPage() {
       <div className="bg-white border border-[#e2e8f0] rounded-[10px] p-3.5 flex items-center gap-2.5 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
           <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#718096]" width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.4"/><path d="M11 11l3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>
-          <input type="text" placeholder="Search candidates..." className="w-full pl-8 pr-3 py-2 border-[1.5px] border-[#e2e8f0] rounded-lg text-[13px] text-[#0F2744] bg-[#f7f9fc] outline-none focus:border-[#0F2744] focus:bg-white transition-colors" />
+          <input 
+            type="text" 
+            placeholder="Search candidates..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-8 pr-3 py-2 border-[1.5px] border-[#e2e8f0] rounded-lg text-[13px] text-[#0F2744] bg-[#f7f9fc] outline-none focus:border-[#0F2744] focus:bg-white transition-colors" 
+          />
         </div>
         <select
           value={filters.status}
@@ -84,7 +123,10 @@ export default function AdminApplicationsPage() {
           <input type="number" value={filters.maxScore} onChange={(e) => setFilters({ ...filters, maxScore: e.target.value })} placeholder="100" className="w-14 px-2 py-1.5 border border-[#e2e8f0] rounded text-[13px] outline-none focus:border-[#0F2744]" />
         </div>
         <div className="flex-1"></div>
-        <button className="flex items-center gap-1.5 px-3.5 py-2 bg-[#0F2744] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1a3a5c] transition-colors">
+        <button 
+          onClick={handleExportCSV}
+          className="flex items-center gap-1.5 px-3.5 py-2 bg-[#0F2744] text-white text-[13px] font-semibold rounded-lg hover:bg-[#1a3a5c] transition-colors"
+        >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M8 3v10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
           Export
         </button>

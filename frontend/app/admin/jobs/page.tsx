@@ -1,20 +1,46 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { getJobs } from '@/lib/api'
 import Link from 'next/link'
 import { AdminShell } from '../../components/AdminShell'
 
-function domainBadge(domain: string) {
-  const map: Record<string, { label: string; bg: string; color: string }> = {
-    artificial_intelligence: { label: 'AI', bg: 'bg-[#e6f7f2]', color: 'text-[#1D9E75]' },
-    software_development: { label: 'Software', bg: 'bg-[#eff6ff]', color: 'text-[#2563eb]' },
-    cybersecurity: { label: 'Security', bg: 'bg-[#fef2f2]', color: 'text-[#dc2626]' },
-    data_science: { label: 'Data', bg: 'bg-[#f5f3ff]', color: 'text-[#7c3aed]' },
-    cloud_computing: { label: 'Cloud', bg: 'bg-[#ecfeff]', color: 'text-[#0e7490]' },
+function formatDomain(domain: string) {
+  const map: Record<string, string> = {
+    artificial_intelligence: 'AI',
+    software_development: 'Software',
+    cybersecurity: 'Security',
+    data_science: 'Data Science',
+    cloud_computing: 'Cloud'
   }
-  return map[domain] || { label: domain, bg: 'bg-[#f7f9fc]', color: 'text-[#4a5568]' }
+  return map[domain] || domain
 }
 
-export default async function AdminJobsPage() {
-  const jobs = await getJobs()
+export default function AdminJobsPage() {
+  const [jobs, setJobs] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadJobs() {
+      try {
+        const data = await getJobs()
+        setJobs(data)
+      } catch (err) {
+        console.error('Failed to load jobs:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadJobs()
+  }, [])
+
+  if (loading) {
+    return (
+      <AdminShell title="Job Profiles" subtitle="Manage internship openings">
+        <div className="flex-1 flex items-center justify-center text-[#718096]">Loading job profiles...</div>
+      </AdminShell>
+    )
+  }
 
   return (
     <AdminShell title="Job Profiles" subtitle="Manage internship openings">
@@ -39,40 +65,31 @@ export default async function AdminJobsPage() {
               </tr>
             </thead>
             <tbody>
-              {jobs.map((job) => {
-                const badge = domainBadge(job.domain)
-                return (
-                  <tr key={job.id} className="border-b border-[#e2e8f0] last:border-0 hover:bg-[#fafbfc] transition-colors">
-                    <td className="px-3.5 py-3 text-[13px] font-semibold text-[#0F2744] whitespace-nowrap">{job.title}</td>
-                    <td className="px-3.5 py-3 whitespace-nowrap">
-                      <span className={`inline-block text-[11px] font-semibold px-2 py-0.5 rounded ${badge.bg} ${badge.color}`}>
-                        {badge.label}
-                      </span>
-                    </td>
-                    <td className="px-3.5 py-3 text-[13px] text-[#4a5568] whitespace-nowrap">{job.seats}</td>
-                    <td className="px-3.5 py-3 text-[13px] text-[#4a5568] whitespace-nowrap">
-                      {job.deadline ? new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Rolling'}
-                    </td>
-                    <td className="px-3.5 py-3 whitespace-nowrap">
-                      <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                        job.status === 'published' ? 'bg-[#e6f7f2] text-[#1D9E75]' : 'bg-[#f7f9fc] text-[#718096]'
-                      }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${job.status === 'published' ? 'bg-[#1D9E75]' : 'bg-[#718096]'}`}></span>
-                        {job.status}
-                      </span>
-                    </td>
-                  </tr>
-                )
-              })}
+              {jobs.map((job) => (
+                <tr key={job.id} className="border-b border-[#e2e8f0] last:border-0 hover:bg-[#fafbfc] transition-colors">
+                  <td className="px-3.5 py-3 text-[13px] font-semibold text-[#0F2744] whitespace-nowrap">{job.title}</td>
+                  <td className="px-3.5 py-3 whitespace-nowrap">
+                    <span className="inline-block text-[11px] font-semibold px-2 py-0.5 rounded bg-[#eff6ff] text-[#2563eb]">
+                      {formatDomain(job.domain)}
+                    </span>
+                  </td>
+                  <td className="px-3.5 py-3 text-[13px] text-[#4a5568] whitespace-nowrap">{job.seats}</td>
+                  <td className="px-3.5 py-3 text-[13px] text-[#4a5568] whitespace-nowrap">
+                    {job.deadline ? new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Rolling'}
+                  </td>
+                  <td className="px-3.5 py-3 whitespace-nowrap">
+                    <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                      job.status === 'published' ? 'bg-[#e6f7f2] text-[#1D9E75]' : 'bg-[#f7f9fc] text-[#718096]'
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${job.status === 'published' ? 'bg-[#1D9E75]' : 'bg-[#718096]'}`}></span>
+                      {job.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
-
-        {jobs.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-[15px] text-[#718096]">No job profiles found.</p>
-          </div>
-        )}
       </div>
     </AdminShell>
   )

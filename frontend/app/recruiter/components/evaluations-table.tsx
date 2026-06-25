@@ -6,7 +6,7 @@ import { Candidate } from '../types';
 import { ExternalLink, Sparkles, Circle } from 'lucide-react';
 
 export const EvaluationsTable: React.FC = () => {
-  const { candidates } = useRecruiterStore();
+  const { candidates, setActiveTab } = useRecruiterStore();
 
   const getRecommendationBadge = (rec: Candidate['recommendation']) => {
     switch (rec) {
@@ -51,7 +51,10 @@ export const EvaluationsTable: React.FC = () => {
           <h3 className="text-sm font-bold text-slate-800">Recent Evaluations</h3>
           <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Overview of latest automated and live candidate matches</p>
         </div>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-blue-600 shadow-sm bg-white">
+        <button 
+          onClick={() => setActiveTab('Evaluation Reports')}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-blue-600 shadow-sm bg-white"
+        >
           <span>View All</span>
           <ExternalLink className="w-3.5 h-3.5" />
         </button>

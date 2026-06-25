@@ -3,7 +3,8 @@ import { supabase } from './supabase'
 import { MOCK_QUESTIONS, mockScreeningResult, MOCK_RATIONALES } from './mock-data'
 import type { Job, Application, InterviewSession } from './types'
 
-const MODE = process.env.NEXT_PUBLIC_APP_MODE as 'mock' | 'live'
+// Default to mock mode locally so builds work without backend/env setup.
+const MODE = (process.env.NEXT_PUBLIC_APP_MODE ?? 'mock') as 'mock' | 'live'
 const API  = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 const isMock = () => MODE === 'mock'
 const delay  = (ms: number) => new Promise(r => setTimeout(r, ms))
@@ -139,7 +140,7 @@ export async function submitAnswer(
     if (isLast) {
       const { data: answers } = await supabase.from('interview_answers')
         .select('mock_score').eq('application_id', applicationId)
-      const avg = answers!.reduce((s, a) => s + a.mock_score, 0) / answers!.length
+      const avg = answers!.reduce((s: number, a: { mock_score: number }) => s + a.mock_score, 0) / answers!.length
       const interviewScore = Math.round(avg * 10)
       const { data: app } = await supabase.from('applications')
         .select('screening_score').eq('id', applicationId).single()
@@ -203,7 +204,7 @@ export async function getMeritList(jobId: string) {
       .order('final_score', { ascending: false })
     // Assign ranks and outcomes
     const seats = data?.[0] ? 5 : 0 // mock: top 5 selected
-    return data?.map((app, i) => ({
+    return data?.map((app: any, i: number) => ({
       ...app,
       rank: i + 1,
       outcome: i < seats ? 'selected' : i < seats + 3 ? 'waitlisted' : 'rejected'

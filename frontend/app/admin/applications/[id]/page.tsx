@@ -44,12 +44,15 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
   const [loading, setLoading] = useState(true)
   const [statusMenuOpen, setStatusMenuOpen] = useState(false)
   const [resumeUrl, setResumeUrl] = useState<string | null>(null)
+  const [notes, setNotes] = useState('')
+  const [savingNotes, setSavingNotes] = useState(false)
 
   useEffect(() => {
     async function loadData() {
       try {
         const { data: appData } = await supabase.from('applications').select('*, job_profiles(*)').eq('id', params.id).single()
         setApplication(appData)
+        setNotes(appData?.admin_notes || '')
         const { data: answersData } = await supabase.from('interview_answers').select('*').eq('application_id', params.id).order('question_number')
         setInterviewAnswers(answersData || [])
         if (appData?.resume_url) {
@@ -76,6 +79,23 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
       })
     }
     setStatusMenuOpen(false)
+  }
+
+  async function handleSaveNotes() {
+    setSavingNotes(true)
+    try {
+      const { error } = await supabase
+        .from('applications')
+        .update({ admin_notes: notes })
+        .eq('id', params.id)
+      
+      if (error) throw error
+      alert('Notes saved successfully!')
+    } catch (err: any) {
+      alert('Failed to save notes: ' + (err.message || 'Unknown error'))
+    } finally {
+      setSavingNotes(false)
+    }
   }
 
   if (loading) {
@@ -338,9 +358,16 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
               <textarea
                 className="w-full p-2.5 border border-[#e2e8f0] rounded-md text-[13px] text-[#0F2744] bg-[#f0f4f8] resize-y min-h-[90px] outline-none focus:border-[#0F2744] focus:bg-white transition-colors leading-relaxed"
                 placeholder="Add notes about this candidate..."
-                defaultValue={application.admin_notes || ''}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               />
-              <button className="self-end px-4 py-2 bg-[#0F2744] text-white rounded-md text-xs font-semibold hover:bg-[#1a3a5c] transition-colors">Save Notes</button>
+              <button 
+                onClick={handleSaveNotes}
+                disabled={savingNotes}
+                className="self-end px-4 py-2 bg-[#0F2744] text-white rounded-md text-xs font-semibold hover:bg-[#1a3a5c] transition-colors disabled:bg-[#718096]"
+              >
+                {savingNotes ? 'Saving...' : 'Save Notes'}
+              </button>
             </div>
           </div>
         </div>

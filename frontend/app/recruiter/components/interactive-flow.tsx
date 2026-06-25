@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRecruiterStore } from '../store';
 import { Candidate } from '../types';
 import { motion } from 'framer-motion';
@@ -60,15 +60,22 @@ const CircularProgress: React.FC<{ value: number; label: string; sublabel: strin
 };
 
 export const InteractiveFlow: React.FC = () => {
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+
   const { 
     candidates, 
+    jobs,
     promoteCandidate, 
     setCandidateStage, 
     seedDemoPipeline,
     searchVal,
     filterJob,
     filterStage,
-    sortBy
+    sortBy,
+    setFilterStage,
+    setSortBy,
+    addCandidate,
+    deleteCandidate
   } = useRecruiterStore();
 
   // Counts for pipeline summary
@@ -81,15 +88,25 @@ export const InteractiveFlow: React.FC = () => {
   const total = candidates.length;
 
   // Filter candidates based on controls
-  const filteredCandidates = candidates.filter((c) => {
-    const matchesSearch = c.name.toLowerCase().includes(searchVal.toLowerCase()) || 
-                          c.position.toLowerCase().includes(searchVal.toLowerCase());
-    const matchesJob = filterJob === 'All' || c.position === filterJob;
-    return matchesSearch && matchesJob;
-  });
+  const filteredCandidates = candidates
+    .filter((c) => {
+      const matchesSearch = c.name.toLowerCase().includes(searchVal.toLowerCase()) || 
+                            c.position.toLowerCase().includes(searchVal.toLowerCase());
+      const matchesJob = filterJob === 'All' || c.position === filterJob;
+      const matchesStage = filterStage === 'All' || c.status.toLowerCase() === filterStage.toLowerCase();
+      return matchesSearch && matchesJob && matchesStage;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'Highest AI Match') return b.aiMatchScore - a.aiMatchScore;
+      if (sortBy === 'Lowest AI Match') return a.aiMatchScore - b.aiMatchScore;
+      if (sortBy === 'Highest Integrity') return b.integrityScore - a.integrityScore;
+      if (sortBy === 'Name') return a.name.localeCompare(b.name);
+      return 0;
+    });
 
   return (
-    <div className="p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col gap-6">
+    <>
+      <div className="p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col gap-6">
       
       {/* Brand Header */}
       <div className="flex justify-between items-start pb-2 border-b border-slate-100">
@@ -126,32 +143,110 @@ export const InteractiveFlow: React.FC = () => {
       {/* Control bar */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pt-2 border-t border-slate-100 text-[10px] font-bold text-slate-500">
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <span>Filter Stage:</span>
-            <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 bg-white">
-              <span>{filterStage}</span>
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
+            <div className="relative">
+              <select
+                value={filterStage}
+                onChange={(e) => setFilterStage(e.target.value)}
+                className="pl-3 pr-8 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 bg-white cursor-pointer appearance-none outline-none text-slate-700 font-bold"
+              >
+                <option value="All">All Stages</option>
+                <option value="Applied">Applied</option>
+                <option value="Screening">Screening</option>
+                <option value="Interviewing">Interviewing</option>
+                <option value="Shortlisted">Shortlisted</option>
+                <option value="Hired">Hired</option>
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            </div>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <span>Sort:</span>
-            <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 bg-white">
-              <ArrowUpDown className="w-3 h-3" />
-              <span>{sortBy}</span>
-              <ChevronDown className="w-3.5 h-3.5" />
-            </button>
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="pl-7 pr-8 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 bg-white cursor-pointer appearance-none outline-none text-slate-700 font-bold"
+              >
+                <option value="Highest AI Match">Highest AI Match</option>
+                <option value="Lowest AI Match">Lowest AI Match</option>
+                <option value="Highest Integrity">Highest Integrity</option>
+                <option value="Name">Name</option>
+              </select>
+              <ArrowUpDown className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="text-slate-400">QUICK ADD:</span>
-          <button className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 font-extrabold text-[9px] text-slate-700">
+          <button
+            onClick={() => {
+              const firstNames = ['Arjun', 'Priya', 'Aditya', 'Ananya', 'Rohan', 'Sneha', 'Rahul', 'Kriti'];
+              const lastNames = ['Sharma', 'Patel', 'Verma', 'Mehta', 'Rao', 'Joshi', 'Gupta', 'Sen'];
+              const randomName = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+              const randomEmail = `${randomName.toLowerCase().replace(' ', '.')}@selectai.gov.in`;
+              
+              const activeJobs = jobs.filter(j => j.status === 'Active');
+              const positions = activeJobs.length > 0 
+                ? activeJobs.map(j => j.title)
+                : ['AI / Machine Learning Researcher', 'Senior Full Stack Engineer', 'Security Engineer (DevSecOps)'];
+              const randomPos = positions[Math.floor(Math.random() * positions.length)];
+              
+              const id = 'cand-' + Date.now();
+              addCandidate({
+                id,
+                name: randomName,
+                position: randomPos,
+                location: 'New Delhi, IN',
+                email: randomEmail,
+                avatarUrl: `https://api.dicebear.com/7.x/adventurer/svg?seed=${randomName}`,
+                aiMatchScore: Math.floor(Math.random() * 26) + 70,
+                integrityScore: Math.floor(Math.random() * 16) + 82,
+                status: 'Applied',
+                recommendation: Math.random() > 0.5 ? 'Hire' : 'Maybe',
+                interviewDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+              });
+            }}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 font-extrabold text-[9px] text-slate-700"
+          >
             <Plus className="w-3 h-3 text-slate-400" />
-            <span>+ Applied</span>
+            <span>Applied</span>
           </button>
-          <button className="flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 font-extrabold text-[9px] text-slate-700">
+          <button
+            onClick={() => {
+              const firstNames = ['Vikram', 'Neha', 'Kabir', 'Divya', 'Siddharth', 'Ishita', 'Aarav', 'Kiara'];
+              const lastNames = ['Nair', 'Singh', 'Kapoor', 'Reddy', 'Choudhury', 'Bose', 'Mishra', 'Das'];
+              const randomName = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+              const randomEmail = `${randomName.toLowerCase().replace(' ', '.')}@selectai.gov.in`;
+              
+              const activeJobs = jobs.filter(j => j.status === 'Active');
+              const positions = activeJobs.length > 0 
+                ? activeJobs.map(j => j.title)
+                : ['AI / Machine Learning Researcher', 'Senior Full Stack Engineer', 'Security Engineer (DevSecOps)'];
+              const randomPos = positions[Math.floor(Math.random() * positions.length)];
+              
+              const id = 'cand-' + Date.now();
+              addCandidate({
+                id,
+                name: randomName,
+                position: randomPos,
+                location: 'Bengaluru, IN',
+                email: randomEmail,
+                avatarUrl: `https://api.dicebear.com/7.x/adventurer/svg?seed=${randomName}`,
+                aiMatchScore: Math.floor(Math.random() * 21) + 80,
+                integrityScore: Math.floor(Math.random() * 11) + 88,
+                status: 'Interviewing',
+                recommendation: Math.random() > 0.4 ? 'Strong Hire' : 'Hire',
+                interviewDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+              });
+            }}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 font-extrabold text-[9px] text-slate-700"
+          >
             <Plus className="w-3 h-3 text-slate-400" />
-            <span>+ Interview</span>
+            <span>Interviewed</span>
           </button>
         </div>
       </div>
@@ -236,10 +331,16 @@ export const InteractiveFlow: React.FC = () => {
                 >
                   Promote &gt;
                 </button>
-                <button className="p-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-colors shadow-sm">
+                <button
+                  onClick={() => setSelectedCandidate(cand)}
+                  className="p-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-colors shadow-sm"
+                >
                   <User className="w-3.5 h-3.5" />
                 </button>
-                <button className="p-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 hover:text-rose-500 transition-colors shadow-sm">
+                <button
+                  onClick={() => deleteCandidate(cand.id)}
+                  className="p-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 hover:text-rose-500 transition-colors shadow-sm"
+                >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -249,5 +350,84 @@ export const InteractiveFlow: React.FC = () => {
         })}
       </div>
     </div>
+
+    {/* Candidate Profile Details Modal */}
+    {selectedCandidate && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6 relative animate-in fade-in zoom-in-95 duration-200 text-slate-800">
+          <button 
+            onClick={() => setSelectedCandidate(null)}
+            className="absolute top-4 right-4 text-slate-400 hover:text-slate-650 font-extrabold text-sm"
+          >
+            ✕
+          </button>
+          <div className="flex items-center gap-4 mb-5 pb-4 border-b border-slate-100">
+            <div className="w-12 h-12 rounded-lg bg-indigo-50 text-indigo-650 flex items-center justify-center font-extrabold text-base border border-indigo-100">
+              {selectedCandidate.name.split(' ').map(n => n[0]).join('')}
+            </div>
+            <div>
+              <h4 className="font-extrabold text-slate-800 text-sm leading-tight">{selectedCandidate.name}</h4>
+              <p className="text-xs text-[#7B8AA3] font-semibold mt-0.5">{selectedCandidate.position}</p>
+            </div>
+          </div>
+          <div className="space-y-3.5 text-xs font-semibold text-slate-700">
+            <div className="grid grid-cols-2 gap-3 bg-slate-55/40 p-3.5 rounded-xl border border-slate-100 mb-2">
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">AI Match Score</span>
+                <span className="text-sm font-extrabold text-slate-800">{selectedCandidate.aiMatchScore}%</span>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider">Integrity Index</span>
+                <span className="text-sm font-extrabold text-[#1D9E75]">{selectedCandidate.integrityScore}%</span>
+              </div>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider mb-0.5">Email Address</span>
+              <span className="text-slate-600 font-medium">{selectedCandidate.email}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider mb-0.5">Location</span>
+              <span className="text-slate-600 font-medium">{selectedCandidate.location}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider mb-0.5">Applied On</span>
+              <span className="text-slate-600 font-medium">{selectedCandidate.interviewDate}</span>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider mb-0.5">Current Status</span>
+              <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100 text-[10px] font-extrabold">
+                {selectedCandidate.status}
+              </span>
+            </div>
+            <div>
+              <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider mb-0.5">AI Recommendation</span>
+              <div>
+                {selectedCandidate.recommendation === 'Strong Hire' && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-250">Strong Hire</span>
+                )}
+                {selectedCandidate.recommendation === 'Hire' && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-250">Hire</span>
+                )}
+                {selectedCandidate.recommendation === 'Maybe' && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-250">Maybe</span>
+                )}
+                {selectedCandidate.recommendation === 'Reject' && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-250">Reject</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 flex justify-end">
+            <button 
+              onClick={() => setSelectedCandidate(null)}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors"
+            >
+              Close Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };

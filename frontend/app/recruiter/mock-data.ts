@@ -128,9 +128,99 @@ export const INITIAL_ALERTS: AiAlert[] = [
 ];
 
 export const MOCK_JOBS: Job[] = [
-  { id: 'job-1', title: 'AI / Machine Learning Researcher', department: 'Engineering', status: 'Active', candidatesCount: 1 },
-  { id: 'job-2', title: 'Senior Full Stack Engineer', department: 'Engineering', status: 'Active', candidatesCount: 1 },
-  { id: 'job-3', title: 'Security Engineer (DevSecOps)', department: 'Security', status: 'Active', candidatesCount: 1 },
-  { id: 'job-4', title: 'DevOps Architect', department: 'Engineering', status: 'Active', candidatesCount: 0 },
-  { id: 'job-5', title: 'UI/UX Designer', department: 'Design', status: 'Active', candidatesCount: 0 }
+  {
+    id: 'job-1',
+    title: 'AI / Machine Learning Researcher',
+    department: 'Engineering',
+    status: 'Active',
+    candidatesCount: 1,
+    description: 'Research and develop advanced neural architectures for high-throughput decision-making systems.',
+    skillsRequired: ['PyTorch', 'TensorFlow', 'NLP', 'Transformers', 'CUDA'],
+    experience: '3+ years',
+    salaryRange: '₹18,00,000 - ₹24,00,000',
+    location: 'New Delhi (On-site)',
+    employmentType: 'Full-time',
+    aiSummary: 'Lead investigator for machine learning modeling and deep neural framework research.',
+    aiQuestions: [
+      'Detail the trade-offs of fine-tuning LLMs vs using RAG.',
+      'Explain optimization strategies for backpropagation in deep architectures.',
+      'How do you manage computational efficiency during training?'
+    ]
+  },
+  {
+    id: 'job-2',
+    title: 'Senior Full Stack Engineer',
+    department: 'Engineering',
+    status: 'Active',
+    candidatesCount: 1,
+    description: 'Build responsive interfaces and robust API backends that scale seamlessly under heavy load.',
+    skillsRequired: ['Next.js', 'React', 'Node.js', 'Express', 'MongoDB'],
+    experience: '5+ years',
+    salaryRange: '₹14,00,000 - ₹20,00,000',
+    location: 'Bengaluru (Hybrid)',
+    employmentType: 'Full-time',
+    aiSummary: 'Lead product engineer responsible for frontend client systems and service architectures.',
+    aiQuestions: [
+      'Explain Next.js rendering modes.',
+      'How do you structure database schemas for fast indexing?',
+      'Detail your experience scaling high-concurrency Node.js endpoints.'
+    ]
+  },
+  {
+    id: 'job-3',
+    title: 'Security Engineer (DevSecOps)',
+    department: 'Security',
+    status: 'Active',
+    candidatesCount: 1,
+    description: 'Audit cloud infrastructure, set container security parameters, and configure access control lists.',
+    skillsRequired: ['Docker', 'Kubernetes', 'AWS', 'IAM', 'OWASP'],
+    experience: '4+ years',
+    salaryRange: '₹16,00,000 - ₹22,00,000',
+    location: 'Hyderabad (Remote)',
+    employmentType: 'Full-time',
+    aiSummary: 'Security compliance officer establishing container guardrails and access policies.',
+    aiQuestions: [
+      'Describe how you audit code for OWASP Top 10 vulnerabilities.',
+      'How do you secure multi-tenant cloud instances?',
+      'Walk us through how you would configure a DevSecOps CI/CD scanner.'
+    ]
+  },
+  {
+    id: 'job-4',
+    title: 'DevOps Architect',
+    department: 'Engineering',
+    status: 'Active',
+    candidatesCount: 0,
+    description: 'Oversee continuous deployment pipelines, maintain Kubernetes cluster stability, and monitor platform health.',
+    skillsRequired: ['Kubernetes', 'GitHub Actions', 'Prometheus', 'Terraform'],
+    experience: '6+ years',
+    salaryRange: '₹20,00,000 - ₹28,00,000',
+    location: 'Bengaluru (On-site)',
+    employmentType: 'Full-time',
+    aiSummary: 'Principal cloud architect designing high-availability automation systems.',
+    aiQuestions: [
+      'Detail your approach to configuring multi-region failovers.',
+      'How do you monitor container telemetry?',
+      'Explain infrastructure-as-code configuration drift management.'
+    ]
+  },
+  {
+    id: 'job-5',
+    title: 'UI/UX Designer',
+    department: 'Design',
+    status: 'Active',
+    candidatesCount: 0,
+    description: 'Draft user flows, create high-fidelity design prototypes, and compile components design libraries.',
+    skillsRequired: ['Figma', 'Illustrator', 'Prototyping', 'Design Systems'],
+    experience: '2+ years',
+    salaryRange: '₹8,00,000 - ₹12,00,000',
+    location: 'New Delhi (Hybrid)',
+    employmentType: 'Full-time',
+    aiSummary: 'Lead interface designer drafting layout paradigms and component specs.',
+    aiQuestions: [
+      'How do you adapt layout systems for responsive viewports?',
+      'Describe your handoff process to frontend engineers.',
+      'Detail your experience creating custom design token architectures.'
+    ]
+  }
 ];
