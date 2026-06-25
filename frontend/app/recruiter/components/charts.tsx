@@ -2,16 +2,16 @@
 
 import React from 'react';
 import { useRecruiterStore } from '../store';
-import { 
-  ResponsiveContainer, 
+import {
+  ResponsiveContainer,
   LineChart,
   Line,
   PieChart,
   Pie,
   Cell,
-  XAxis, 
-  YAxis, 
-  Tooltip, 
+  XAxis,
+  YAxis,
+  Tooltip,
   CartesianGrid
 } from 'recharts';
 import { Calendar, Filter, Sparkles } from 'lucide-react';
@@ -63,7 +63,7 @@ export const Charts: React.FC = () => {
   ];
 
   const groupedData: Record<string, { name: string; Applications: number; Interviews: number; Shortlisted: number; Hired: number }> = {};
-  
+
   // Initialize with base data
   baseData.forEach(d => {
     groupedData[d.name] = { ...d };
@@ -73,7 +73,7 @@ export const Charts: React.FC = () => {
   filteredCandidates.forEach(cand => {
     if (!cand.interviewDate) return;
     const dateKey = cand.interviewDate.split(',')[0].trim(); // e.g. "Jun 20"
-    
+
     if (!groupedData[dateKey]) {
       groupedData[dateKey] = {
         name: dateKey,
@@ -83,7 +83,7 @@ export const Charts: React.FC = () => {
         Hired: 0
       };
     }
-    
+
     if (cand.status === 'Applied') {
       groupedData[dateKey].Applications += 1;
     } else if (cand.status === 'Interviewing') {
@@ -104,7 +104,7 @@ export const Charts: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
+
       {/* 1. AI Recruitment Overview Area Chart */}
       <div className="lg:col-span-2 p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between">
         <div className="flex justify-between items-center mb-6">
@@ -118,14 +118,14 @@ export const Charts: React.FC = () => {
               <span>Last 30 Days</span>
             </button>
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-colors text-[10px] font-bold ${filterJob !== 'All' ? 'bg-blue-50 text-blue-755 border-blue-200' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}
               >
                 <Filter className="w-3.5 h-3.5" />
                 <span className="truncate max-w-[100px]">Filter{filterJob !== 'All' ? `: ${filterJob}` : ''}</span>
               </button>
-              
+
               {isFilterOpen && (
                 <div className="absolute right-0 mt-1.5 w-56 rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700 max-h-60 overflow-y-auto">
                   <div className="px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-50">
@@ -185,14 +185,14 @@ export const Charts: React.FC = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
               <XAxis dataKey="name" stroke="#94a3b8" tickLine={false} axisLine={false} />
               <YAxis stroke="#94a3b8" tickLine={false} axisLine={false} domain={[0, 8]} ticks={[0, 2, 4, 6, 8]} />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#ffffff', 
-                  borderColor: '#f1f5f9', 
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#ffffff',
+                  borderColor: '#f1f5f9',
                   borderRadius: '12px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                  color: '#1e293b' 
-                }} 
+                  color: '#1e293b'
+                }}
               />
               <Line
                 type="linear"
@@ -243,7 +243,7 @@ export const Charts: React.FC = () => {
           </div>
           <div className="px-2.5 py-1.5 rounded bg-blue-50 text-blue-700 text-[9px] font-bold border border-blue-100 flex items-center gap-0.5 whitespace-nowrap shadow-sm">
             <Sparkles className="w-2.5 h-2.5 text-blue-600" />
-          <span>{hireRate.toFixed(1)}% Hire Rate</span>
+            <span>{hireRate.toFixed(1)}% Hire Rate</span>
           </div>
         </div>
 
