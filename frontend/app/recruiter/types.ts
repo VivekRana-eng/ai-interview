@@ -46,7 +46,7 @@ export interface Job {
   id: string;
   title: string;
   department: string;
-  status: 'Active' | 'Draft' | 'Closed' | 'Hold' | 'Deactive';
+  status: 'Active' | 'Draft' | 'Closed' | 'Hold';
   candidatesCount: number;
   description: string;
   role: string;

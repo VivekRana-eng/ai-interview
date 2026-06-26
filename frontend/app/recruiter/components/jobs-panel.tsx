@@ -26,7 +26,7 @@ export const JobsPanel: React.FC = () => {
 
   // Search and Filter States
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Draft' | 'Closed' | 'Hold' | 'Deactive'>('All');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Draft' | 'Closed' | 'Hold'>('All');
 
   // Selected Job for Applicants drawer
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
@@ -163,8 +163,7 @@ export const JobsPanel: React.FC = () => {
   };
 
   // Submit handlers
-  const handleCreateJob = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitJobForm = async (status: Job['status']) => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -190,7 +189,7 @@ export const JobsPanel: React.FC = () => {
         employmentType: formValues.employmentType,
         role: formValues.role,
         aboutJob: formValues.aboutJob,
-        status: 'Active',
+        status,
         lastDateToApply: formValues.lastDateToApply,
         joiningType: formValues.joiningType,
         joiningDate: formValues.joiningDate,
@@ -206,6 +205,11 @@ export const JobsPanel: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCreateJob = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitJobForm('Active');
   };
 
   const handleUpdateJob = async (e: React.FormEvent) => {
@@ -322,17 +326,10 @@ export const JobsPanel: React.FC = () => {
             Hold
           </span>
         );
-      case 'Deactive':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-extrabold uppercase tracking-[0.14em] bg-rose-500/10 text-rose-600 border border-rose-300/40 ring-1 ring-white/50 shadow-[0_4px_14px_rgba(244,63,94,0.08)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shadow-[0_0_0_4px_rgba(244,63,94,0.12)]" />
-            Deactive
-          </span>
-        );
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-extrabold uppercase tracking-[0.14em] bg-slate-500/10 text-slate-400 border border-slate-300/40 ring-1 ring-white/50 shadow-[0_4px_14px_rgba(244,63,94,0.08)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-500 shadow-[0_0_0_4px_rgba(244,63,94,0.12)]" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-extrabold uppercase tracking-[0.14em] bg-rose-500/10 text-rose-600 border border-rose-300/40 ring-1 ring-white/50 shadow-[0_4px_14px_rgba(244,63,94,0.08)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_0_4px_rgba(244,63,94,0.12)]" />
             Closed
           </span>
         );
@@ -423,7 +420,7 @@ export const JobsPanel: React.FC = () => {
                     <div className="px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-50">
                       Filter by Status
                     </div>
-                    {(['All', 'Active', 'Hold', 'Deactive', 'Draft', 'Closed'] as const).map(status => (
+                    {(['All', 'Active', 'Hold', 'Draft', 'Closed'] as const).map(status => (
                       <button
                         key={status}
                         onClick={() => {
@@ -482,9 +479,9 @@ export const JobsPanel: React.FC = () => {
                 >
                   <div className="absolute top-0 left-0 w-1.5 h-full rounded-l-[15px]" style={{
                     backgroundColor:
-                      job.status === 'Active' ? '#3B82F6' :
+                        job.status === 'Active' ? '#3B82F6' :
                         job.status === 'Hold' ? '#F59E0B' :
-                          job.status === 'Deactive' ? '#F43F5E' : '#94A3B8'
+                          job.status === 'Closed' ? '#EF4444' : '#94A3B8'
                   }} />
 
                   {/* Card Actions Header */}
@@ -535,7 +532,7 @@ export const JobsPanel: React.FC = () => {
                               </button>
                             )}
 
-                            {(job.status === 'Active' || job.status === 'Hold' || job.status === 'Deactive') && (
+                            {(job.status === 'Active' || job.status === 'Hold') && (
                               <button
                                 onClick={() => {
                                   handleSetStatus(job, job.status === 'Hold' ? 'Active' : 'Hold');
@@ -549,27 +546,13 @@ export const JobsPanel: React.FC = () => {
                               </button>
                             )}
 
-                            {job.status !== 'Closed' && job.status !== 'Draft' && (
-                              <button
-                                onClick={() => {
-                                  handleSetStatus(job, job.status === 'Deactive' ? 'Active' : 'Deactive');
-                                  setActiveJobMenuId(null);
-                                }}
-                                className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold transition-colors ${job.status === 'Deactive' ? 'text-emerald-600 hover:bg-emerald-50' : 'text-slate-600 hover:bg-rose-50 hover:text-rose-600'
-                                  }`}
-                              >
-                                <Archive className="w-4 h-4" />
-                                <span>{job.status === 'Deactive' ? 'Re-activate' : 'Deactivate Job'}</span>
-                              </button>
-                            )}
-
                             {job.status === 'Active' && (
                               <button
                                 onClick={() => {
                                   handleSetStatus(job, 'Closed');
                                   setActiveJobMenuId(null);
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 transition-colors"
                               >
                                 <X className="w-4 h-4" />
                                 <span>Close Opening</span>
@@ -806,97 +789,137 @@ export const JobsPanel: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 p-5 md:p-8 overflow-y-auto min-h-0 bg-white">
-                <div className="xl:col-span-7 space-y-6">
-                  {/* Info Card */}
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 shadow-sm">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-y-4 md:gap-y-0">
-                      <div className="text-center md:border-r border-slate-200 last:border-0 px-2 lg:px-1">
-                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Created by</div>
-                        <div className="mt-1.5 text-[12px] font-bold text-slate-800 truncate">{selectedJob.createdBy ?? 'Unknown'}</div>
+              <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.9fr)] overflow-y-auto min-h-0 bg-white">
+                <div className="p-5 md:p-8 space-y-8">
+                  <section className="space-y-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <h4 className="text-[15px] font-extrabold text-slate-900 flex items-center gap-2">
+                        <Sparkles className="w-4.5 h-4.5 text-blue-500" />
+                        Core Details
+                      </h4>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                        {selectedJob.status}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Title</div>
+                        <div className="text-sm font-semibold text-slate-900">{selectedJob.title}</div>
                       </div>
-                      <div className="text-center md:border-r border-slate-200 last:border-0 px-2 lg:px-1">
-                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Type</div>
-                        <div className="mt-1.5 text-[12px] font-bold text-slate-800">{selectedJob.employmentType}</div>
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Department</div>
+                        <div className="text-sm font-semibold text-slate-900">{selectedJob.department}</div>
                       </div>
-                      <div className="text-center md:border-r border-slate-200 last:border-0 px-2 lg:px-1">
-                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Salary</div>
-                        <div className="mt-1.5 text-[12px] font-bold text-slate-800 truncate">{selectedJob.salaryRange}</div>
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Role</div>
+                        <div className="text-sm font-semibold text-slate-900">{selectedJob.role || 'Not specified'}</div>
                       </div>
-                      <div className="text-center md:border-r border-slate-200 last:border-0 px-2 lg:px-1">
-                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Experience</div>
-                        <div className="mt-1.5 text-[12px] font-bold text-slate-800">{selectedJob.experience}</div>
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Location</div>
+                        <div className="text-sm font-semibold text-slate-900">{selectedJob.location || 'Not specified'}</div>
                       </div>
-                      <div className="text-center md:border-r border-slate-200 last:border-0 px-2 lg:px-1">
-                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Join By</div>
-                        <div className="mt-1.5 text-[12px] font-bold text-slate-800">
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Employment Type</div>
+                        <div className="text-sm font-semibold text-slate-900">{selectedJob.employmentType}</div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Created By</div>
+                        <div className="text-sm font-semibold text-slate-900 truncate">{selectedJob.createdBy ?? 'Unknown'}</div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="space-y-4 border-t border-slate-100 pt-6">
+                    <h4 className="text-[15px] font-extrabold text-slate-900">Hiring Details</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Salary Range</div>
+                        <div className="text-sm font-semibold text-slate-900">{selectedJob.salaryRange || 'Not specified'}</div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Experience</div>
+                        <div className="text-sm font-semibold text-slate-900">{selectedJob.experience || 'Not specified'}</div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Apply By</div>
+                        <div className="text-sm font-semibold text-slate-900">
+                          {selectedJob.lastDateToApply ? new Date(selectedJob.lastDateToApply).toLocaleDateString() : 'Rolling'}
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Joining</div>
+                        <div className="text-sm font-semibold text-slate-900">
                           {selectedJob.joiningType === 'Custom Date' && selectedJob.joiningDate
                             ? new Date(selectedJob.joiningDate).toLocaleDateString()
                             : 'Immediate'}
                         </div>
                       </div>
-                      <div className="text-center px-2 lg:px-1">
-                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Deadline</div>
-                        <div className="mt-1.5 text-[12px] font-bold text-slate-800">
-                          {selectedJob.lastDateToApply ? new Date(selectedJob.lastDateToApply).toLocaleDateString() : 'Rolling'}
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Created On</div>
+                        <div className="text-sm font-semibold text-slate-900">
+                          {selectedJob.createdAt ? new Date(selectedJob.createdAt).toLocaleDateString() : 'Not specified'}
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.18em]">Internship</div>
+                        <div className="text-sm font-semibold text-slate-900">
+                          {selectedJob.isInternship
+                            ? `${selectedJob.internshipDuration || 'N/A'} Months`
+                            : 'No'}
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </section>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm space-y-5">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-[15px] font-extrabold text-slate-900 flex items-center gap-2">
-                          <Sparkles className="w-4.5 h-4.5 text-blue-500" />
-                          Skills Required
-                        </h4>
-                        <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-lg">
-                          {selectedJob.skillsRequired?.length || 0}
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-2.5">
-                        {selectedJob.skillsRequired?.map((skill) => (
-                          <span key={skill} className="px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-[11px] font-bold text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 cursor-default">
+                  <section className="space-y-3 border-t border-slate-100 pt-6">
+                    <h4 className="text-[15px] font-extrabold text-slate-900">Description</h4>
+                    <p className="text-[13px] text-slate-600 leading-7 font-medium max-w-4xl">
+                      {selectedJob.description || 'No description provided.'}
+                    </p>
+                  </section>
+
+                  <section className="space-y-3 border-t border-slate-100 pt-6">
+                    <h4 className="text-[15px] font-extrabold text-slate-900">About the Job</h4>
+                    <p className="text-[13px] text-slate-600 leading-7 font-medium max-w-4xl">
+                      {selectedJob.aboutJob || 'No company or culture summary provided.'}
+                    </p>
+                  </section>
+
+                  <section className="space-y-4 border-t border-slate-100 pt-6">
+                    <div className="flex items-center justify-between gap-4">
+                      <h4 className="text-[15px] font-extrabold text-slate-900">Skills Required</h4>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.18em]">
+                        {selectedJob.skillsRequired?.length || 0} skills
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2.5">
+                      {selectedJob.skillsRequired?.length ? (
+                        selectedJob.skillsRequired.map((skill) => (
+                          <span key={skill} className="px-3.5 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-700">
                             {skill}
                           </span>
-                        ))}
-                      </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-slate-500">No skills specified for this role.</p>
+                      )}
                     </div>
+                  </section>
 
-                    <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm space-y-5">
-                      <h4 className="text-[15px] font-extrabold text-slate-900 flex items-center gap-2">
-                        <Building className="w-4.5 h-4.5 text-emerald-500" />
-                        Key Information
-                      </h4>
-                      <div className="space-y-4">
-                        {selectedJob.isInternship && (
-                          <div className="flex items-center justify-between text-[11px] font-bold">
-                            <span className="text-slate-400 uppercase tracking-widest">Internship</span>
-                            <span className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-xl">{selectedJob.internshipDuration} Months</span>
-                          </div>
-                        )}
-                        <div className="space-y-2">
-                          <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Academic Requirements</span>
-                          <p className="text-[12px] font-semibold text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                            {selectedJob.qualifications || 'Standard industry qualifications required for this position.'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm space-y-4">
-                    <h4 className="text-[15px] font-extrabold text-slate-900">About the Role</h4>
-                    <p className="text-[13px] text-slate-600 leading-loose font-medium">
-                      {selectedJob.description}
+                  <section className="space-y-3 border-t border-slate-100 pt-6">
+                    <h4 className="text-[15px] font-extrabold text-slate-900 flex items-center gap-2">
+                      <Building className="w-4.5 h-4.5 text-emerald-500" />
+                      Qualifications
+                    </h4>
+                    <p className="text-[13px] text-slate-600 leading-7 font-medium max-w-4xl">
+                      {selectedJob.qualifications || 'Standard industry qualifications required for this position.'}
                     </p>
-                  </div>
+                  </section>
+
                 </div>
 
-                <div className="xl:col-span-5 space-y-6">
-                  <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm flex flex-col min-h-[300px]">
-                    <div className="flex items-center justify-between mb-6">
+                <div className="border-t xl:border-t-0 xl:border-l border-slate-100 bg-slate-50/40 p-5 md:p-8 space-y-8">
+                  <section className="space-y-4">
+                    <div className="flex items-center justify-between gap-4">
                       <h4 className="text-[15px] font-extrabold text-slate-900 flex items-center gap-2.5">
                         <Users className="w-5 h-5 text-blue-500" />
                         Matched Applicants
@@ -905,49 +928,14 @@ export const JobsPanel: React.FC = () => {
                         {matchingApplicants.length}
                       </span>
                     </div>
-                    
-                    <div className="flex-1 flex flex-col items-center justify-center py-10 rounded-2xl bg-slate-50/50 border border-dashed border-slate-200">
-                      <Users className="w-12 h-12 text-slate-200 mb-3" />
-                      <h4 className="text-sm font-bold text-slate-600">Screening in Progress</h4>
-                      <p className="text-[11px] text-slate-400 mt-2 max-w-[200px] text-center font-medium">
-                        Detailed applicant insights will be displayed here as they match the criteria.
+                    <div className="rounded-[24px] border border-dashed border-slate-200 bg-white/70 px-5 py-8 text-center">
+                      <Users className="w-11 h-11 text-slate-200 mx-auto" />
+                      <h4 className="mt-3 text-sm font-semibold text-slate-700">Screening in Progress</h4>
+                      <p className="mt-2 text-[11px] text-slate-500 leading-6 max-w-[240px] mx-auto">
+                        Detailed applicant insights will appear here once candidates match the role criteria.
                       </p>
                     </div>
-                  </div>
-
-                  <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm">
-                    <h4 className="text-[15px] font-extrabold text-slate-900">Job Creation Details</h4>
-                    <div className="mt-5 text-sm text-slate-800 space-y-4">
-                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Location</span>
-                        <span className="font-semibold">{selectedJob.location || 'Not specified'}</span>
-                      </div>
-                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Employment Type</span>
-                        <span className="font-semibold">{selectedJob.employmentType}</span>
-                      </div>
-                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Qualification</span>
-                        <span className="font-semibold">{selectedJob.qualifications || 'Standard industry qualifications required for this position.'}</span>
-                      </div>
-                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Apply By</span>
-                        <span className="font-semibold">{selectedJob.lastDateToApply ? new Date(selectedJob.lastDateToApply).toLocaleDateString() : 'Rolling'}</span>
-                      </div>
-                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Joining</span>
-                        <span className="font-semibold">
-                          {selectedJob.joiningType === 'Custom Date' && selectedJob.joiningDate
-                            ? new Date(selectedJob.joiningDate).toLocaleDateString()
-                            : 'Immediate'}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Job Role</span>
-                        <span className="font-semibold">{selectedJob.role || 'Not specified'}</span>
-                      </div>
-                    </div>
-                  </div>
+                  </section>
                 </div>
               </div>
             </motion.div>
@@ -1179,7 +1167,7 @@ export const JobsPanel: React.FC = () => {
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); setEditingJob(null); }}
@@ -1187,8 +1175,19 @@ export const JobsPanel: React.FC = () => {
                   >
                     Cancel
                   </button>
+                  {isCreateModalOpen && (
+                    <button
+                      type="button"
+                      disabled={isSubmitting}
+                      onClick={() => submitJobForm('Draft')}
+                      className="px-5 py-2.5 border border-amber-200 bg-amber-50 rounded-xl text-amber-700 font-bold hover:bg-amber-100 transition-colors disabled:opacity-60"
+                    >
+                      Save Draft
+                    </button>
+                  )}
                   <button
                     type="submit"
+                    disabled={isSubmitting}
                     className="px-8 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-md transition-all active:scale-95"
                   >
                     {isCreateModalOpen ? 'Create Role' : 'Save Changes'}
