@@ -61,6 +61,8 @@ const CircularProgress: React.FC<{ value: number; label: string; sublabel: strin
 
 export const InteractiveFlow: React.FC = () => {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
+  const [isStageFilterOpen, setIsStageFilterOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
 
   const { 
     candidates, 
@@ -146,36 +148,94 @@ export const InteractiveFlow: React.FC = () => {
           <div className="flex items-center gap-1.5">
             <span>Filter Stage:</span>
             <div className="relative">
-              <select
-                value={filterStage}
-                onChange={(e) => setFilterStage(e.target.value)}
-                className="pl-3 pr-8 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 bg-white cursor-pointer appearance-none outline-none text-slate-700 font-bold"
+              <button
+                type="button"
+                onClick={() => {
+                  setIsStageFilterOpen(!isStageFilterOpen);
+                  setIsSortOpen(false);
+                }}
+                className={`flex items-center justify-between gap-1.5 px-3 py-1.5 rounded-xl border transition-colors text-[10px] font-bold min-w-[110px] ${
+                  filterStage !== 'All' ? 'bg-blue-50 text-blue-755 border-blue-200' : 'border-slate-200 hover:bg-slate-50 bg-white text-slate-700'
+                }`}
               >
-                <option value="All">All Stages</option>
-                <option value="Applied">Applied</option>
-                <option value="Screening">Screening</option>
-                <option value="Interviewing">Interviewing</option>
-                <option value="Shortlisted">Shortlisted</option>
-                <option value="Hired">Hired</option>
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <span>{filterStage === 'All' ? 'All Stages' : filterStage}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              </button>
+
+              {isStageFilterOpen && (
+                <div className="absolute left-0 mt-1.5 w-44 rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700 max-h-60 overflow-y-auto">
+                  <div className="px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-50">
+                    Filter by Stage
+                  </div>
+                  {[
+                    { value: 'All', label: 'All Stages' },
+                    { value: 'Applied', label: 'Applied' },
+                    { value: 'Screening', label: 'Screening' },
+                    { value: 'Interviewing', label: 'Interviewing' },
+                    { value: 'Shortlisted', label: 'Shortlisted' },
+                    { value: 'Hired', label: 'Hired' }
+                  ].map((stage) => (
+                    <button
+                      key={stage.value}
+                      type="button"
+                      onClick={() => {
+                        setFilterStage(stage.value);
+                        setIsStageFilterOpen(false);
+                      }}
+                      className={`w-full text-left px-2.5 py-2 rounded-lg text-[10px] font-bold transition-colors ${
+                        filterStage === stage.value ? 'bg-blue-50/50 text-blue-650' : 'hover:bg-slate-50'
+                      }`}
+                    >
+                      {stage.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-1.5">
             <span>Sort:</span>
             <div className="relative">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="pl-7 pr-8 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 bg-white cursor-pointer appearance-none outline-none text-slate-700 font-bold"
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSortOpen(!isSortOpen);
+                  setIsStageFilterOpen(false);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 bg-white transition-colors text-[10px] font-bold text-slate-700"
               >
-                <option value="Highest AI Match">Highest AI Match</option>
-                <option value="Lowest AI Match">Lowest AI Match</option>
-                <option value="Highest Integrity">Highest Integrity</option>
-                <option value="Name">Name</option>
-              </select>
-              <ArrowUpDown className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
+                <span className="truncate max-w-[120px]">{sortBy}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              </button>
+
+              {isSortOpen && (
+                <div className="absolute left-0 mt-1.5 w-44 rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700 max-h-60 overflow-y-auto">
+                  <div className="px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-50">
+                    Sort By
+                  </div>
+                  {[
+                    { value: 'Highest AI Match', label: 'Highest AI Match' },
+                    { value: 'Lowest AI Match', label: 'Lowest AI Match' },
+                    { value: 'Highest Integrity', label: 'Highest Integrity' },
+                    { value: 'Name', label: 'Name' }
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => {
+                        setSortBy(option.value);
+                        setIsSortOpen(false);
+                      }}
+                      className={`w-full text-left px-2.5 py-2 rounded-lg text-[10px] font-bold transition-colors ${
+                        sortBy === option.value ? 'bg-blue-50/50 text-blue-650' : 'hover:bg-slate-50'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
