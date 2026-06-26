@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React from 'react';
 import { useRecruiterStore } from '../store';
@@ -106,9 +107,9 @@ export const KpiCards: React.FC = () => {
           >
             {/* Top row */}
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
+              <div className={tw.flexItemsGap2}>
                 <div className={`p-1.5 rounded-lg border flex items-center justify-center ${card.iconColor}`}>
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className={tw.iconSm} />
                 </div>
                 <span className="text-xs font-semibold text-[#7B8AA3]">
                   {card.title}

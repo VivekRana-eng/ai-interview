@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React, { useState } from 'react';
 import { useDashboardStore } from '../store';
@@ -88,10 +89,10 @@ export const AlertsPanel: React.FC = () => {
               >
                 <div className="flex gap-3">
                   <div className="mt-0.5 p-1.5 rounded-lg bg-slate-950/60 border border-slate-900/80">
-                    <Icon className="w-4 h-4" />
+                    <Icon className={tw.iconMd} />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className={tw.flexItemsGap2}>
                       <span className="font-bold text-xs text-white dark:text-white light:text-slate-800">{alert.candidateName}</span>
                       <span className={`text-[8px] font-bold px-1.5 py-0.2 rounded uppercase border border-slate-900/40 tracking-wider ${styles.badge}`}>
                         {alert.severity}

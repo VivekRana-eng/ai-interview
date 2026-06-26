@@ -16,7 +16,7 @@ import { ResumeScreener } from './components/resume-screener';
 import { motion } from 'framer-motion';
 
 export default function RecruiterDashboard() {
-  const { activeTab, initializeStore } = useRecruiterStore();
+  const { activeTab, initializeStore, isJobOverlayOpen } = useRecruiterStore();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -24,17 +24,17 @@ export default function RecruiterDashboard() {
   }, [initializeStore]);
 
   return (
-    <div className="h-screen bg-[#f7f9fc] text-slate-800 flex overflow-hidden font-sans antialiased">
-      
+    <div className="h-screen bg-white text-slate-800 flex overflow-hidden font-sans antialiased">
+
       {/* 1. Navigation Sidebar (Dark Mode) */}
-      <Sidebar 
-        isOpen={mobileSidebarOpen} 
-        onClose={() => setMobileSidebarOpen(false)} 
+      <Sidebar
+        isOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
       />
 
       {/* 2. Main content area frame (Light Mode) */}
       <div className="flex-1 flex flex-col min-w-0 lg:pl-[228px] h-full">
-        
+
         {/* Top Header Utilities */}
         <Navbar onMenuClick={() => setMobileSidebarOpen(true)} />
 

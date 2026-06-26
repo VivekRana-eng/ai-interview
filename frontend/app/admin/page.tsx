@@ -1,10 +1,16 @@
 'use client'
+import * as tw from '@/lib/tailwindClasses'
 
 import { useState, useEffect } from 'react'
 import { getApplications } from '@/lib/api'
 import { supabase } from '@/lib/supabase'
 import { AdminShell } from '../components/AdminShell'
 import Link from 'next/link'
+import {
+  centeredLoading,
+  surfaceCard,
+  tableShell,
+} from '@/lib/tailwindClasses'
 
 export default function AdminDashboard() {
   const [applications, setApplications] = useState<any[]>([])
@@ -54,7 +60,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <AdminShell title="Dashboard" subtitle="Overview of the selection pipeline">
-        <div className="flex-1 flex items-center justify-center text-[#718096]">Loading dashboard...</div>
+        <div className={centeredLoading}>Loading dashboard...</div>
       </AdminShell>
     )
   }
@@ -72,14 +78,14 @@ export default function AdminDashboard() {
       </div>
 
       {/* Pipeline Funnel */}
-      <div className="bg-white border border-[#e2e8f0] rounded-xl p-6">
+      <div className={tw.cardP6}>
         <h2 className="text-lg font-bold text-[#0F2744] mb-1">Pipeline Funnel</h2>
         <p className="text-xs text-[#718096] mb-5">Application flow through selection stages</p>
         <div className="flex flex-col gap-3">
           {funnel.map((stage) => (
             <div key={stage.label} className="flex items-center gap-4">
               <span className="w-24 text-[13px] text-[#4a5568] font-medium">{stage.label}</span>
-              <div className="flex-1 bg-[#f7f9fc] rounded-full h-7 overflow-hidden">
+              <div className="flex-1 h-7 bg-[#f7f9fc] rounded-full overflow-hidden">
                 <div
                   className={`${stage.barBg} h-7 rounded-full flex items-center justify-end pr-3 transition-all`}
                   style={{ width: totalApplications > 0 ? `${Math.max((stage.count / totalApplications) * 100, 4)}%` : '4%' }}
@@ -93,19 +99,19 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white border border-[#e2e8f0] rounded-xl p-6">
+      <div className={tw.cardP6}>
         <div className="flex items-center justify-between mb-5">
           <div>
             <h2 className="text-lg font-bold text-[#0F2744]">Recent Activity</h2>
-            <p className="text-xs text-[#718096]">Latest status changes and actions</p>
+            <p className={tw.textSecondary12}>Latest status changes and actions</p>
           </div>
           <Link href="/admin/notifications" className="text-xs font-semibold text-[#2563eb] hover:text-[#1d4ed8]">View all</Link>
         </div>
         {auditLogs && auditLogs.length > 0 ? (
-          <div className="flex flex-col gap-1">
+          <div className={tw.flexColGap1}>
             {auditLogs.map((log: any) => (
               <div key={log.id} className="flex items-start justify-between py-3 border-b border-[#e2e8f0] last:border-0">
-                <div className="flex items-center gap-3">
+                <div className={tw.flexItemsGap3}>
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
                     log.to_status === 'selected' ? 'bg-[#1D9E75]' :
                     log.to_status === 'rejected' ? 'bg-[#dc2626]' :
@@ -116,7 +122,7 @@ export default function AdminDashboard() {
                     <p className="text-[13px] text-[#4a5568]">
                       <span className="font-semibold text-[#0F2744]">{log.entity_type}</span> {log.from_status ? `changed from ${log.from_status} to ` : 'set to '}<span className="font-semibold text-[#0F2744]">{log.to_status}</span>
                     </p>
-                    <p className="text-[11px] text-[#718096]">by {log.actor}</p>
+                    <p className={tw.textSecondary11}>by {log.actor}</p>
                   </div>
                 </div>
                 <p className="text-[11px] text-[#718096] whitespace-nowrap">

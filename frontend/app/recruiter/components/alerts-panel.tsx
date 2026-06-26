@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React from 'react';
 import { useRecruiterStore } from '../store';
@@ -62,10 +63,10 @@ export const AlertsPanel: React.FC = () => {
               >
                 <div className="flex gap-3">
                   <div className={`p-1.5 rounded-lg border flex items-center justify-center ${style.iconBg} h-8 w-8 mt-0.5`}>
-                    <Icon className="w-4 h-4" />
+                    <Icon className={tw.iconMd} />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
+                    <div className={tw.flexItemsGap2}>
                       <span className="text-xs font-bold text-[#111827]">{style.title}</span>
                       <span className="text-[8px] font-semibold text-[#7B8AA3]">• {alert.timestamp}</span>
                     </div>

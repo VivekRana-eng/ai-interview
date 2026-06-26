@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRecruiterStore } from '../store';
@@ -139,28 +140,28 @@ export const ResumeScreener: React.FC = () => {
       case 'Strong Hire':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-450 dark:border-emerald-900/60">
-            <ShieldCheck className="w-4 h-4" />
+            <ShieldCheck className={tw.iconMd} />
             Strong Hire
           </span>
         );
       case 'Hire':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-600 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-450 dark:border-blue-900/60">
-            <CheckCircle2 className="w-4 h-4" />
+            <CheckCircle2 className={tw.iconMd} />
             Hire
           </span>
         );
       case 'Maybe':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-450 dark:border-amber-900/60">
-            <AlertTriangle className="w-4 h-4" />
+            <AlertTriangle className={tw.iconMd} />
             Maybe
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-50 text-rose-600 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-450 dark:border-rose-900/60">
-            <AlertTriangle className="w-4 h-4" />
+            <AlertTriangle className={tw.iconMd} />
             Reject
           </span>
         );
@@ -271,7 +272,7 @@ export const ResumeScreener: React.FC = () => {
 
               {errorMsg && (
                 <p className="text-[10px] text-red-500 font-bold flex items-center gap-1">
-                  <AlertCircleIcon className="w-3.5 h-3.5" />
+                  <AlertCircleIcon className={tw.iconSm} />
                   {errorMsg}
                 </p>
               )}

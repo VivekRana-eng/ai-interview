@@ -1,4 +1,5 @@
 'use client'
+import * as tw from '@/lib/tailwindClasses'
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -38,7 +39,7 @@ export default function AdminNotificationsPage() {
 
   return (
     <AdminShell title="Notifications" subtitle="Audit log and activity history">
-      <div className="bg-white border border-[#e2e8f0] rounded-[10px] overflow-hidden">
+      <div className={tw.cardCompactOverflow}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[700px]">
             <thead>
@@ -56,14 +57,14 @@ export default function AdminNotificationsPage() {
                   </td>
                   <td className="px-3.5 py-3 text-[13px] font-semibold text-[#0F2744] whitespace-nowrap">{log.entity_type}</td>
                   <td className="px-3.5 py-3 text-[11px] text-[#718096] whitespace-nowrap font-mono">{log.entity_id?.slice(0, 8)}...</td>
-                  <td className="px-3.5 py-3 text-[13px] text-[#4a5568] whitespace-nowrap">
+                  <td className={tw.tableCellText}>
                     {log.from_status ? (
                       <span><span className="text-[#718096]">{log.from_status}</span> <span className="text-[#e2e8f0]">→</span> <span className="font-semibold text-[#0F2744]">{log.to_status}</span></span>
                     ) : (
                       <span className="font-semibold text-[#0F2744]">{log.to_status}</span>
                     )}
                   </td>
-                  <td className="px-3.5 py-3 text-[13px] text-[#4a5568] whitespace-nowrap">{log.actor}</td>
+                  <td className={tw.tableCellText}>{log.actor}</td>
                 </tr>
               ))}
             </tbody>

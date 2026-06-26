@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React from 'react';
 import { useDashboardStore } from '../store';
@@ -78,7 +79,7 @@ export const KanbanBoard: React.FC = () => {
             >
               {/* Column Header */}
               <div className="flex items-center justify-between pb-2 border-b border-slate-900/40 dark:border-slate-900/40 light:border-slate-250">
-                <div className="flex items-center gap-2">
+                <div className={tw.flexItemsGap2}>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase border ${getStatusColor(column)}`}>
                     {column}
                   </span>
@@ -106,7 +107,7 @@ export const KanbanBoard: React.FC = () => {
                           transition-all duration-200
                         "
                       >
-                        <div className="flex items-center gap-3">
+                        <div className={tw.flexItemsGap3}>
                           <img 
                             src={candidate.avatarUrl} 
                             alt={candidate.name} 

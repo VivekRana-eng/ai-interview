@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React, { useState, useEffect } from 'react';
 import { useDashboardStore } from './store';
@@ -41,7 +42,7 @@ export default function HireAiProDashboard() {
           onClick={() => setSearchVal('')}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-500 text-white font-bold text-xs uppercase tracking-wider hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-500/20"
         >
-          <RotateCcw className="w-4 h-4" /> Reset Search
+          <RotateCcw className={tw.iconMd} /> Reset Search
         </button>
       </div>
     );

@@ -1,4 +1,5 @@
 'use client'
+import * as tw from '@/lib/tailwindClasses'
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -52,14 +53,14 @@ export default function CreateJobPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white border border-[#e2e8f0] rounded-xl p-6 max-w-[720px] flex flex-col gap-5">
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-semibold text-[#0F2744]">Title <span className="text-[#dc2626]">*</span></label>
-          <input type="text" name="title" required placeholder="e.g., Full-Stack Developer Intern" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+        <div className={tw.flexColGap1_5}>
+          <label className={tw.textPrimary13}>Title <span className="text-[#dc2626]">*</span></label>
+          <input type="text" name="title" required placeholder="e.g., Full-Stack Developer Intern" className={tw.inputBase} />
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-semibold text-[#0F2744]">Domain <span className="text-[#dc2626]">*</span></label>
-          <select name="domain" required className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all cursor-pointer appearance-none pr-8" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23718096' d='M5 7L1 3h8z'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center' }}>
+        <div className={tw.flexColGap1_5}>
+          <label className={tw.textPrimary13}>Domain <span className="text-[#dc2626]">*</span></label>
+          <select name="domain" required className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all cursor-pointer appearance-none pr-8 bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%2210%22 viewBox=%220 0 10 10%22%3E%3Cpath fill=%22%23718096%22 d=%22M5 7L1 3h8z%22/%3E%3C/svg%3E')] bg-no-repeat bg-[right_10px_center]">
             <option value="artificial_intelligence">Artificial Intelligence</option>
             <option value="software_development">Software Development</option>
             <option value="cybersecurity">Cybersecurity</option>
@@ -68,39 +69,39 @@ export default function CreateJobPage() {
           </select>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-semibold text-[#0F2744]">Description</label>
+        <div className={tw.flexColGap1_5}>
+          <label className={tw.textPrimary13}>Description</label>
           <textarea name="description" rows={4} placeholder="Describe the role, responsibilities, and expectations..." className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all resize-y min-h-[100px] leading-relaxed" />
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-semibold text-[#0F2744]">Required Skills (JSON array)</label>
-          <input type="text" name="required_skills" placeholder='["Python", "Machine Learning", "React"]' className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all font-mono" />
+        <div className={tw.flexColGap1_5}>
+          <label className={tw.textPrimary13}>Required Skills (JSON array)</label>
+          <input type="text" name="required_skills" placeholder='["Python", "Machine Learning", "React"]' className={tw.inputBaseMono} />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-[#0F2744]">Min CGPA</label>
-            <input type="number" name="min_cgpa" step="0.1" min="0" max="10" defaultValue="0" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+          <div className={tw.flexColGap1_5}>
+            <label className={tw.textPrimary13}>Min CGPA</label>
+            <input type="number" name="min_cgpa" step="0.1" min="0" max="10" defaultValue="0" className={tw.inputBase} />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-[#0F2744]">Min Experience (months)</label>
-            <input type="number" name="min_exp_months" min="0" defaultValue="0" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+          <div className={tw.flexColGap1_5}>
+            <label className={tw.textPrimary13}>Min Experience (months)</label>
+            <input type="number" name="min_exp_months" min="0" defaultValue="0" className={tw.inputBase} />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-[#0F2744]">Seats <span className="text-[#dc2626]">*</span></label>
-            <input type="number" name="seats" min="1" required defaultValue="5" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+          <div className={tw.flexColGap1_5}>
+            <label className={tw.textPrimary13}>Seats <span className="text-[#dc2626]">*</span></label>
+            <input type="number" name="seats" min="1" required defaultValue="5" className={tw.inputBase} />
           </div>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-semibold text-[#0F2744]">Required Certifications (JSON array)</label>
-          <input type="text" name="required_certs" placeholder='["AWS Certified", "Google Cloud"]' className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all font-mono" />
+        <div className={tw.flexColGap1_5}>
+          <label className={tw.textPrimary13}>Required Certifications (JSON array)</label>
+          <input type="text" name="required_certs" placeholder='["AWS Certified", "Google Cloud"]' className={tw.inputBaseMono} />
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-semibold text-[#0F2744]">Deadline</label>
-          <input type="date" name="deadline" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+        <div className={tw.flexColGap1_5}>
+          <label className={tw.textPrimary13}>Deadline</label>
+          <input type="date" name="deadline" className={tw.inputBase} />
         </div>
 
         {error && <p className="text-[#dc2626] text-sm">{error}</p>}

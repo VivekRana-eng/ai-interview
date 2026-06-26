@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React from 'react';
 import { useRecruiterStore } from '../store';
@@ -57,7 +58,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Sidebar Brand Header */}
         <div className="relative z-10 flex items-center justify-between h-16 px-5 border-b border-white/8 bg-[#0B1222]">
-          <div className="flex items-center gap-3">
+          <div className={tw.flexItemsGap3}>
             {/* Styled Logo Icon */}
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-500 shadow-md shadow-blue-500/10 ring-1 ring-white/10">
               <Sparkles className="w-4.5 h-4.5 text-white" />
@@ -80,7 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             onClick={onClose}
             className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 lg:hidden transition-all duration-300 active:scale-95"
           >
-            <X className="w-4.5 h-4.5" />
+            <X className={tw.iconLg} />
           </button>
         </div>
 
@@ -115,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   <span className="absolute right-3.5 w-1 h-1 rounded-full bg-[#6D8CFF] shadow-[0_0_8px_rgba(109,140,255,0.45)]" />
                 )}
 
-                <div className="flex items-center gap-3">
+                <div className={tw.flexItemsGap3}>
                   <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-[#6D8CFF]' : 'text-[#7F8CA5] group-hover:text-[#9FB0D0]'}`} />
                   <span>{item.name}</span>
                 </div>

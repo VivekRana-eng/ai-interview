@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React from 'react';
 import { useRecruiterStore } from '../store';
@@ -114,7 +115,7 @@ export const Charts: React.FC = () => {
           </div>
           <div className="flex gap-2">
             <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-slate-600">
-              <Calendar className="w-3.5 h-3.5" />
+              <Calendar className={tw.iconSm} />
               <span>Last 30 Days</span>
             </button>
             <div className="relative">
@@ -122,7 +123,7 @@ export const Charts: React.FC = () => {
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-colors text-[10px] font-bold ${filterJob !== 'All' ? 'bg-blue-50 text-blue-755 border-blue-200' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}
               >
-                <Filter className="w-3.5 h-3.5" />
+                <Filter className={tw.iconSm} />
                 <span className="truncate max-w-[100px]">Filter{filterJob !== 'All' ? `: ${filterJob}` : ''}</span>
               </button>
 
@@ -296,7 +297,7 @@ export const Charts: React.FC = () => {
               const shade = ['bg-[#1d4ed8]', 'bg-[#2563eb]', 'bg-[#3b82f6]', 'bg-[#60a5fa]'][idx]
               return (
                 <div key={stage.label} className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/70 px-4 py-3">
-                  <div className="flex items-center gap-3">
+                  <div className={tw.flexItemsGap3}>
                     <span className={`w-3 h-3 rounded-full ${shade}`} />
                     <div className="flex flex-col">
                       <span className="text-xs font-bold text-slate-800">{stage.label}</span>
@@ -308,7 +309,7 @@ export const Charts: React.FC = () => {
               )
             })}
             <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-blue-50 px-4 py-3">
-              <div className="flex items-center gap-3">
+              <div className={tw.flexItemsGap3}>
                 <span className="w-3 h-3 rounded-full bg-[#93c5fd]" />
                 <div className="flex flex-col">
                   <span className="text-xs font-bold text-slate-800">Hired</span>

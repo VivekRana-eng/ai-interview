@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React from 'react';
 import { useDashboardStore } from '../store';
@@ -54,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       `}>
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-slate-900/60 dark:border-slate-900/60 light:border-slate-200/60">
-          <div className="flex items-center gap-2.5">
+          <div className={tw.flexItemsGap2_5}>
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-indigo-500/30">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
@@ -66,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             onClick={onClose}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 lg:hidden"
           >
-            <X className="w-4 h-4" />
+            <X className={tw.iconMd} />
           </button>
         </div>
 
@@ -101,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   />
                 )}
 
-                <div className="flex items-center gap-3">
+                <div className={tw.flexItemsGap3}>
                   <Icon className={`w-4 h-4 transition-colors ${isActive ? 'text-indigo-400 light:text-indigo-600' : 'text-slate-400 dark:text-slate-400 light:text-slate-500 group-hover:text-slate-200'}`} />
                   <span>{item.name}</span>
                 </div>
@@ -124,7 +125,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Recruiter Footnote Info */}
         <div className="p-4 m-4 rounded-2xl bg-gradient-to-b from-slate-900/50 to-slate-950 border border-slate-900/80 dark:border-slate-900/80 light:bg-slate-100 light:border-slate-200">
-          <div className="flex items-center gap-2">
+          <div className={tw.flexItemsGap2}>
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>

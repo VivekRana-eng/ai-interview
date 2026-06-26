@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React, { useState, useEffect } from 'react';
 import { useRecruiterStore } from '../store';
@@ -310,7 +311,7 @@ export const QuestionBankPanel: React.FC = () => {
                 disabled={isLoading || !selectedJobTitle}
                 className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all text-xs font-bold shadow-md hover:shadow-lg active:scale-[0.98]"
               >
-                <FileDown className="w-4 h-4" />
+                <FileDown className={tw.iconMd} />
                 <span>Export PDF</span>
               </button>
             </>
@@ -410,7 +411,7 @@ export const QuestionBankPanel: React.FC = () => {
                     className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100/80 dark:border-slate-850 shadow-[0_2px_12px_rgba(0,0,0,0.015)] hover:shadow-md transition-all flex justify-between items-start gap-4"
                   >
                     <div className="space-y-3 flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
+                      <div className={tw.flexItemsGap2}>
                         <span className="text-[10px] font-bold text-slate-400 dark:text-slate-550 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded">
                           Question #{globalIndex + 1}
                         </span>
@@ -432,7 +433,7 @@ export const QuestionBankPanel: React.FC = () => {
                       }`}
                       title="Copy question text to clipboard"
                     >
-                      {isCopied ? <Check className="w-4.5 h-4.5" /> : <Copy className="w-4.5 h-4.5" />}
+                      {isCopied ? <Check className={tw.iconLg} /> : <Copy className={tw.iconLg} />}
                     </button>
                   </div>
                 );

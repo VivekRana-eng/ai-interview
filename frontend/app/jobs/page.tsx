@@ -2,6 +2,15 @@ import Link from 'next/link'
 import { getJobs } from '@/lib/api'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
+import {
+  badgeBase,
+  badgeChip,
+  badgeDot,
+  badgeInfo,
+  pageShell,
+  pageContainer,
+  tableShell,
+} from '@/lib/tailwindClasses'
 
 function domainBadge(domain: string) {
   const map: Record<string, { label: string; color: string; bg: string }> = {
@@ -19,7 +28,7 @@ export default async function JobsPage() {
   const jobs = await getJobs()
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc] flex flex-col">
+    <div className={pageShell}>
       <Header />
 
       {/* Hero */}
@@ -41,14 +50,14 @@ export default async function JobsPage() {
 
       <main className="flex-1">
         {/* Results bar */}
-        <div className="max-w-[1200px] mx-auto px-6 mt-8 mb-5 flex items-center justify-between">
+        <div className={pageContainer + ' mt-8 mb-5 flex items-center justify-between'}>
           <div className="text-[13px] text-[#718096]">
             <strong className="text-[#0F2744] font-semibold">{jobs.length}</strong> internships available
           </div>
         </div>
 
         {/* Grid */}
-        <div className="max-w-[1200px] mx-auto px-6 pb-16">
+        <div className={pageContainer + ' pb-16'}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {jobs.map((job) => {
               const badge = domainBadge(job.domain)

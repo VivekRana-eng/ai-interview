@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React, { useEffect } from 'react';
 import { useDashboardStore } from '../store';
@@ -134,7 +135,7 @@ export const KpiCards: React.FC = () => {
                 {card.title}
               </span>
               <div className={`p-2 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-900 dark:border-slate-900 light:border-slate-100 ${card.iconColor}`}>
-                <Icon className="w-4 h-4" />
+                <Icon className={tw.iconMd} />
               </div>
             </div>
 
@@ -148,12 +149,12 @@ export const KpiCards: React.FC = () => {
               <div className="flex items-center gap-1 text-[11px] font-semibold">
                 {card.isPositive ? (
                   <span className="flex items-center gap-0.5 text-emerald-400 dark:text-emerald-400 light:text-emerald-600">
-                    <ArrowUpRight className="w-3.5 h-3.5" />
+                    <ArrowUpRight className={tw.iconSm} />
                     {card.trend}
                   </span>
                 ) : (
                   <span className="flex items-center gap-0.5 text-rose-400 dark:text-rose-400 light:text-rose-600">
-                    <ArrowDownRight className="w-3.5 h-3.5" />
+                    <ArrowDownRight className={tw.iconSm} />
                     {card.trend}
                   </span>
                 )}

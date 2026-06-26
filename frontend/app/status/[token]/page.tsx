@@ -1,4 +1,5 @@
 'use client'
+import * as tw from '@/lib/tailwindClasses'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -71,7 +72,7 @@ export default function StatusPage({ params }: { params: { token: string } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f7f9fc] flex items-center justify-center">
+      <div className={tw.pageShellCentered}>
         <div className="text-[#718096]">Loading...</div>
       </div>
     )
@@ -95,7 +96,7 @@ export default function StatusPage({ params }: { params: { token: string } }) {
       <header className="bg-white border-t-[3px] border-t-[#0F2744] border-b border-[#e2e8f0]">
         <div className="max-w-[900px] mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 no-underline">
-            <div className="w-10 h-10 bg-[#0F2744] rounded-md flex items-center justify-center">
+            <div className={tw.brandMark}>
               <svg viewBox="0 0 22 22" fill="none" className="w-[22px] h-[22px]">
                 <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.9"/>
                 <rect x="12" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.5"/>
@@ -104,7 +105,7 @@ export default function StatusPage({ params }: { params: { token: string } }) {
               </svg>
             </div>
             <div className="flex flex-col leading-tight">
-              <span className="text-sm font-bold text-[#0F2744] tracking-[0.01em]">SelectAI</span>
+              <span className={tw.brandTitle}>SelectAI</span>
               <span className="text-[10px] text-[#718096] uppercase tracking-[0.03em]">Govt. of India</span>
             </div>
           </Link>
@@ -115,7 +116,7 @@ export default function StatusPage({ params }: { params: { token: string } }) {
       {/* Candidate Banner */}
       <div className="bg-[#0F2744] px-6 py-7">
         <div className="max-w-[900px] mx-auto flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex flex-col gap-1">
+          <div className={tw.flexColGap1}>
             <span className="text-xs font-medium text-white/50 uppercase tracking-[0.04em]">Candidate</span>
             <span className="text-[22px] font-bold text-white tracking-[-0.01em]">{application?.candidate_name || 'Applicant'}</span>
             <div className="inline-flex items-center gap-[7px] mt-1">
@@ -255,7 +256,7 @@ export default function StatusPage({ params }: { params: { token: string } }) {
               Powered by AI
             </span>
           </div>
-          <div className="text-xs text-[#718096]">Government of India · © 2026 SelectAI</div>
+          <div className={tw.textSecondary12}>Government of India · © 2026 SelectAI</div>
         </div>
       </footer>
 

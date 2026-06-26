@@ -3,6 +3,8 @@ import { getJob } from '@/lib/api'
 import { notFound } from 'next/navigation'
 import { Header } from '../../components/Header'
 import { Footer } from '../../components/Footer'
+import { badgeChip, pageShell, pageContainer } from '@/lib/tailwindClasses'
+import * as tw from '@/lib/tailwindClasses'
 
 function domainBadge(domain: string) {
   const map: Record<string, { label: string; color: string; bg: string }> = {
@@ -25,12 +27,12 @@ export default async function JobDetailPage({ params }: { params: { id: string }
   const badge = domainBadge(job.domain)
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc] flex flex-col">
+    <div className={pageShell}>
       <Header />
 
       {/* Breadcrumb */}
       <div className="bg-white border-b border-[#e2e8f0]">
-        <div className="max-w-[1200px] mx-auto px-6 h-11 flex items-center gap-2 text-[13px]">
+        <div className={pageContainer + ' h-11 flex items-center gap-2 text-[13px]'}>
           <Link href="/jobs" className="text-[#718096] hover:text-[#0F2744] transition-colors">Jobs</Link>
           <span className="text-[#e2e8f0]">›</span>
           <span className="text-[#0F2744] font-medium">{job.title}</span>
@@ -42,9 +44,9 @@ export default async function JobDetailPage({ params }: { params: { id: string }
           {/* Main content */}
           <div className="flex flex-col gap-6">
             {/* Header card */}
-            <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
+            <div className={tw.cardOverflow}>
               <div className="bg-[#0F2744] p-6">
-                <span className={`inline-flex items-center gap-[5px] text-[11px] font-semibold uppercase tracking-[0.04em] px-[9px] py-1 rounded-full bg-white ${badge.color} mb-3`}>
+                <span className={`${badgeChip} bg-white ${badge.color} mb-3`}>
                   <span className="w-[5px] h-[5px] rounded-full bg-current"></span>
                   {badge.label}
                 </span>
@@ -71,15 +73,15 @@ export default async function JobDetailPage({ params }: { params: { id: string }
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <div className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#718096] mb-1">Min CGPA</div>
-                      <div className="text-[13px] font-semibold text-[#0F2744]">{job.min_cgpa || 'Any'}</div>
+                      <div className={tw.textPrimary13}>{job.min_cgpa || 'Any'}</div>
                     </div>
                     <div>
                       <div className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#718096] mb-1">Experience</div>
-                      <div className="text-[13px] font-semibold text-[#0F2744]">{job.min_exp_months || 0} months min</div>
+                      <div className={tw.textPrimary13}>{job.min_exp_months || 0} months min</div>
                     </div>
                     <div>
                       <div className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#718096] mb-1">Seats</div>
-                      <div className="text-[13px] font-semibold text-[#0F2744]">{job.seats} available</div>
+                      <div className={tw.textPrimary13}>{job.seats} available</div>
                     </div>
                   </div>
                 </div>
@@ -89,9 +91,9 @@ export default async function JobDetailPage({ params }: { params: { id: string }
 
           {/* Sidebar */}
           <div className="flex flex-col gap-4">
-            <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden sticky top-[84px]">
+            <div className={tw.cardOverflowSticky}>
               <div className="bg-[#0F2744] p-5">
-                <span className={`inline-flex items-center gap-[5px] text-[11px] font-semibold uppercase tracking-[0.04em] px-[9px] py-1 rounded-full bg-white ${badge.color} mb-2`}>
+                <span className={`${badgeChip} bg-white ${badge.color} mb-2`}>
                   <span className="w-[5px] h-[5px] rounded-full bg-current"></span>
                   {badge.label}
                 </span>
@@ -99,21 +101,21 @@ export default async function JobDetailPage({ params }: { params: { id: string }
                 <div className="text-[13px] text-white/60 mt-1">Ministry of Electronics & IT</div>
               </div>
               <div className="p-5 flex flex-col gap-3.5">
-                <div className="flex flex-col gap-1">
+                <div className={tw.flexColGap1}>
                   <div className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#718096]">Deadline</div>
                   <div className="text-[13px] font-semibold text-[#dc2626]">{job.deadline ? new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Rolling'}</div>
                 </div>
-                <div className="h-px bg-[#e2e8f0]"></div>
-                <div className="flex flex-col gap-1">
+                <div className={tw.divider}></div>
+                <div className={tw.flexColGap1}>
                   <div className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#718096]">Duration</div>
-                  <div className="text-[13px] font-semibold text-[#0F2744]">8-12 weeks</div>
+                  <div className={tw.textPrimary13}>8-12 weeks</div>
                 </div>
-                <div className="h-px bg-[#e2e8f0]"></div>
-                <div className="flex flex-col gap-1">
+                <div className={tw.divider}></div>
+                <div className={tw.flexColGap1}>
                   <div className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#718096]">Seats</div>
-                  <div className="text-[13px] font-semibold text-[#0F2744]">{job.seats}</div>
+                  <div className={tw.textPrimary13}>{job.seats}</div>
                 </div>
-                <div className="h-px bg-[#e2e8f0]"></div>
+                <div className={tw.divider}></div>
                 <div className="flex flex-wrap gap-1.5">
                   {job.required_skills.slice(0, 4).map((skill: string) => (
                     <span key={skill} className="text-[11px] font-medium bg-[#E8F4FD] text-[#0F2744] px-2 py-[3px] rounded">{skill}</span>
@@ -122,7 +124,7 @@ export default async function JobDetailPage({ params }: { params: { id: string }
               </div>
             </div>
 
-            <div className="bg-white border border-[#e2e8f0] rounded-xl p-5">
+            <div className={tw.cardP5}>
               <div className="text-xs font-semibold text-[#718096] uppercase tracking-[0.05em] mb-3">Application Steps</div>
               <div className="flex flex-col gap-2">
                 {['Submit application', 'AI screening', 'Interview', 'Final result'].map((step, i) => (

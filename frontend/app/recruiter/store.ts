@@ -13,6 +13,7 @@ interface RecruiterState {
   filterStage: string;
   sortBy: string;
   isDarkMode: boolean;
+  isJobOverlayOpen: boolean;
 
   // MongoDB Aggregated Analytics State
   kpiData: { activeJobs: number; totalCandidates: number; interviewsToday: number; integrityAlerts: number } | null;
@@ -20,6 +21,7 @@ interface RecruiterState {
   funnelData: any[] | null;
 
   setActiveTab: (tab: string) => void;
+  setIsJobOverlayOpen: (isOpen: boolean) => void;
   setSearchVal: (val: string) => void;
   setFilterJob: (job: string) => void;
   setFilterStage: (stage: string) => void;
@@ -65,12 +67,14 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   filterStage: 'All Stages (3)',
   sortBy: 'Highest AI Match',
   isDarkMode: false,
+  isJobOverlayOpen: false,
 
   kpiData: null,
   overviewData: null,
   funnelData: null,
 
   setActiveTab: (tab) => set({ activeTab: tab }),
+  setIsJobOverlayOpen: (isOpen: boolean) => set({ isJobOverlayOpen: isOpen }),
   setSearchVal: (val) => set({ searchVal: val }),
   setFilterJob: (job) => set({ filterJob: job }),
   setFilterStage: (stage) => set({ filterStage: stage }),
@@ -169,26 +173,40 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
     const nextIdx = Math.min(currIdx + 1, STAGES.length - 1);
     const nextStatus = STAGES[nextIdx];
 
+    // Optimistic Update
+    set((state) => ({
+      candidates: state.candidates.map(c => 
+        c.id === id ? { ...c, status: nextStatus } : c
+      )
+    }));
+
     try {
-      await fetch(`${API_URL}/candidates/${id}`, {
+      const res = await fetch(`${API_URL}/candidates/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: nextStatus })
       });
-      await get().initializeStore();
+      if (res.ok) await get().initializeStore();
     } catch (err) {
       console.error('Failed to promote candidate in MongoDB:', err);
     }
   },
 
   setCandidateStage: async (id, stage) => {
+    // Optimistic Update
+    set((state) => ({
+      candidates: state.candidates.map(c => 
+        c.id === id ? { ...c, status: stage } : c
+      )
+    }));
+
     try {
-      await fetch(`${API_URL}/candidates/${id}`, {
+      const res = await fetch(`${API_URL}/candidates/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: stage })
       });
-      await get().initializeStore();
+      if (res.ok) await get().initializeStore();
     } catch (err) {
       console.error('Failed to set candidate stage in MongoDB:', err);
     }
@@ -206,6 +224,22 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   },
 
   addCandidate: async (candidate) => {
+    // Local state add for immediate UI feedback
+    const localId = 'cand-' + Math.random().toString(36).substr(2, 9);
+    const newCand: Candidate = {
+      ...candidate,
+      id: localId,
+      skills: candidate.skills || [],
+      education: candidate.education || [],
+      experience: candidate.experience || [],
+      certifications: candidate.certifications || [],
+      strengths: candidate.strengths || [],
+      missingSkills: candidate.missingSkills || [],
+      summary: candidate.summary || ''
+    };
+    
+    set((state) => ({ candidates: [newCand, ...state.candidates] }));
+
     try {
       const payload = {
         name: candidate.name,
@@ -220,23 +254,24 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
         interviewDate: candidate.interviewDate
       };
 
-      await fetch(`${API_URL}/candidates`, {
+      const res = await fetch(`${API_URL}/candidates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      await get().initializeStore();
+      if (res.ok) await get().initializeStore();
     } catch (err) {
       console.error('Failed to add candidate to MongoDB:', err);
     }
   },
 
   deleteCandidate: async (id) => {
+    set((state) => ({ candidates: state.candidates.filter(c => c.id !== id) }));
     try {
-      await fetch(`${API_URL}/candidates/${id}`, {
+      const res = await fetch(`${API_URL}/candidates/${id}`, {
         method: 'DELETE'
       });
-      await get().initializeStore();
+      if (res.ok) await get().initializeStore();
     } catch (err) {
       console.error('Failed to delete candidate in MongoDB:', err);
     }
@@ -273,37 +308,62 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   },
 
   addJob: async (job) => {
+    const localId = 'job-' + Math.random().toString(36).substr(2, 9);
+    const newJob: Job = {
+      ...job,
+      id: localId,
+      candidatesCount: 0,
+      description: job.description || '',
+      skillsRequired: job.skillsRequired || [],
+      experience: job.experience || '',
+      salaryRange: job.salaryRange || '',
+      location: job.location || '',
+      employmentType: job.employmentType || 'Full-time',
+      role: job.role || '',
+      aboutJob: job.aboutJob || '',
+      aiSummary: job.aiSummary || '',
+      aiQuestions: job.aiQuestions || []
+    };
+
+    set((state) => ({ jobs: [newJob, ...state.jobs] }));
+
     try {
-      await fetch(`${API_URL}/jobs`, {
+      const res = await fetch(`${API_URL}/jobs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(job)
       });
-      await get().initializeStore();
+      if (res.ok) await get().initializeStore();
     } catch (err) {
       console.error('Failed to add job to MongoDB:', err);
     }
   },
 
   updateJob: async (id, job) => {
+    // Optimistic Update
+    set((state) => ({
+      jobs: state.jobs.map((j) => (j.id === id ? { ...j, ...job } : j))
+    }));
+
     try {
-      await fetch(`${API_URL}/jobs/${id}`, {
+      const res = await fetch(`${API_URL}/jobs/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(job)
       });
-      await get().initializeStore();
+      if (res.ok) await get().initializeStore();
     } catch (err) {
       console.error('Failed to update job in MongoDB:', err);
     }
   },
 
   deleteJob: async (id) => {
+    set((state) => ({ jobs: state.jobs.filter(j => j.id !== id) }));
     try {
-      await fetch(`${API_URL}/jobs/${id}`, {
+      const res = await fetch(`${API_URL}/jobs/${id}`, {
         method: 'DELETE'
       });
-      await get().initializeStore();
+      if (res.ok) await get().initializeStore();
     } catch (err) {
       console.error('Failed to delete job in MongoDB:', err);
     }

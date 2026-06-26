@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React, { useState } from 'react';
 import { useDashboardStore } from '../store';
@@ -119,7 +120,7 @@ export const InterviewsTable: React.FC = () => {
                 {/* AI Score */}
                 <td className="py-3 px-4 text-center">
                   <div className="inline-flex items-center gap-1 font-bold text-indigo-400">
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Sparkles className={tw.iconSm} />
                     <span>{candidate.aiMatchScore}%</span>
                   </div>
                 </td>
@@ -127,7 +128,7 @@ export const InterviewsTable: React.FC = () => {
                 {/* Integrity Score */}
                 <td className="py-3 px-4 text-center">
                   <div className={`inline-flex items-center gap-1 font-bold ${candidate.integrityScore < 80 ? 'text-rose-400' : 'text-emerald-400'}`}>
-                    {candidate.integrityScore < 80 ? <ShieldAlert className="w-3.5 h-3.5" /> : <ShieldCheck className="w-3.5 h-3.5" />}
+                    {candidate.integrityScore < 80 ? <ShieldAlert className={tw.iconSm} /> : <ShieldCheck className={tw.iconSm} />}
                     <span>{candidate.integrityScore}%</span>
                   </div>
                 </td>
@@ -156,20 +157,20 @@ export const InterviewsTable: React.FC = () => {
           <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
             Page {currentPage} of {totalPages}
           </span>
-          <div className="flex items-center gap-2">
+          <div className={tw.flexItemsGap2}>
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
               className="p-1.5 rounded-xl border border-slate-900 hover:border-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-900/60 transition-colors text-slate-400 hover:text-white"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className={tw.iconMd} />
             </button>
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
               className="p-1.5 rounded-xl border border-slate-900 hover:border-slate-800 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-900/60 transition-colors text-slate-400 hover:text-white"
             >
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className={tw.iconMd} />
             </button>
           </div>
         </div>

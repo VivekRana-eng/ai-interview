@@ -1,4 +1,5 @@
 'use client'
+import * as tw from '@/lib/tailwindClasses'
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
@@ -71,7 +72,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f7f9fc] flex items-center justify-center">
+      <div className={tw.pageShellCentered}>
         <div className="text-[#718096]">Loading...</div>
       </div>
     )
@@ -87,8 +88,8 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#f7f9fc] flex items-center justify-center">
-        <div className="bg-white border border-[#e2e8f0] rounded-xl p-8 max-w-md w-full mx-4 text-center">
+      <div className={tw.pageShellCentered}>
+        <div className={tw.cardP8Centered}>
           <div className="w-14 h-14 bg-[#e6f7f2] rounded-full flex items-center justify-center mx-auto mb-4">
             <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
               <path d="M3 8l3.5 3.5 6.5-7" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -110,7 +111,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
   const badge = domainBadge(job?.domain || '')
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc] flex flex-col">
+    <div className={tw.pageShell}>
       <Header />
 
       {/* Breadcrumb */}
@@ -130,7 +131,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
             {/* Section 1: Resume */}
-            <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
+            <div className={tw.cardOverflow}>
               <div className="px-6 py-[18px] border-b border-[#e2e8f0] flex items-center gap-2.5">
                 <div className="w-[26px] h-[26px] bg-[#0F2744] rounded-full text-white text-xs font-bold flex items-center justify-center flex-shrink-0">1</div>
                 <div className="text-[15px] font-bold text-[#0F2744]">Resume Upload</div>
@@ -156,7 +157,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                         </svg>
                       </div>
                       <div className="text-sm font-semibold text-[#0F2744] mb-1">Drop your resume here or <span className="text-[#1D9E75]">click to browse</span></div>
-                      <div className="text-xs text-[#718096]">PDF only · Max 5MB</div>
+                      <div className={tw.textSecondary12}>PDF only · Max 5MB</div>
                     </>
                   ) : (
                     <div className="flex items-center gap-3 px-4 py-3.5 bg-[#e6f7f2] border border-[#6ee7c4] rounded-lg">
@@ -174,64 +175,64 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
             </div>
 
             {/* Section 2: Your Details */}
-            <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
+            <div className={tw.cardOverflow}>
               <div className="px-6 py-[18px] border-b border-[#e2e8f0] flex items-center gap-2.5">
                 <div className="w-[26px] h-[26px] bg-[#0F2744] rounded-full text-white text-xs font-bold flex items-center justify-center flex-shrink-0">2</div>
                 <div className="text-[15px] font-bold text-[#0F2744]">Your Details</div>
               </div>
               <div className="p-6 flex flex-col gap-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-semibold text-[#0F2744]">Full Name <span className="text-[#dc2626] ml-0.5">*</span></label>
-                    <input type="text" name="name" required placeholder="As on official documents" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+                  <div className={tw.flexColGap1_5}>
+                    <label className={tw.textPrimary13}>Full Name <span className="text-[#dc2626] ml-0.5">*</span></label>
+                    <input type="text" name="name" required placeholder="As on official documents" className={tw.inputBase} />
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-semibold text-[#0F2744]">Email Address <span className="text-[#dc2626] ml-0.5">*</span></label>
-                    <input type="email" name="email" required placeholder="you@example.com" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-semibold text-[#0F2744]">Phone Number <span className="text-[#dc2626] ml-0.5">*</span></label>
-                    <input type="tel" name="phone" required placeholder="+91 ..." className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-semibold text-[#0F2744]">Institution <span className="text-[#dc2626] ml-0.5">*</span></label>
-                    <input type="text" name="institution" required placeholder="University / College name" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+                  <div className={tw.flexColGap1_5}>
+                    <label className={tw.textPrimary13}>Email Address <span className="text-[#dc2626] ml-0.5">*</span></label>
+                    <input type="email" name="email" required placeholder="you@example.com" className={tw.inputBase} />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-semibold text-[#0F2744]">Degree <span className="text-[#dc2626] ml-0.5">*</span></label>
-                    <input type="text" name="degree" required placeholder="B.Tech, M.Tech, etc." className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+                  <div className={tw.flexColGap1_5}>
+                    <label className={tw.textPrimary13}>Phone Number <span className="text-[#dc2626] ml-0.5">*</span></label>
+                    <input type="tel" name="phone" required placeholder="+91 ..." className={tw.inputBase} />
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-semibold text-[#0F2744]">CGPA <span className="text-[#dc2626] ml-0.5">*</span></label>
-                    <input type="number" name="cgpa" step="0.01" min="0" max="10" required placeholder="0.00 - 10.00" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+                  <div className={tw.flexColGap1_5}>
+                    <label className={tw.textPrimary13}>Institution <span className="text-[#dc2626] ml-0.5">*</span></label>
+                    <input type="text" name="institution" required placeholder="University / College name" className={tw.inputBase} />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-semibold text-[#0F2744]">Experience (months) <span className="text-[#dc2626] ml-0.5">*</span></label>
-                    <input type="number" name="experience_months" min="0" required placeholder="0" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+                  <div className={tw.flexColGap1_5}>
+                    <label className={tw.textPrimary13}>Degree <span className="text-[#dc2626] ml-0.5">*</span></label>
+                    <input type="text" name="degree" required placeholder="B.Tech, M.Tech, etc." className={tw.inputBase} />
                   </div>
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[13px] font-semibold text-[#0F2744]">Certifications</label>
-                    <input type="text" name="certifications" placeholder="e.g., AWS Certified, Google Cloud" className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all" />
+                  <div className={tw.flexColGap1_5}>
+                    <label className={tw.textPrimary13}>CGPA <span className="text-[#dc2626] ml-0.5">*</span></label>
+                    <input type="number" name="cgpa" step="0.01" min="0" max="10" required placeholder="0.00 - 10.00" className={tw.inputBase} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className={tw.flexColGap1_5}>
+                    <label className={tw.textPrimary13}>Experience (months) <span className="text-[#dc2626] ml-0.5">*</span></label>
+                    <input type="number" name="experience_months" min="0" required placeholder="0" className={tw.inputBase} />
+                  </div>
+                  <div className={tw.flexColGap1_5}>
+                    <label className={tw.textPrimary13}>Certifications</label>
+                    <input type="text" name="certifications" placeholder="e.g., AWS Certified, Google Cloud" className={tw.inputBase} />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Section 3: SOP */}
-            <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden">
+            <div className={tw.cardOverflow}>
               <div className="px-6 py-[18px] border-b border-[#e2e8f0] flex items-center gap-2.5">
                 <div className="w-[26px] h-[26px] bg-[#0F2744] rounded-full text-white text-xs font-bold flex items-center justify-center flex-shrink-0">3</div>
                 <div className="text-[15px] font-bold text-[#0F2744]">Statement of Purpose</div>
               </div>
               <div className="p-6 flex flex-col gap-5">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[13px] font-semibold text-[#0F2744]">Why do you want this internship? <span className="text-[#dc2626] ml-0.5">*</span></label>
+                <div className={tw.flexColGap1_5}>
+                  <label className={tw.textPrimary13}>Why do you want this internship? <span className="text-[#dc2626] ml-0.5">*</span></label>
                   <textarea name="sop_text" required rows={6} placeholder="Tell us why you're interested in this position and what makes you a good fit..." className="px-3.5 py-2.5 border-[1.5px] border-[#e2e8f0] rounded-lg text-sm text-[#0F2744] bg-white outline-none focus:border-[#0F2744] focus:shadow-[0_0_0_3px_rgba(15,39,68,0.07)] transition-all resize-y min-h-[130px] leading-relaxed" />
                   <div className="flex items-center justify-between text-[11px] text-[#718096]">
                     <span>Min 50 words recommended</span>
@@ -241,7 +242,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
             </div>
 
             {/* Submit */}
-            <div className="bg-white border border-[#e2e8f0] rounded-xl p-6">
+            <div className={tw.cardP6}>
               {error && <p className="text-[#dc2626] text-sm mb-4">{error}</p>}
               <button
                 type="submit"
@@ -259,7 +260,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
 
           {/* Sidebar */}
           <div className="flex flex-col gap-4">
-            <div className="bg-white border border-[#e2e8f0] rounded-xl overflow-hidden sticky top-[84px]">
+            <div className={tw.cardOverflowSticky}>
               <div className="bg-[#0F2744] p-5">
                 <span className={`inline-flex items-center gap-[5px] text-[11px] font-semibold uppercase tracking-[0.04em] px-[9px] py-1 rounded-full bg-white ${badge.color} mb-2`}>
                   <span className="w-[5px] h-[5px] rounded-full bg-current"></span>
@@ -269,24 +270,24 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
                 <div className="text-[13px] text-white/60 mt-1">Ministry of Electronics & IT</div>
               </div>
               <div className="p-5 flex flex-col gap-3.5">
-                <div className="flex flex-col gap-1">
+                <div className={tw.flexColGap1}>
                   <div className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#718096]">Deadline</div>
                   <div className="text-[13px] font-semibold text-[#dc2626]">{job?.deadline ? new Date(job.deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Rolling'}</div>
                 </div>
-                <div className="h-px bg-[#e2e8f0]"></div>
-                <div className="flex flex-col gap-1">
+                <div className={tw.divider}></div>
+                <div className={tw.flexColGap1}>
                   <div className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#718096]">Seats</div>
-                  <div className="text-[13px] font-semibold text-[#0F2744]">{job?.seats}</div>
+                  <div className={tw.textPrimary13}>{job?.seats}</div>
                 </div>
-                <div className="h-px bg-[#e2e8f0]"></div>
-                <div className="flex flex-col gap-1">
+                <div className={tw.divider}></div>
+                <div className={tw.flexColGap1}>
                   <div className="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#718096]">Min CGPA</div>
-                  <div className="text-[13px] font-semibold text-[#0F2744]">{job?.min_cgpa || 'Any'}</div>
+                  <div className={tw.textPrimary13}>{job?.min_cgpa || 'Any'}</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white border border-[#e2e8f0] rounded-xl p-5">
+            <div className={tw.cardP5}>
               <div className="text-xs font-semibold text-[#718096] uppercase tracking-[0.05em] mb-3">Application Steps</div>
               <div className="flex flex-col gap-2">
                 {[

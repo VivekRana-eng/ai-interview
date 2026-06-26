@@ -11,7 +11,7 @@ const JobSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Active', 'Draft', 'Closed'],
+    enum: ['Active', 'Draft', 'Closed', 'Hold', 'Deactive'],
     default: 'Active',
   },
   candidatesCount: {
@@ -21,6 +21,14 @@ const JobSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
+  },
+  role: {
+    type: String,
+    default: '',
+  },
+  aboutJob: {
+    type: String,
+    default: '',
   },
   skillsRequired: {
     type: [String],

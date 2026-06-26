@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React, { useState } from 'react';
 import { useRecruiterStore } from '../store';
@@ -75,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             onClick={() => setNotifsOpen(!notifsOpen)}
             className="p-2 rounded-xl border border-[#E6EBF2] hover:bg-slate-50 text-slate-500 hover:text-slate-900 transition-colors relative"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className={tw.iconMd} />
             {activeAlerts.length > 0 && (
               <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[9px] font-extrabold text-white ring-2 ring-white">
                 {activeAlerts.length}

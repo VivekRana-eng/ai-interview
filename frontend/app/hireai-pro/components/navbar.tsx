@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React, { useState } from 'react';
 import { useDashboardStore } from '../store';
@@ -113,7 +114,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             onClick={() => setNotifOpen(!notifOpen)}
             className="p-2 rounded-xl border border-slate-900 dark:border-slate-900 light:border-slate-200 hover:bg-slate-900/60 dark:hover:bg-slate-900/60 light:hover:bg-slate-100 text-slate-400 hover:text-white dark:hover:text-white light:hover:text-slate-900 transition-colors relative"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className={tw.iconMd} />
             {activeAlertsCount > 0 && (
               <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white ring-2 ring-slate-950 dark:ring-slate-950 light:ring-white">
                 {activeAlertsCount}
@@ -173,7 +174,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                 <User className="w-3.5 h-3.5 text-slate-400" /> My Profile
               </button>
               <button className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-800 light:hover:bg-slate-100 flex items-center gap-2 text-rose-400 font-medium">
-                <LogOut className="w-3.5 h-3.5" /> Logout
+                <LogOut className={tw.iconSm} /> Logout
               </button>
             </div>
           )}

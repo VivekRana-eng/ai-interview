@@ -164,6 +164,20 @@ const MOCK_JOBS = [
       'Describe your handoff process to frontend engineers.',
       'Detail your experience creating custom design token architectures.'
     ]
+  },
+  {
+    title: 'Data Engineer (Legacy)',
+    department: 'Engineering',
+    status: 'Deactive',
+    candidatesCount: 8,
+    description: 'Maintenance of legacy data pipelines and ETL processes.',
+    skillsRequired: ['SQL', 'Hadoop', 'Apache Spark'],
+    experience: '4+ years',
+    salaryRange: '₹12,00,000 - ₹16,00,000',
+    location: 'Chennai (On-site)',
+    employmentType: 'Full-time',
+    aiSummary: 'This role is currently deactivated as we transition to new cloud-native pipelines.',
+    aiQuestions: []
   }
 ];
 

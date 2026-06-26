@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React from 'react';
 import { useRecruiterStore } from '../store';
@@ -56,7 +57,7 @@ export const EvaluationsTable: React.FC = () => {
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-blue-600 shadow-sm bg-white"
         >
           <span>View All</span>
-          <ExternalLink className="w-3.5 h-3.5" />
+          <ExternalLink className={tw.iconSm} />
         </button>
       </div>
 
@@ -100,7 +101,7 @@ export const EvaluationsTable: React.FC = () => {
 
                 {/* Match Score Progress Bar */}
                 <td className="py-4 px-4">
-                  <div className="flex items-center gap-3">
+                  <div className={tw.flexItemsGap3}>
                     <div className="w-24 bg-slate-100 rounded-full h-1.5 overflow-hidden">
                       <div 
                         className={`h-full rounded-full ${getProgressBarColor(cand.aiMatchScore)}`}

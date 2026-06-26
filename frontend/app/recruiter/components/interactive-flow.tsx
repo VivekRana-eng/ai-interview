@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React, { useState } from 'react';
 import { useRecruiterStore } from '../store';
@@ -24,7 +25,7 @@ const CircularProgress: React.FC<{ value: number; label: string; sublabel: strin
   const strokeDashoffset = circumference - (value / 100) * circumference;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className={tw.flexItemsGap2}>
       <div className="relative w-10 h-10 flex items-center justify-center">
         <svg className="w-10 h-10 transform -rotate-90">
           <circle
@@ -120,7 +121,7 @@ export const InteractiveFlow: React.FC = () => {
           onClick={seedDemoPipeline}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-slate-600 bg-white shadow-sm"
         >
-          <RotateCcw className="w-3.5 h-3.5" />
+          <RotateCcw className={tw.iconSm} />
           <span>Seed Demo Pipeline</span>
         </button>
       </div>
@@ -240,7 +241,7 @@ export const InteractiveFlow: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className={tw.flexItemsGap2}>
           <span className="text-slate-400">QUICK ADD:</span>
           <button
             onClick={() => {
@@ -327,7 +328,7 @@ export const InteractiveFlow: React.FC = () => {
                   {cand.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className={tw.flexItemsGap2}>
                     <span className="font-extrabold text-slate-800 text-xs">{cand.name}</span>
                     <span className={`text-[8px] font-extrabold px-1.5 py-0.2 rounded border ${cand.recommendation === 'Strong Hire' ? 'bg-indigo-50 text-indigo-600 border-indigo-200' : 'bg-amber-50 text-amber-600 border-amber-200'}`}>
                       {cand.recommendation}
@@ -395,13 +396,13 @@ export const InteractiveFlow: React.FC = () => {
                   onClick={() => setSelectedCandidate(cand)}
                   className="p-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-colors shadow-sm"
                 >
-                  <User className="w-3.5 h-3.5" />
+                  <User className={tw.iconSm} />
                 </button>
                 <button
                   onClick={() => deleteCandidate(cand.id)}
                   className="p-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 hover:text-rose-500 transition-colors shadow-sm"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className={tw.iconSm} />
                 </button>
               </div>
 

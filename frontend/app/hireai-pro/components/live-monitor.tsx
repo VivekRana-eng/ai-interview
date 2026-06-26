@@ -1,4 +1,5 @@
 'use client';
+import * as tw from '@/lib/tailwindClasses'
 
 import React, { useEffect, useState } from 'react';
 import { useDashboardStore } from '../store';
@@ -50,19 +51,19 @@ export const LiveMonitor: React.FC = () => {
       case 'Good':
         return (
           <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
-            <ShieldCheck className="w-3.5 h-3.5" /> Good
+            <ShieldCheck className={tw.iconSm} /> Good
           </span>
         );
       case 'Warning':
         return (
           <span className="flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">
-            <ShieldAlert className="w-3.5 h-3.5" /> Warning
+            <ShieldAlert className={tw.iconSm} /> Warning
           </span>
         );
       case 'Critical':
         return (
           <span className="flex items-center gap-1 text-[10px] font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider animate-bounce">
-            <ShieldAlert className="w-3.5 h-3.5" /> Critical
+            <ShieldAlert className={tw.iconSm} /> Critical
           </span>
         );
     }
@@ -90,7 +91,7 @@ export const LiveMonitor: React.FC = () => {
           <div className="md:col-span-2 p-5 rounded-2xl bg-slate-950/40 dark:bg-slate-950/40 light:bg-white border border-slate-900/60 dark:border-slate-900/60 light:border-slate-200/60 shadow-lg backdrop-blur-md flex flex-col justify-between min-h-[250px]">
             <div>
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className={tw.flexItemsGap3}>
                   <img 
                     src={currentInterview.avatarUrl} 
                     alt={currentInterview.candidateName} 

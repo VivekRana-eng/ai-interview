@@ -1,4 +1,5 @@
 'use client'
+import * as tw from '@/lib/tailwindClasses'
 
 import { useState, useEffect, useRef } from 'react'
 import { startInterview, submitAnswer } from '@/lib/api'
@@ -122,8 +123,8 @@ export default function InterviewPage({ params }: { params: { token: string } })
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#f7f9fc] flex items-center justify-center">
-        <div className="bg-white border border-[#e2e8f0] rounded-xl p-8 max-w-md w-full mx-4 text-center">
+      <div className={tw.pageShellCentered}>
+        <div className={tw.cardP8Centered}>
           <div className="w-16 h-16 bg-[#fef2f2] rounded-full flex items-center justify-center mx-auto mb-4">
             <svg width="28" height="28" viewBox="0 0 16 16" fill="none">
               <path d="M4 4l8 8M12 4l-8 8" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"/>
@@ -144,8 +145,8 @@ export default function InterviewPage({ params }: { params: { token: string } })
 
   if (completed) {
     return (
-      <div className="min-h-screen bg-[#f7f9fc] flex items-center justify-center">
-        <div className="bg-white border border-[#e2e8f0] rounded-xl p-8 max-w-md w-full mx-4 text-center">
+      <div className={tw.pageShellCentered}>
+        <div className={tw.cardP8Centered}>
           <div className="w-16 h-16 bg-[#e6f7f2] rounded-full flex items-center justify-center mx-auto mb-4">
             <svg width="28" height="28" viewBox="0 0 16 16" fill="none">
               <path d="M3 8l3.5 3.5 6.5-7" stroke="#1D9E75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -174,9 +175,9 @@ export default function InterviewPage({ params }: { params: { token: string } })
       {/* Top bar */}
       <div className="bg-white border-b border-[#e2e8f0] z-50 flex-shrink-0">
         <div className="h-14 grid grid-cols-[1fr_auto_1fr] items-center px-6 gap-4">
-          <div className="flex items-center gap-2.5">
+          <div className={tw.flexItemsGap2_5}>
             <div className="w-[30px] h-[30px] bg-[#0F2744] rounded-[5px] flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 22 22" fill="none" className="w-4 h-4">
+              <svg viewBox="0 0 22 22" fill="none" className={tw.iconMd}>
                 <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.9"/>
                 <rect x="12" y="3" width="7" height="7" rx="1.5" fill="white" opacity="0.5"/>
                 <rect x="3" y="12" width="7" height="7" rx="1.5" fill="white" opacity="0.5"/>
@@ -184,7 +185,7 @@ export default function InterviewPage({ params }: { params: { token: string } })
               </svg>
             </div>
             <div>
-              <div className="text-[13px] font-semibold text-[#0F2744]">SelectAI Interview</div>
+              <div className={tw.textPrimary13}>SelectAI Interview</div>
               <div className="text-[10px] text-[#718096]">Govt. of India</div>
             </div>
           </div>

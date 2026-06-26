@@ -1,4 +1,5 @@
 'use client'
+import * as tw from '@/lib/tailwindClasses'
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
@@ -136,7 +137,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
           <div>
             <div className="text-[17px] font-bold text-[#0F2744] tracking-[-0.01em]">{application.candidate_name}</div>
             <div className="flex items-center gap-2.5 mt-[3px] flex-wrap">
-              <span className="text-xs text-[#718096]">{application.email}</span>
+              <span className={tw.textSecondary12}>{application.email}</span>
               <span className="w-[3px] h-[3px] rounded-full bg-[#e2e8f0]"></span>
               <span className="text-xs text-[#4a5568] font-medium">{application.job_profiles?.title}</span>
               <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-[3px] rounded-full ${pill.bg} ${pill.text}`}>
@@ -146,13 +147,13 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2.5">
+        <div className={tw.flexItemsGap2_5}>
           {application.rank && (
             <div className="text-xs font-semibold text-[#718096] bg-[#f0f4f8] border border-[#e2e8f0] rounded-md px-3 py-1.5 whitespace-nowrap">
               Rank <strong className="text-[#0F2744]">#{application.rank}</strong>
             </div>
           )}
-          <div className="flex items-center gap-2">
+          <div className={tw.flexItemsGap2}>
             <button onClick={() => updateStatus('rejected')} className="px-4 py-2 bg-white text-[#dc2626] border border-[#fca5a5] rounded-md text-xs font-semibold hover:bg-[#fef2f2] transition-colors whitespace-nowrap">Reject</button>
             <button onClick={() => updateStatus('selected')} className="px-4 py-2 bg-[#1D9E75] text-white rounded-md text-xs font-semibold hover:bg-[#18896a] transition-colors whitespace-nowrap">✓ Select</button>
             <div className="relative">
@@ -176,7 +177,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
       <div className="grid grid-cols-1 lg:grid-cols-[30%_1fr_30%] gap-4 items-start">
 
         {/* LEFT: Score Breakdown */}
-        <div className="bg-white border border-[#e2e8f0] rounded-[10px] overflow-hidden">
+        <div className={tw.cardCompactOverflow}>
           <div className="px-[18px] py-[13px] border-b border-[#e2e8f0]">
             <div className="text-[13px] font-bold text-[#0F2744]">Score Breakdown</div>
             <div className="text-[11px] text-[#718096] mt-[1px]">AI-generated evaluation</div>
@@ -193,7 +194,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
                 const val = components[c.key] || 0
                 const pct = Math.min(100, Math.round((val / c.max) * 100))
                 return (
-                  <div key={c.key} className="flex flex-col gap-1">
+                  <div key={c.key} className={tw.flexColGap1}>
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-medium text-[#4a5568]">{c.label}</span>
                       <span className="text-xs font-bold text-[#0F2744] tabular-nums">{val} / {c.max}</span>
@@ -288,7 +289,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
 
         {/* RIGHT: Resume / Candidate Info */}
         <div className="flex flex-col gap-4">
-          <div className="bg-white border border-[#e2e8f0] rounded-[10px] overflow-hidden">
+          <div className={tw.cardCompactOverflow}>
             <div className="px-[18px] py-[13px] border-b border-[#e2e8f0]">
               <div className="text-[13px] font-bold text-[#0F2744]">Candidate Profile</div>
             </div>
@@ -297,16 +298,16 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
               <div>
                 <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#718096] mb-1.5">Education</div>
                 <div className="text-xs font-semibold text-[#0F2744]">{application.degree || '—'}</div>
-                <div className="text-[11px] text-[#718096]">{application.institution || '—'} · CGPA {application.cgpa || '—'}</div>
+                <div className={tw.textSecondary11}>{application.institution || '—'} · CGPA {application.cgpa || '—'}</div>
               </div>
-              <div className="h-px bg-[#e2e8f0]"></div>
+              <div className={tw.divider}></div>
               {/* Experience */}
               <div>
                 <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#718096] mb-1.5">Experience</div>
                 <div className="text-xs font-semibold text-[#0F2744]">{application.experience_months || 0} months</div>
-                <div className="text-[11px] text-[#718096]">Relevant work / projects</div>
+                <div className={tw.textSecondary11}>Relevant work / projects</div>
               </div>
-              <div className="h-px bg-[#e2e8f0]"></div>
+              <div className={tw.divider}></div>
               {/* Skills */}
               <div>
                 <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#718096] mb-1.5">Certifications</div>
@@ -314,10 +315,10 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
                   {(application.certifications || []).map((cert: string) => (
                     <span key={cert} className="text-[11px] font-medium bg-[#eff6ff] text-[#0F2744] px-[9px] py-[3px] rounded">{cert}</span>
                   ))}
-                  {(application.certifications || []).length === 0 && <span className="text-[11px] text-[#718096]">None listed</span>}
+                  {(application.certifications || []).length === 0 && <span className={tw.textSecondary11}>None listed</span>}
                 </div>
               </div>
-              <div className="h-px bg-[#e2e8f0]"></div>
+              <div className={tw.divider}></div>
               {/* SOP */}
               {application.sop_text && (
                 <div>
@@ -325,7 +326,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
                   <p className="text-xs text-[#4a5568] leading-relaxed">{application.sop_text}</p>
                 </div>
               )}
-              <div className="h-px bg-[#e2e8f0]"></div>
+              <div className={tw.divider}></div>
               {/* Contact */}
               <div>
                 <div className="text-[11px] font-bold uppercase tracking-[0.06em] text-[#718096] mb-1.5">Contact</div>
@@ -334,7 +335,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
               </div>
               {resumeUrl && (
                 <>
-                  <div className="h-px bg-[#e2e8f0]"></div>
+                  <div className={tw.divider}></div>
                   <a
                     href={resumeUrl}
                     target="_blank"
@@ -350,7 +351,7 @@ export default function ApplicationDetailPage({ params }: { params: { id: string
           </div>
 
           {/* Admin Notes */}
-          <div className="bg-white border border-[#e2e8f0] rounded-[10px] overflow-hidden">
+          <div className={tw.cardCompactOverflow}>
             <div className="px-[18px] py-[13px] border-b border-[#e2e8f0]">
               <div className="text-[13px] font-bold text-[#0F2744]">Admin Notes</div>
             </div>
