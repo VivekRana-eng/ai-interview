@@ -141,6 +141,7 @@ export const MOCK_JOBS: Job[] = [
     experience: '3+ years',
     salaryRange: '₹18,00,000 - ₹24,00,000',
     location: 'New Delhi (On-site)',
+    createdBy: 'Akash Patel',
     employmentType: 'Full-time',
     aiSummary: 'Lead investigator for machine learning modeling and deep neural framework research.',
     aiQuestions: [
@@ -162,6 +163,7 @@ export const MOCK_JOBS: Job[] = [
     experience: '5+ years',
     salaryRange: '₹14,00,000 - ₹20,00,000',
     location: 'Bengaluru (Hybrid)',
+    createdBy: 'Priya Sharma',
     employmentType: 'Full-time',
     aiSummary: 'Lead product engineer responsible for frontend client systems and service architectures.',
     aiQuestions: [
@@ -183,6 +185,7 @@ export const MOCK_JOBS: Job[] = [
     experience: '4+ years',
     salaryRange: '₹16,00,000 - ₹22,00,000',
     location: 'Hyderabad (Remote)',
+    createdBy: 'Nisha Lal',
     employmentType: 'Full-time',
     aiSummary: 'Security compliance officer establishing container guardrails and access policies.',
     aiQuestions: [
@@ -204,6 +207,7 @@ export const MOCK_JOBS: Job[] = [
     experience: '3+ years',
     salaryRange: '₹15,00,000 - ₹22,00,000',
     location: 'Mumbai (Hybrid)',
+    createdBy: 'Rahul Mehta',
     employmentType: 'Full-time',
     aiQuestions: [
       'How do you prioritize features in a fast-paced AI environment?',
@@ -223,6 +227,7 @@ export const MOCK_JOBS: Job[] = [
     experience: '2-4 years',
     salaryRange: '₹10,00,000 - ₹14,00,000',
     location: 'Remote',
+    createdBy: 'Tanya Gupta',
     employmentType: 'Full-time',
     aiQuestions: []
   },
@@ -239,6 +244,7 @@ export const MOCK_JOBS: Job[] = [
     experience: '3+ years',
     salaryRange: '₹12,00,000 - ₹16,00,000',
     location: 'Pune (Remote)',
+    createdBy: 'Charan Singh',
     employmentType: 'Full-time',
     aiQuestions: []
   },
@@ -255,6 +261,7 @@ export const MOCK_JOBS: Job[] = [
     experience: '4+ years',
     salaryRange: '₹12,00,000 - ₹16,00,000',
     location: 'Chennai (On-site)',
+    createdBy: 'Meera Nair',
     employmentType: 'Full-time',
     aiQuestions: []
   }

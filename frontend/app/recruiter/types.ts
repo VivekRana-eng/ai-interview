@@ -55,7 +55,14 @@ export interface Job {
   experience: string;
   salaryRange: string;
   location: string;
+  createdBy?: string;
   employmentType: 'Full-time' | 'Part-time' | 'Contract' | 'Internship';
+  lastDateToApply?: string;
+  joiningType?: 'Immediately' | 'Custom Date';
+  joiningDate?: string;
+  isInternship?: boolean;
+  internshipDuration?: string; // e.g. "3 months"
+  qualifications?: string;
   aiSummary?: string;
   aiQuestions?: string[];
   createdAt?: string;

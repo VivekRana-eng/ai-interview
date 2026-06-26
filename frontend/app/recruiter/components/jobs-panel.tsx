@@ -53,7 +53,14 @@ export const JobsPanel: React.FC = () => {
     employmentType: 'Full-time' as Job['employmentType'],
     role: '',
     aboutJob: '',
-    aiQuestions: ''
+    aiQuestions: '',
+    lastDateToApply: '',
+    joiningType: 'Immediately' as Job['joiningType'],
+    joiningDate: '',
+    isInternship: false,
+    internshipDuration: '',
+    qualifications: '',
+    status: 'Active' as Job['status']
   });
 
   // Validation States
@@ -93,7 +100,14 @@ export const JobsPanel: React.FC = () => {
         employmentType: editingJob.employmentType || 'Full-time',
         role: editingJob.role || '',
         aboutJob: editingJob.aboutJob || '',
-        aiQuestions: (editingJob.aiQuestions || []).join('\n')
+        aiQuestions: (editingJob.aiQuestions || []).join('\n'),
+        lastDateToApply: editingJob.lastDateToApply ? new Date(editingJob.lastDateToApply).toISOString().split('T')[0] : '',
+        joiningType: editingJob.joiningType || 'Immediately',
+        joiningDate: editingJob.joiningDate ? new Date(editingJob.joiningDate).toISOString().split('T')[0] : '',
+        isInternship: editingJob.isInternship || false,
+        internshipDuration: editingJob.internshipDuration || '',
+        qualifications: editingJob.qualifications || '',
+        status: editingJob.status || 'Active'
       });
       setErrors({});
     } else {
@@ -108,7 +122,14 @@ export const JobsPanel: React.FC = () => {
         employmentType: 'Full-time',
         role: '',
         aboutJob: '',
-        aiQuestions: ''
+        aiQuestions: '',
+        lastDateToApply: '',
+        joiningType: 'Immediately',
+        joiningDate: '',
+        isInternship: false,
+        internshipDuration: '',
+        qualifications: '',
+        status: 'Active'
       });
       setErrors({});
     }
@@ -170,6 +191,12 @@ export const JobsPanel: React.FC = () => {
         role: formValues.role,
         aboutJob: formValues.aboutJob,
         status: 'Active',
+        lastDateToApply: formValues.lastDateToApply,
+        joiningType: formValues.joiningType,
+        joiningDate: formValues.joiningDate,
+        isInternship: formValues.isInternship,
+        internshipDuration: formValues.isInternship ? formValues.internshipDuration : '',
+        qualifications: formValues.qualifications,
         ...(questions.length > 0 ? { aiQuestions: questions } : {})
       });
 
@@ -209,7 +236,13 @@ export const JobsPanel: React.FC = () => {
         employmentType: formValues.employmentType,
         role: formValues.role,
         aboutJob: formValues.aboutJob,
-        aiQuestions: questions
+        aiQuestions: questions,
+        lastDateToApply: formValues.lastDateToApply,
+        joiningType: formValues.joiningType,
+        joiningDate: formValues.joiningDate,
+        isInternship: formValues.isInternship,
+        internshipDuration: formValues.isInternship ? formValues.internshipDuration : '',
+        qualifications: formValues.qualifications
       });
 
       setIsEditModalOpen(false);
@@ -326,11 +359,7 @@ export const JobsPanel: React.FC = () => {
 
   return (
     <div className="space-y-6 lg:space-y-8 animate-in fade-in duration-500 relative">
-
-      {/* Background Content (Unblurred) */}
       <div className={`space-y-6 lg:space-y-8 transition-all duration-300 ${selectedJob ? 'pointer-events-none select-none opacity-60' : ''}`}>
-
-        {/* 1. Dashboard Header */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">
             <h2 className="text-xl md:text-[22px] font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
@@ -686,9 +715,8 @@ export const JobsPanel: React.FC = () => {
                         <Users className="w-3.5 h-3.5" />
                         View Applicants
                       </button>
-                      <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
-                        <MapPin className="w-3 h-3" />
-                        {job.location.split(' (')[0]}
+                      <div className="text-[10px] font-bold text-slate-400 whitespace-nowrap">
+                        Created by {job.createdBy ?? 'Unknown'}
                       </div>
                     </div>
                   </div>
@@ -741,7 +769,7 @@ export const JobsPanel: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 self-start flex-wrap">
+                <div className="flex items-center gap-3">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -754,20 +782,11 @@ export const JobsPanel: React.FC = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleSetStatus(selectedJob, selectedJob.status === 'Deactive' ? 'Active' : 'Deactive');
-                    }}
-                    className={`px-3.5 py-2 rounded-xl border text-xs font-bold transition-all shadow-[0_4px_12px_rgba(15,23,42,0.06)] ${selectedJob.status === 'Deactive' ? 'bg-rose-100 border-rose-200 text-rose-600' : 'bg-white/80 border-white/80 text-slate-600 hover:bg-white'}`}
-                  >
-                    {selectedJob.status === 'Deactive' ? 'Activate' : 'Deactivate'}
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
                       setEditingJob(selectedJob);
                       setIsEditModalOpen(true);
                       handleCloseJobDetails();
                     }}
-                    className="px-3.5 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-600 text-xs font-bold shadow-[0_4px_12px_rgba(37,99,235,0.06)] hover:bg-blue-100 transition-all"
+                    className="px-5 py-2.5 rounded-2xl bg-blue-600 text-white text-[11px] font-extrabold shadow-[0_8px_20px_rgba(37,99,235,0.24)] hover:bg-blue-700 transition-all hover:scale-[1.02]"
                   >
                     Edit Job
                   </button>
@@ -777,144 +796,157 @@ export const JobsPanel: React.FC = () => {
                       handleDeleteJob(selectedJob.id);
                       handleCloseJobDetails();
                     }}
-                    className="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 text-xs font-bold shadow-[0_4px_12px_rgba(244,63,94,0.06)] hover:bg-rose-100 transition-all"
+                    className="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 text-xs font-bold hover:bg-rose-100 transition-all"
                   >
-                    Delete Job
+                    Delete
                   </button>
-                  <button
-                    onClick={handleCloseJobDetails}
-                    className="p-2.5 rounded-xl bg-white/80 border border-white/80 shadow-[0_4px_12px_rgba(15,23,42,0.06)]"
-                  >
-                    <X className="w-4 h-4 text-slate-500" />
+                  <button onClick={handleCloseJobDetails} className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-200">
+                    <X className="w-5 h-5 text-slate-500" />
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 p-5 md:p-6 overflow-y-auto min-h-0">
-                <div className="xl:col-span-7 space-y-5">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="rounded-2xl bg-white/75 border border-white/80 backdrop-blur-md p-3 shadow-[0_4px_12px_rgba(15,23,42,0.04)] text-center">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Location</div>
-                      <div className="mt-1 text-sm font-bold text-slate-800 truncate">{selectedJob.location}</div>
-                    </div>
-                    <div className="rounded-2xl bg-white/75 border border-white/80 backdrop-blur-md p-3 shadow-[0_4px_12px_rgba(15,23,42,0.04)] text-center">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Type</div>
-                      <div className="mt-1 text-sm font-bold text-slate-800">{selectedJob.employmentType}</div>
-                    </div>
-                    <div className="rounded-2xl bg-white/75 border border-white/80 backdrop-blur-md p-3 shadow-[0_4px_12px_rgba(15,23,42,0.04)] text-center">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Salary</div>
-                      <div className="mt-1 text-sm font-bold text-slate-800 truncate">{selectedJob.salaryRange}</div>
-                    </div>
-                    <div className="rounded-2xl bg-white/75 border border-white/80 backdrop-blur-md p-3 shadow-[0_4px_12px_rgba(15,23,42,0.04)] text-center">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Experience</div>
-                      <div className="mt-1 text-sm font-bold text-slate-800">{selectedJob.experience}</div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-3xl bg-white/75 border border-white/80 backdrop-blur-md p-5 shadow-[0_4px_16px_rgba(15,23,42,0.04)] space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-extrabold text-slate-900">Skills Required</h4>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                        {selectedJob.skillsRequired?.length || 0} skills
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedJob.skillsRequired?.length ? (
-                        selectedJob.skillsRequired.map((skill) => (
-                          <span
-                            key={skill}
-                            className="px-3 py-1.5 rounded-full bg-slate-900/5 border border-white/80 text-[11px] font-bold text-slate-700 backdrop-blur-md"
-                          >
-                            {skill}
-                          </span>
-                        ))
-                      ) : (
-                        <p className="text-sm text-slate-400 font-semibold">No skills listed.</p>
-                      )}
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 p-5 md:p-8 overflow-y-auto min-h-0 bg-white">
+                <div className="xl:col-span-7 space-y-6">
+                  {/* Info Card */}
+                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 shadow-sm">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-y-4 md:gap-y-0">
+                      <div className="text-center md:border-r border-slate-200 last:border-0 px-2 lg:px-1">
+                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Created by</div>
+                        <div className="mt-1.5 text-[12px] font-bold text-slate-800 truncate">{selectedJob.createdBy ?? 'Unknown'}</div>
+                      </div>
+                      <div className="text-center md:border-r border-slate-200 last:border-0 px-2 lg:px-1">
+                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Type</div>
+                        <div className="mt-1.5 text-[12px] font-bold text-slate-800">{selectedJob.employmentType}</div>
+                      </div>
+                      <div className="text-center md:border-r border-slate-200 last:border-0 px-2 lg:px-1">
+                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Salary</div>
+                        <div className="mt-1.5 text-[12px] font-bold text-slate-800 truncate">{selectedJob.salaryRange}</div>
+                      </div>
+                      <div className="text-center md:border-r border-slate-200 last:border-0 px-2 lg:px-1">
+                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Experience</div>
+                        <div className="mt-1.5 text-[12px] font-bold text-slate-800">{selectedJob.experience}</div>
+                      </div>
+                      <div className="text-center md:border-r border-slate-200 last:border-0 px-2 lg:px-1">
+                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Join By</div>
+                        <div className="mt-1.5 text-[12px] font-bold text-slate-800">
+                          {selectedJob.joiningType === 'Custom Date' && selectedJob.joiningDate
+                            ? new Date(selectedJob.joiningDate).toLocaleDateString()
+                            : 'Immediate'}
+                        </div>
+                      </div>
+                      <div className="text-center px-2 lg:px-1">
+                        <div className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Deadline</div>
+                        <div className="mt-1.5 text-[12px] font-bold text-slate-800">
+                          {selectedJob.lastDateToApply ? new Date(selectedJob.lastDateToApply).toLocaleDateString() : 'Rolling'}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {selectedJob.aiQuestions && selectedJob.aiQuestions.length > 0 && (
-                    <div className="rounded-3xl bg-white/75 border border-white/80 backdrop-blur-md p-5 shadow-[0_4px_16px_rgba(15,23,42,0.04)]">
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-sm font-extrabold text-slate-900">Evaluation Questions</h4>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                          {selectedJob.aiQuestions.length}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm space-y-5">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-[15px] font-extrabold text-slate-900 flex items-center gap-2">
+                          <Sparkles className="w-4.5 h-4.5 text-blue-500" />
+                          Skills Required
+                        </h4>
+                        <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-lg">
+                          {selectedJob.skillsRequired?.length || 0}
                         </span>
                       </div>
-                      <ul className="space-y-3 text-sm font-semibold text-slate-600">
-                        {selectedJob.aiQuestions.map((question, index) => (
-                          <li key={index} className="flex gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
-                            <span className="leading-relaxed">{question}</span>
-                          </li>
+                      <div className="flex flex-wrap gap-2.5">
+                        {selectedJob.skillsRequired?.map((skill) => (
+                          <span key={skill} className="px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-[11px] font-bold text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-600 hover:border-blue-100 cursor-default">
+                            {skill}
+                          </span>
                         ))}
-                      </ul>
+                      </div>
                     </div>
-                  )}
+
+                    <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm space-y-5">
+                      <h4 className="text-[15px] font-extrabold text-slate-900 flex items-center gap-2">
+                        <Building className="w-4.5 h-4.5 text-emerald-500" />
+                        Key Information
+                      </h4>
+                      <div className="space-y-4">
+                        {selectedJob.isInternship && (
+                          <div className="flex items-center justify-between text-[11px] font-bold">
+                            <span className="text-slate-400 uppercase tracking-widest">Internship</span>
+                            <span className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-xl">{selectedJob.internshipDuration} Months</span>
+                          </div>
+                        )}
+                        <div className="space-y-2">
+                          <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Academic Requirements</span>
+                          <p className="text-[12px] font-semibold text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                            {selectedJob.qualifications || 'Standard industry qualifications required for this position.'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm space-y-4">
+                    <h4 className="text-[15px] font-extrabold text-slate-900">About the Role</h4>
+                    <p className="text-[13px] text-slate-600 leading-loose font-medium">
+                      {selectedJob.description}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="xl:col-span-5 space-y-5">
-                  <div className="rounded-3xl bg-white/75 border border-white/80 backdrop-blur-md p-5 shadow-[0_4px_16px_rgba(15,23,42,0.04)] flex flex-col min-h-0 h-full">
-                    <div className="flex items-center justify-between mb-4 flex-shrink-0">
-                      <h4 className="text-sm font-extrabold text-slate-900 flex items-center gap-2">
-                        <Users className="w-4.5 h-4.5 text-blue-500" />
+                <div className="xl:col-span-5 space-y-6">
+                  <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm flex flex-col min-h-[300px]">
+                    <div className="flex items-center justify-between mb-6">
+                      <h4 className="text-[15px] font-extrabold text-slate-900 flex items-center gap-2.5">
+                        <Users className="w-5 h-5 text-blue-500" />
                         Matched Applicants
                       </h4>
-                      <span className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-[10px] font-extrabold shadow-sm">
+                      <span className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-[12px] font-bold shadow-lg">
                         {matchingApplicants.length}
                       </span>
                     </div>
+                    
+                    <div className="flex-1 flex flex-col items-center justify-center py-10 rounded-2xl bg-slate-50/50 border border-dashed border-slate-200">
+                      <Users className="w-12 h-12 text-slate-200 mb-3" />
+                      <h4 className="text-sm font-bold text-slate-600">Screening in Progress</h4>
+                      <p className="text-[11px] text-slate-400 mt-2 max-w-[200px] text-center font-medium">
+                        Detailed applicant insights will be displayed here as they match the criteria.
+                      </p>
+                    </div>
+                  </div>
 
-                    {matchingApplicants.length > 0 ? (
-                      <div className="space-y-3 overflow-y-auto pr-1 custom-scrollbar">
-                        {matchingApplicants.map((cand) => (
-                          <div
-                            key={cand.id}
-                            className="rounded-2xl bg-white/80 border border-white/80 backdrop-blur-md p-3.5 shadow-[0_4px_12px_rgba(15,23,42,0.04)] hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] transition-all cursor-pointer group"
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-500 border border-white/60 shadow-sm group-hover:scale-105 transition-transform">
-                                    {cand.name.split(' ').map(n => n[0]).join('')}
-                                  </div>
-                                  <div className="min-w-0">
-                                    <div className="text-[13px] font-bold text-slate-800 truncate">{cand.name}</div>
-                                    <div className="text-[10px] text-slate-400 flex items-center gap-1 font-semibold">
-                                      <MapPin className="w-2.5 h-2.5" />
-                                      {cand.location}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${getStageColor(cand.status)} shadow-sm`}>
-                                {cand.status}
-                              </span>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-2 mt-3.5 text-[10px] font-semibold text-slate-500">
-                              <div className="rounded-xl bg-blue-50/50 border border-blue-100/50 px-2.5 py-2 flex flex-col gap-0.5">
-                                <span className="text-[8px] text-slate-400 uppercase font-extrabold tracking-tighter">AI Match</span>
-                                <span className="text-[12px] font-extrabold text-blue-600">{cand.aiMatchScore}%</span>
-                              </div>
-                              <div className="rounded-xl bg-emerald-50/50 border border-emerald-100/50 px-2.5 py-2 flex flex-col gap-0.5">
-                                <span className="text-[8px] text-slate-400 uppercase font-extrabold tracking-tighter">Integrity</span>
-                                <span className="text-[12px] font-extrabold text-emerald-600">{cand.integrityScore}%</span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
+                  <div className="rounded-[28px] bg-white border border-slate-200 p-6 shadow-sm">
+                    <h4 className="text-[15px] font-extrabold text-slate-900">Job Creation Details</h4>
+                    <div className="mt-5 text-sm text-slate-800 space-y-4">
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Location</span>
+                        <span className="font-semibold">{selectedJob.location || 'Not specified'}</span>
                       </div>
-                    ) : (
-                      <div className="flex-1 flex flex-col items-center justify-center py-20 rounded-2xl bg-slate-50/70 border border-dashed border-slate-200">
-                        <Users className="w-10 h-10 text-slate-200 mb-2" />
-                        <h4 className="text-[13px] font-bold text-slate-600">No applicants linked</h4>
-                        <p className="text-[10px] text-slate-400 mt-1 max-w-[200px] text-center font-medium">
-                          New resumes will be screened against these criteria automatically.
-                        </p>
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Employment Type</span>
+                        <span className="font-semibold">{selectedJob.employmentType}</span>
                       </div>
-                    )}
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Qualification</span>
+                        <span className="font-semibold">{selectedJob.qualifications || 'Standard industry qualifications required for this position.'}</span>
+                      </div>
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Apply By</span>
+                        <span className="font-semibold">{selectedJob.lastDateToApply ? new Date(selectedJob.lastDateToApply).toLocaleDateString() : 'Rolling'}</span>
+                      </div>
+                      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Joining</span>
+                        <span className="font-semibold">
+                          {selectedJob.joiningType === 'Custom Date' && selectedJob.joiningDate
+                            ? new Date(selectedJob.joiningDate).toLocaleDateString()
+                            : 'Immediate'}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Job Role</span>
+                        <span className="font-semibold">{selectedJob.role || 'Not specified'}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -929,98 +961,77 @@ export const JobsPanel: React.FC = () => {
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.6 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => {
-                setIsCreateModalOpen(false);
-                setIsEditModalOpen(false);
-                setEditingJob(null);
-              }}
-              
+              onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); setEditingJob(null); }}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             />
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              transition={{ duration: 0.2 }}
-              className="relative w-full max-w-2xl bg-white rounded-[28px] border border-slate-200 shadow-[0_30px_80px_rgba(15,23,42,0.18)] overflow-hidden flex flex-col max-h-[90vh] z-10 font-sans"
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl bg-white rounded-[32px] shadow-[0_40px_100px_rgba(15,23,42,0.25)] overflow-hidden flex flex-col max-h-[90vh] z-10 font-sans"
             >
-              <div className="p-5 md:p-6 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
->
-                <div>
-                  <h3 className="text-[16px] font-bold text-slate-900 flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-blue-500" />
-                    <span>{isCreateModalOpen ? 'Create New Job Opening' : 'Edit Job Opening Details'}</span>
-                  </h3>
-                </div>
+              <div className="p-6 md:p-8 border-b border-slate-50 flex justify-between items-center bg-white shrink-0">
+                <h3 className="text-lg md:text-xl font-extrabold text-slate-900 flex items-center gap-2.5">
+                  <Plus className="w-6 h-6 text-blue-600" />
+                  {isCreateModalOpen ? 'Create New Role' : 'Update Job Details'}
+                </h3>
                 <button
-                  onClick={() => {
-                    setIsCreateModalOpen(false);
-                    setIsEditModalOpen(false);
-                    setEditingJob(null);
-                  }}
-                  className="p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors"
+                  onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); setEditingJob(null); }}
+                  className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-200"
                 >
-                  <X className="w-4 h-4 text-slate-500" />
+                  <X className="w-5 h-5 text-slate-500" />
                 </button>
               </div>
 
               <form
                 onSubmit={isCreateModalOpen ? handleCreateJob : handleUpdateJob}
-                className="flex-1 overflow-y-auto p-5 md:p-6 space-y-5 text-xs text-slate-700 bg-white"
+                className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 text-slate-700 bg-white"
               >
-                {/* Form fields same as before, simplified for space in example */}
-                {/* 1. Basic Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="font-bold text-slate-700">Job Title <span className="text-red-500">*</span></label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Job Title *</label>
                     <input
                       type="text"
                       value={formValues.title}
                       onChange={(e) => setFormValues({ ...formValues, title: e.target.value })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all"
-                      placeholder="e.g. Senior Frontend Engineer"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 bg-slate-50 text-[13px] font-bold shadow-sm transition-all"
+                      placeholder="e.g. Lead Designer"
                     />
-                    {errors.title && <p className="text-[10px] text-red-500 font-bold">{errors.title}</p>}
+                    {errors.title && <p className="text-[10px] text-rose-500 font-bold">{errors.title}</p>}
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="font-bold text-slate-700">Department <span className="text-red-500">*</span></label>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Department *</label>
                     <input
                       type="text"
                       value={formValues.department}
                       onChange={(e) => setFormValues({ ...formValues, department: e.target.value })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all"
-                      placeholder="e.g. Engineering"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 bg-slate-50 text-[13px] font-bold shadow-sm transition-all"
+                      placeholder="e.g. Design Team"
                     />
                   </div>
-                </div>
-
-                {/* 2. Logistics & Type */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="font-bold text-slate-700">Location <span className="text-red-500">*</span></label>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Location *</label>
                     <input
                       type="text"
                       value={formValues.location}
                       onChange={(e) => setFormValues({ ...formValues, location: e.target.value })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 bg-slate-50 text-[13px] font-bold shadow-sm transition-all"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="font-bold text-slate-700">Salary Range <span className="text-red-500">*</span></label>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Salary Range *</label>
                     <input
                       type="text"
                       value={formValues.salaryRange}
                       onChange={(e) => setFormValues({ ...formValues, salaryRange: e.target.value })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 bg-slate-50 text-[13px] font-bold shadow-sm transition-all"
                     />
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="font-bold text-slate-700">Experience Level <span className="text-red-500">*</span></label>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Experience *</label>
                     <input
                       type="text"
                       value={formValues.experience}
@@ -1042,6 +1053,66 @@ export const JobsPanel: React.FC = () => {
                       <option value="Internship">Internship</option>
                     </select>
                   </div>
+
+                  {/* Row 4 */}
+                  <div className="space-y-1.5">
+                    <label className="font-bold text-slate-700">Joining Timeline</label>
+                    <select
+                      value={formValues.joiningType}
+                      onChange={(e) => setFormValues({ ...formValues, joiningType: e.target.value as any })}
+                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700 font-bold"
+                    >
+                      <option value="Immediately">Immediately</option>
+                      <option value="Custom Date">Custom Date</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="font-bold text-slate-700">Last Date to Apply</label>
+                    <input
+                      type="date"
+                      value={formValues.lastDateToApply}
+                      onChange={(e) => setFormValues({ ...formValues, lastDateToApply: e.target.value })}
+                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                    />
+                  </div>
+
+                  {/* Optional Row 5 */}
+                  {formValues.joiningType === 'Custom Date' && (
+                    <div className="space-y-1.5">
+                      <label className="font-bold text-slate-700">Joining Date</label>
+                      <input
+                        type="date"
+                        value={formValues.joiningDate}
+                        onChange={(e) => setFormValues({ ...formValues, joiningDate: e.target.value })}
+                        className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col md:flex-row md:items-center gap-6">
+                  <div className="flex items-center gap-3">
+                    <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 transition-colors cursor-pointer"
+                         onClick={() => setFormValues({ ...formValues, isInternship: !formValues.isInternship })}>
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formValues.isInternship ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </div>
+                    <span className="font-bold text-slate-700">Is this an Internship?</span>
+                  </div>
+                  
+                  {formValues.isInternship && (
+                    <div className="flex-1 flex items-center gap-3">
+                      <label className="font-bold text-slate-700 whitespace-nowrap">Duration (Months):</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="24"
+                        value={formValues.internshipDuration}
+                        onChange={(e) => setFormValues({ ...formValues, internshipDuration: e.target.value })}
+                        className="w-24 px-3 py-1.5 border border-slate-200 rounded-lg bg-white shadow-sm"
+                        placeholder="e.g. 6"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* 3. Detailed Info */}
@@ -1063,6 +1134,17 @@ export const JobsPanel: React.FC = () => {
                     onChange={(e) => setFormValues({ ...formValues, skillsRequired: e.target.value })}
                     className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
                     placeholder="React, Node.js, etc."
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="font-bold text-slate-700">Educational Qualifications</label>
+                  <input
+                    type="text"
+                    value={formValues.qualifications}
+                    onChange={(e) => setFormValues({ ...formValues, qualifications: e.target.value })}
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                    placeholder="e.g. B.Tech in Computer Science, MBA, etc."
                   />
                 </div>
 

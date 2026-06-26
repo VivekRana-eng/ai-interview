@@ -51,6 +51,26 @@ const JobSchema = new mongoose.Schema({
     enum: ['Full-time', 'Part-time', 'Contract', 'Internship'],
     required: true,
   },
+  lastDateToApply: {
+    type: Date,
+  },
+  joiningType: {
+    type: String,
+    enum: ['Immediately', 'Custom Date'],
+  },
+  joiningDate: {
+    type: Date,
+  },
+  isInternship: {
+    type: Boolean,
+    default: false,
+  },
+  internshipDuration: {
+    type: String,
+  },
+  qualifications: {
+    type: String,
+  },
   aiSummary: {
     type: String,
   },
