@@ -552,7 +552,7 @@ export const JobsPanel: React.FC = () => {
                                   handleSetStatus(job, 'Closed');
                                   setActiveJobMenuId(null);
                                 }}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 transition-colors"
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
                               >
                                 <X className="w-4 h-4" />
                                 <span>Close Opening</span>
@@ -727,7 +727,10 @@ export const JobsPanel: React.FC = () => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[50] flex items-center justify-center p-4 lg:p-8"
           >
-            <div onClick={handleCloseJobDetails}/>
+            <div
+              onClick={handleCloseJobDetails}
+              className="fixed inset-0 bg-slate-900/20 backdrop-blur-[6px]"
+            />
 
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: 18 }}
@@ -952,7 +955,7 @@ export const JobsPanel: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); setEditingJob(null); }}
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/20 backdrop-blur-[6px]"
             />
 
             <motion.div
@@ -980,60 +983,62 @@ export const JobsPanel: React.FC = () => {
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Job Title *</label>
+                    <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-widest">Job Title <span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       value={formValues.title}
                       onChange={(e) => setFormValues({ ...formValues, title: e.target.value })}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 bg-slate-50 text-[13px] font-bold shadow-sm transition-all"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
                       placeholder="e.g. Lead Designer"
                     />
                     {errors.title && <p className="text-[10px] text-rose-500 font-bold">{errors.title}</p>}
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Department *</label>
+                    <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-widest">Department <span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       value={formValues.department}
                       onChange={(e) => setFormValues({ ...formValues, department: e.target.value })}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 bg-slate-50 text-[13px] font-bold shadow-sm transition-all"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
                       placeholder="e.g. Design Team"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Location *</label>
+                    <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-widest">Location <span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       value={formValues.location}
                       onChange={(e) => setFormValues({ ...formValues, location: e.target.value })}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 bg-slate-50 text-[13px] font-bold shadow-sm transition-all"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
+                      placeholder="e.g. Bengaluru, Remote, Pune"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Salary Range *</label>
+                    <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-widest">Salary Range <span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       value={formValues.salaryRange}
                       onChange={(e) => setFormValues({ ...formValues, salaryRange: e.target.value })}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 bg-slate-50 text-[13px] font-bold shadow-sm transition-all"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
+                      placeholder="e.g. ₹10,00,000 - ₹14,00,000"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[11px] font-extrabold text-slate-400 uppercase tracking-widest">Experience *</label>
+                    <label className="text-[11px] font-extrabold text-slate-900 uppercase tracking-widest">Experience <span className="text-red-500">*</span></label>
                     <input
                       type="text"
                       value={formValues.experience}
                       onChange={(e) => setFormValues({ ...formValues, experience: e.target.value })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
                       placeholder="e.g. 5+ years"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="font-bold text-slate-700">Employment Type</label>
+                    <label className="font-bold text-slate-900">Employment Type</label>
                     <select
                       value={formValues.employmentType}
                       onChange={(e) => setFormValues({ ...formValues, employmentType: e.target.value as any })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700 font-bold"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-400"
                     >
                       <option value="Full-time">Full-time</option>
                       <option value="Part-time">Part-time</option>
@@ -1044,35 +1049,35 @@ export const JobsPanel: React.FC = () => {
 
                   {/* Row 4 */}
                   <div className="space-y-1.5">
-                    <label className="font-bold text-slate-700">Joining Timeline</label>
+                    <label className="font-bold text-slate-900">Joining Timeline</label>
                     <select
                       value={formValues.joiningType}
                       onChange={(e) => setFormValues({ ...formValues, joiningType: e.target.value as any })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700 font-bold"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-400"
                     >
                       <option value="Immediately">Immediately</option>
                       <option value="Custom Date">Custom Date</option>
                     </select>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="font-bold text-slate-700">Last Date to Apply</label>
+                    <label className="font-bold text-slate-900">Last Date to Apply</label>
                     <input
                       type="date"
                       value={formValues.lastDateToApply}
                       onChange={(e) => setFormValues({ ...formValues, lastDateToApply: e.target.value })}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-400"
                     />
                   </div>
 
                   {/* Optional Row 5 */}
                   {formValues.joiningType === 'Custom Date' && (
                     <div className="space-y-1.5">
-                      <label className="font-bold text-slate-700">Joining Date</label>
+                      <label className="font-bold text-slate-900">Joining Date</label>
                       <input
                         type="date"
                         value={formValues.joiningDate}
                         onChange={(e) => setFormValues({ ...formValues, joiningDate: e.target.value })}
-                        className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                        className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-400"
                       />
                     </div>
                   )}
@@ -1084,19 +1089,19 @@ export const JobsPanel: React.FC = () => {
                          onClick={() => setFormValues({ ...formValues, isInternship: !formValues.isInternship })}>
                       <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formValues.isInternship ? 'translate-x-6' : 'translate-x-1'}`} />
                     </div>
-                    <span className="font-bold text-slate-700">Is this an Internship?</span>
+                    <span className="font-bold text-slate-900">Is this an Internship?</span>
                   </div>
                   
                   {formValues.isInternship && (
                     <div className="flex-1 flex items-center gap-3">
-                      <label className="font-bold text-slate-700 whitespace-nowrap">Duration (Months):</label>
+                      <label className="font-bold text-slate-900 whitespace-nowrap">Duration (Months):</label>
                       <input
                         type="number"
                         min="1"
                         max="24"
                         value={formValues.internshipDuration}
                         onChange={(e) => setFormValues({ ...formValues, internshipDuration: e.target.value })}
-                        className="w-24 px-3 py-1.5 border border-slate-200 rounded-lg bg-white shadow-sm"
+                        className="w-24 px-3 py-1.5 border border-slate-200 rounded-lg bg-white shadow-sm text-slate-900 placeholder:text-slate-400"
                         placeholder="e.g. 6"
                       />
                     </div>
@@ -1105,65 +1110,54 @@ export const JobsPanel: React.FC = () => {
 
                 {/* 3. Detailed Info */}
                 <div className="space-y-1.5">
-                  <label className="font-bold text-slate-700">Role Summary</label>
+                  <label className="font-bold text-slate-900">Role Summary</label>
                   <input
                     type="text"
                     value={formValues.role}
                     onChange={(e) => setFormValues({ ...formValues, role: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-bold text-slate-700">Skills <span className="text-red-500">*</span></label>
+                  <label className="font-bold text-slate-900">Skills <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     value={formValues.skillsRequired}
                     onChange={(e) => setFormValues({ ...formValues, skillsRequired: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
                     placeholder="React, Node.js, etc."
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-bold text-slate-700">Educational Qualifications</label>
+                  <label className="font-bold text-slate-900">Educational Qualifications</label>
                   <input
                     type="text"
                     value={formValues.qualifications}
                     onChange={(e) => setFormValues({ ...formValues, qualifications: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
                     placeholder="e.g. B.Tech in Computer Science, MBA, etc."
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-bold text-slate-700">Description <span className="text-red-500">*</span></label>
+                  <label className="font-bold text-slate-900">Description <span className="text-red-500">*</span></label>
                   <textarea
                     rows={3}
                     value={formValues.description}
                     onChange={(e) => setFormValues({ ...formValues, description: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="font-bold text-slate-700">About the Job / Culture</label>
+                  <label className="font-bold text-slate-900">About the Job / Culture</label>
                   <textarea
                     rows={3}
                     value={formValues.aboutJob}
                     onChange={(e) => setFormValues({ ...formValues, aboutJob: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-700"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="font-bold text-slate-700">AI Evaluation Questions (One per line)</label>
-                  <textarea
-                    rows={4}
-                    value={formValues.aiQuestions}
-                    onChange={(e) => setFormValues({ ...formValues, aiQuestions: e.target.value })}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white shadow-sm text-slate-700"
-                    placeholder="What is the difference between props and state?"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-slate-50 shadow-sm transition-all text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
 

@@ -57,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <div className="pointer-events-none absolute bottom-16 -left-10 h-24 w-24 rounded-full bg-violet-500/10 blur-3xl" />
 
         {/* Sidebar Brand Header */}
-        <div className="relative z-10 flex items-center justify-between h-16 px-5 border-b border-white/8 bg-[#0B1222]">
+        <div className="relative z-10 flex items-center justify-between h-16 px-5 bg-[#0B1222]">
           <div className={tw.flexItemsGap3}>
             {/* Styled Logo Icon */}
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-500 shadow-md shadow-blue-500/10 ring-1 ring-white/10">
