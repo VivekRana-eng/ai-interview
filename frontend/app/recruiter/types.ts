@@ -17,7 +17,74 @@ export interface Candidate {
   strengths?: string[];
   missingSkills?: string[];
   summary?: string;
+
+  // ATS Candidate Profile Dashboard extensions
+  phone?: string;
+  currentCompany?: string;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  resumeUrl?: string;
+  resumeText?: string;
+  workExperienceDetails?: Array<{
+    role: string;
+    company: string;
+    duration: string;
+    description: string[];
+  }>;
+  educationDetails?: Array<{
+    degree: string;
+    school: string;
+    year: string;
+    grade?: string;
+  }>;
+  projects?: Array<{
+    title: string;
+    description: string;
+    techStack: string[];
+    link?: string;
+  }>;
+  internships?: Array<{
+    role: string;
+    company: string;
+    duration: string;
+    description: string[];
+  }>;
+  trainingsAndCertifications?: Array<{
+    name: string;
+    issuer: string;
+    date: string;
+    credentialId?: string;
+  }>;
+  interviewPerformance?: {
+    overallScore: number;
+    communicationScore: number;
+    technicalScore: number;
+    problemSolvingScore: number;
+    strengths: string[];
+    weaknesses: string[];
+    performedWell: string[];
+    gotStuck: string[];
+    qaList: Array<{
+      question: string;
+      answer: string;
+      aiEvaluation: string;
+      score: number;
+    }>;
+  };
+  aiEvaluationDetails?: {
+    strengths: string[];
+    gaps: string[];
+    integrityDetails: string;
+    overallRecommendation: string;
+  };
+  hiringTimeline?: Array<{
+    stage: string;
+    date: string;
+    status: 'completed' | 'current' | 'upcoming';
+    comment?: string;
+  }>;
 }
+
 
 export interface LiveCandidate {
   id: string;
