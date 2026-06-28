@@ -1,480 +1,674 @@
 'use client';
-import * as tw from '@/lib/tailwindClasses'
 
-import React, { useState, useEffect } from 'react';
-import { useRecruiterStore } from '../store';
-import { QuestionItem, Job } from '../types';
-import { 
-  Sparkles, Search, Copy, Check, FileDown, RefreshCcw, 
-  HelpCircle, ChevronRight, AlertCircle, BookOpen, Layers, Terminal
-} from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowDown, ArrowUp, Briefcase, Building2, Check, ChevronRight, HelpCircle, MapPin, Pencil, Plus, Sparkles, Trash2, X } from 'lucide-react';
+import { useRecruiterStore } from '../store';
+import { Job } from '../types';
+
+const getStatusStyle = (status: Job['status']) => {
+  switch (status) {
+    case 'Active':
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+    case 'Draft':
+      return 'bg-slate-100 text-slate-700 border-slate-200';
+    case 'Hold':
+      return 'bg-amber-50 text-amber-700 border-amber-200';
+    case 'Closed':
+      return 'bg-rose-50 text-rose-700 border-rose-200';
+    default:
+      return 'bg-slate-100 text-slate-700 border-slate-200';
+  }
+};
+
+const buildQuestionsForJob = (job: Job) => {
+  const department = job.department || 'the team';
+  const experience = job.experience || 'the required experience';
+  const skills = job.skillsRequired?.length ? job.skillsRequired.slice(0, 3).join(', ') : 'the core skills';
+  const descriptionSnippet = job.description ? `${job.description.split('.').slice(0, 2).join('.')}...` : '';
+  const existingQuestions = (job.aiQuestions || []).filter(Boolean);
+
+  const generatedQuestions = [
+    `Which of these skills have you used in production: ${skills}?`,
+    `Describe a project where you handled responsibilities similar to this position.`,
+    `How would you collaborate with other teams while contributing to ${department}?`,
+    `Based on this job posting, how do you approach work requiring ${experience}?`,
+    `How do you manage shifting priorities and deadlines in a fast-paced ${department.toLowerCase()} environment?`,
+    `What experience do you have that matches the core responsibilities described here?`,
+    `How do you prepare to learn new skills quickly when the project demands change?`,
+    `How do you ensure strong communication and alignment with stakeholders during a busy hiring cycle?`
+  ];
+
+  return Array.from(new Set([...existingQuestions, ...generatedQuestions])).slice(0, 8);
+};
+
+const EXTRA_QUESTIONS_POOL: Record<string, string[]> = {
+  ai: [
+    "How do you handle class imbalance in training datasets for deep learning models?",
+    "Explain the concept of gradient vanishing and how architectures like ResNet mitigate it.",
+    "What is your approach to hyperparameter tuning for large-scale transformer models?",
+    "How do you evaluate the bias and fairness of a trained AI model before deployment?",
+    "Describe your experience with distributed training across multiple GPUs/TPUs.",
+    "What are the trade-offs between using a pre-trained model vs. training from scratch?",
+    "How do you optimize deep learning models for edge devices or low-latency inference?",
+    "Explain the attention mechanism in Transformers and how it differs from self-attention.",
+    "How do you handle overfitting in models with a small amount of training data?",
+    "Describe a time when you had to debug a model that was not converging."
+  ],
+  web: [
+    "How do you optimize frontend performance for web applications with large datasets?",
+    "Explain the difference between SQL and NoSQL databases, and when you would choose each.",
+    "How do you implement secure authentication and authorization (e.g., JWT, OAuth) in a distributed system?",
+    "Describe your experience with CI/CD pipelines and automated deployment strategies.",
+    "How do you design RESTful or GraphQL APIs to be resilient and backward-compatible?",
+    "What is your approach to state management in large-scale React applications?",
+    "Explain how web sockets work and when you would use them over HTTP polling.",
+    "How do you ensure web accessibility (WCAG compliance) in your frontend designs?",
+    "Describe your strategy for database migrations in a production environment with zero downtime.",
+    "How do you handle cross-origin resource sharing (CORS) issues in a web application."
+  ],
+  security: [
+    "How do you perform threat modeling for a newly designed cloud-native application?",
+    "Describe your experience with secrets management in Kubernetes (e.g., HashiCorp Vault).",
+    "How do you handle a suspected security breach or data leak in a production environment?",
+    "What is your approach to implementing Zero Trust architecture across enterprise networks?",
+    "Explain how you integrate static and dynamic application security testing (SAST/DAST) into CI/CD.",
+    "What are the primary differences between symmetric and asymmetric encryption, and where is each used?",
+    "How do you protect a web application against SQL injection and Cross-Site Scripting (XSS)?",
+    "Describe your experience with penetration testing tools and methodologies.",
+    "How do you configure and monitor firewalls and intrusion detection systems (IDS)?",
+    "What is the role of IAM policies in securing cloud infrastructure, and how do you enforce least privilege?"
+  ],
+  pm: [
+    "How do you define and track key performance indicators (KPIs) for a newly launched AI feature?",
+    "Describe a situation where you had to say 'no' to an important stakeholder's feature request.",
+    "How do you conduct user research to validate a product hypothesis before engineering begins?",
+    "What is your strategy for managing product debt versus building new feature sets?",
+    "How do you collaborate with engineering teams to translate high-level product vision into technical user stories?",
+    "How do you handle a product launch that did not meet its initial success metrics?",
+    "What methodologies do you use for competitor analysis and market research?",
+    "Describe how you manage and prioritize a product backlog with competing priorities.",
+    "How do you balance short-term business goals with long-term product vision?",
+    "Explain how you gather and analyze qualitative and quantitative feedback from users."
+  ],
+  qa: [
+    "How do you design a test automation framework from scratch for a microservices architecture?",
+    "Describe your approach to load testing and stress testing high-traffic APIs.",
+    "How do you handle flaky tests in your automated CI/CD pipeline?",
+    "What is your strategy for regression testing when major architectural changes are deployed?",
+    "Explain the difference between integration testing and end-to-end testing, and their relative trade-offs.",
+    "How do you write test cases for non-functional requirements like security and usability?",
+    "Describe your experience with bug tracking systems and how you prioritize defect fixes.",
+    "How do you perform exploratory testing, and what value does it add to automated testing?",
+    "What is your approach to testing mobile applications across different devices and OS versions?",
+    "Explain how you collaborate with developers to ensure testability of code early in the lifecycle."
+  ],
+  data: [
+    "How do you design a scalable ETL pipeline to handle streaming data in real-time?",
+    "Explain how you ensure data quality and consistency across a distributed data warehouse.",
+    "What are the key considerations when choosing between batch processing and stream processing?",
+    "How do you optimize slow-running SQL queries on large-scale datasets?",
+    "Describe your experience with data orchestration tools like Apache Airflow or Prefect.",
+    "What is the difference between a data lake and a data warehouse, and when do you use which?",
+    "How do you handle schema evolution in a data pipeline?",
+    "Describe your experience with data storage formats like Parquet or ORC.",
+    "How do you implement data governance and access control in a data platform?",
+    "Explain how you monitor data pipeline health and set up alerting for failures."
+  ],
+  generic: [
+    "What are the most critical performance bottlenecks you typically encounter in your projects?",
+    "How do you approach mentoring junior team members or sharing technical knowledge?",
+    "Describe a time when you had to make an important technical decision with limited information.",
+    "How do you balance technical debt with the need to deliver features quickly?",
+    "What is your preferred workflow for code reviews, and what specific aspects do you focus on?",
+    "How do you handle conflict or differing opinions within a project team?",
+    "Describe a project that failed or did not go as planned. What did you learn from it?",
+    "How do you manage your time and prioritize tasks when working on multiple projects simultaneously?",
+    "What is your approach to learning a new technology or domain quickly?",
+    "How do you ensure effective communication when working in a remote or hybrid team environment?"
+  ]
+};
+
+const getPoolKey = (title: string): string => {
+  const t = title.toLowerCase();
+  if (t.includes('machine learning') || t.includes('ai') || t.includes('ml')) return 'ai';
+  if (t.includes('full stack') || t.includes('web') || t.includes('software') || t.includes('frontend') || t.includes('developer')) return 'web';
+  if (t.includes('security') || t.includes('devsecops')) return 'security';
+  if (t.includes('product manager') || t.includes('pm')) return 'pm';
+  if (t.includes('qa') || t.includes('test')) return 'qa';
+  if (t.includes('data')) return 'data';
+  return 'generic';
+};
 
 export const QuestionBankPanel: React.FC = () => {
-  const { 
-    jobs, 
-    activeQuestionBank, 
-    fetchQuestionBank, 
-    generateQuestions, 
-    regenerateQuestions 
-  } = useRecruiterStore();
+  const { jobs } = useRecruiterStore();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedJobId, setSelectedJobId] = useState('');
+  const [jobQuestions, setJobQuestions] = useState<Record<string, string[]>>({});
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isAddingCustom, setIsAddingCustom] = useState(false);
+  const [customQuestionText, setCustomQuestionText] = useState('');
+  
+  // Edit state
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState('');
 
-  const [selectedJobTitle, setSelectedJobTitle] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [activeCategory, setActiveCategory] = useState<string>('All');
-  const [copiedId, setCopiedId] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const visibleJobs = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    return jobs.filter((job) => {
+      if (!term) return true;
+      return (
+        job.title.toLowerCase().includes(term) ||
+        job.department.toLowerCase().includes(term) ||
+        job.location.toLowerCase().includes(term)
+      );
+    });
+  }, [jobs, searchTerm]);
 
-  // Initialize selected job if list is present
   useEffect(() => {
-    const activeJobs = jobs.filter(j => j.status === 'Active');
-    if (activeJobs.length > 0 && !selectedJobTitle) {
-      setSelectedJobTitle(activeJobs[0].title);
-    }
-  }, [jobs]);
-
-  // Fetch question bank when selected job changes
-  useEffect(() => {
-    if (selectedJobTitle) {
-      setIsLoading(true);
-      fetchQuestionBank(selectedJobTitle).finally(() => {
-        setIsLoading(false);
-      });
-    }
-  }, [selectedJobTitle]);
-
-  const handleGenerate = async () => {
-    if (!selectedJobTitle) return;
-    setIsLoading(true);
-    try {
-      await generateQuestions(selectedJobTitle);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRegenerate = async () => {
-    if (!selectedJobTitle) return;
-    if (window.confirm(`Are you sure you want to regenerate AI screening questions for "${selectedJobTitle}"? This will overwrite the existing bank.`)) {
-      setIsLoading(true);
-      try {
-        await regenerateQuestions(selectedJobTitle);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  const handleCopy = (text: string, index: number) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(index);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
-  // Helper to escape HTML characters for PDF printing
-  const escapeHtml = (text: string) => {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  };
-
-  const handleExportPDF = () => {
-    if (!activeQuestionBank) return;
-
-    const printWindow = window.open('', '_blank', 'width=850,height=900');
-    if (!printWindow) {
-      alert('Please allow popups to export the PDF.');
+    if (!jobs.length) {
+      setSelectedJobId('');
       return;
     }
 
-    const categories = ['Easy', 'Medium', 'Hard', 'Scenario', 'Behavioral'];
-    const questionsByCategory = categories.reduce((acc, cat) => {
-      acc[cat] = activeQuestionBank.questions.filter(q => q.category === cat);
-      return acc;
-    }, {} as Record<string, QuestionItem[]>);
+    const stillExists = jobs.some((job) => job.id === selectedJobId);
+    if (!selectedJobId || !stillExists) {
+      const preferred = jobs.find((job) => job.status === 'Active') ?? jobs[0];
+      setSelectedJobId(preferred.id);
+    }
+  }, [jobs, selectedJobId]);
 
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Interview Question Bank - ${activeQuestionBank.jobTitle}</title>
-        <style>
-          @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
-          body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #1e293b;
-            line-height: 1.6;
-            margin: 40px;
-          }
-          .header {
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-          }
-          .header-left {
-            flex: 1;
-          }
-          .logo {
-            font-family: 'Outfit', sans-serif;
-            font-size: 22px;
-            font-weight: 800;
-            color: #2563eb;
-            margin-bottom: 6px;
-            letter-spacing: -0.02em;
-          }
-          .title {
-            font-size: 20px;
-            font-weight: 800;
-            margin: 0;
-            color: #0f172a;
-            letter-spacing: -0.01em;
-          }
-          .meta {
-            font-size: 11px;
-            color: #64748b;
-            font-weight: 600;
-            margin-top: 6px;
-          }
-          .category-section {
-            margin-bottom: 30px;
-            page-break-inside: avoid;
-          }
-          .category-title {
-            font-size: 13px;
-            font-weight: 800;
-            color: #2563eb;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            border-bottom: 1.5px solid #e2e8f0;
-            padding-bottom: 6px;
-            margin-bottom: 14px;
-          }
-          .question-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-          }
-          .question-item {
-            padding: 12px 0;
-            border-bottom: 1px solid #f8fafc;
-            font-size: 13px;
-            font-weight: 650;
-            display: flex;
-            gap: 12px;
-          }
-          .question-num {
-            font-weight: 800;
-            color: #94a3b8;
-            min-width: 22px;
-          }
-          .question-text {
-            color: #334155;
-            flex: 1;
-          }
-          @media print {
-            body {
-              margin: 20px;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div class="header-left">
-            <div class="logo">SelectAI</div>
-            <h1 class="title">Interview Question Bank</h1>
-            <div class="meta">Role: ${activeQuestionBank.jobTitle} &nbsp;|&nbsp; Total Questions: ${activeQuestionBank.questions.length} &nbsp;|&nbsp; Generated: ${new Date(activeQuestionBank.createdAt || Date.now()).toLocaleDateString()}</div>
-          </div>
-        </div>
+  const selectedJob = useMemo(
+    () => jobs.find((job) => job.id === selectedJobId) ?? null,
+    [jobs, selectedJobId]
+  );
 
-        ${categories.map(cat => {
-          const list = questionsByCategory[cat] || [];
-          if (list.length === 0) return '';
-          return `
-            <div class="category-section">
-              <div class="category-title">${cat === 'Scenario' ? 'Scenario-Based' : cat} Questions (${list.length})</div>
-              <ul class="question-list">
-                ${list.map((q, idx) => `
-                  <li class="question-item">
-                    <span class="question-num">${idx + 1}.</span>
-                    <span class="question-text">${escapeHtml(q.text)}</span>
-                  </li>
-                `).join('')}
-              </ul>
-            </div>
-          `;
-        }).join('')}
-        
-        <script>
-          window.onload = function() {
-            window.print();
-          };
-        </script>
-      </body>
-      </html>
-    `;
+  const questions = useMemo(() => {
+    if (!selectedJob) return [];
+    if (!jobQuestions[selectedJob.id]) {
+      return buildQuestionsForJob(selectedJob);
+    }
+    return jobQuestions[selectedJob.id];
+  }, [selectedJob, jobQuestions]);
 
-    printWindow.document.open();
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
+  const handleGenerateMore = () => {
+    if (isGenerating || !selectedJob) return;
+
+    setIsGenerating(true);
+
+    // Simulate AI generation delay for realistic, premium UX
+    setTimeout(() => {
+      const poolKey = getPoolKey(selectedJob.title);
+      const pool = EXTRA_QUESTIONS_POOL[poolKey];
+      const genericPool = EXTRA_QUESTIONS_POOL.generic;
+
+      const current = jobQuestions[selectedJob.id] || buildQuestionsForJob(selectedJob);
+
+      // Find questions from the pool that are not already in the list
+      let newQs = pool.filter(q => !current.includes(q));
+      
+      // If we don't have enough in the specific pool, fill with generic questions
+      if (newQs.length < 5) {
+        const extraGeneric = genericPool.filter(q => !current.includes(q) && !newQs.includes(q));
+        newQs = [...newQs, ...extraGeneric];
+      }
+
+      // Take exactly 5
+      const selectedNewQs = newQs.slice(0, 5);
+
+      setJobQuestions(prev => {
+        return {
+          ...prev,
+          [selectedJob.id]: [...current, ...selectedNewQs]
+        };
+      });
+
+      setIsGenerating(false);
+    }, 1200);
   };
 
-  // Categories mapping
-  const CATEGORIES = ['All', 'Easy', 'Medium', 'Hard', 'Scenario', 'Behavioral'];
+  const handleAddCustomQuestion = () => {
+    if (!customQuestionText.trim() || !selectedJob) return;
 
-  const getCategoryColor = (cat: QuestionItem['category']) => {
-    switch (cat) {
-      case 'Easy': return 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-450 dark:border-emerald-900/60';
-      case 'Medium': return 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-950/30 dark:text-amber-450 dark:border-amber-900/60';
-      case 'Hard': return 'bg-rose-50 text-rose-600 border-rose-100 dark:bg-rose-950/30 dark:text-rose-450 dark:border-rose-900/60';
-      case 'Scenario': return 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-950/30 dark:text-indigo-450 dark:border-indigo-900/60';
-      default: return 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-950/30 dark:text-purple-450 dark:border-purple-900/60';
+    const newQuestion = customQuestionText.trim();
+    setJobQuestions(prev => {
+      const current = prev[selectedJob.id] || buildQuestionsForJob(selectedJob);
+      return {
+        ...prev,
+        [selectedJob.id]: [...current, newQuestion]
+      };
+    });
+
+    setCustomQuestionText('');
+    setIsAddingCustom(false);
+  };
+
+  const handleDeleteQuestion = (indexToDelete: number) => {
+    if (!selectedJob) return;
+
+    setJobQuestions(prev => {
+      const current = prev[selectedJob.id] || buildQuestionsForJob(selectedJob);
+      return {
+        ...prev,
+        [selectedJob.id]: current.filter((_, index) => index !== indexToDelete)
+      };
+    });
+
+    // Reset editing index if the currently edited item was deleted
+    if (editingIndex === indexToDelete) {
+      setEditingIndex(null);
+    } else if (editingIndex !== null && editingIndex > indexToDelete) {
+      setEditingIndex(editingIndex - 1);
     }
   };
 
-  // Filter questions list
-  const filteredQuestions = activeQuestionBank
-    ? activeQuestionBank.questions.filter(q => {
-        const matchesCategory = activeCategory === 'All' || q.category === activeCategory;
-        const matchesSearch = q.text.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesCategory && matchesSearch;
-      })
-    : [];
+  const handleSaveEdit = (indexToEdit: number) => {
+    if (!editingText.trim() || !selectedJob) return;
 
-  const activeJobs = jobs.filter(j => j.status === 'Active');
+    setJobQuestions(prev => {
+      const current = prev[selectedJob.id] || buildQuestionsForJob(selectedJob);
+      return {
+        ...prev,
+        [selectedJob.id]: current.map((q, index) => index === indexToEdit ? editingText.trim() : q)
+      };
+    });
+
+    setEditingIndex(null);
+    setEditingText('');
+  };
+
+  const handleMoveUp = (index: number) => {
+    if (index === 0 || !selectedJob) return;
+
+    setJobQuestions(prev => {
+      const current = [...(prev[selectedJob.id] || buildQuestionsForJob(selectedJob))];
+      const temp = current[index];
+      current[index] = current[index - 1];
+      current[index - 1] = temp;
+      return {
+        ...prev,
+        [selectedJob.id]: current
+      };
+    });
+
+    if (editingIndex === index) {
+      setEditingIndex(index - 1);
+    } else if (editingIndex === index - 1) {
+      setEditingIndex(index);
+    }
+  };
+
+  const handleMoveDown = (index: number) => {
+    if (!selectedJob) return;
+
+    setJobQuestions(prev => {
+      const current = [...(prev[selectedJob.id] || buildQuestionsForJob(selectedJob))];
+      if (index === current.length - 1) return prev;
+      
+      const temp = current[index];
+      current[index] = current[index + 1];
+      current[index + 1] = temp;
+      return {
+        ...prev,
+        [selectedJob.id]: current
+      };
+    });
+
+    if (editingIndex === index) {
+      setEditingIndex(index + 1);
+    } else if (editingIndex === index + 1) {
+      setEditingIndex(index);
+    }
+  };
 
   return (
     <div className="space-y-6">
-      
-      {/* 1. Header Grid */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-            <BookOpen className="w-5.5 h-5.5 text-blue-500" />
-            <span>AI Question Bank</span>
-          </h2>
-          <p className="text-xs text-slate-400 font-semibold mt-1">
-            Instantly generate structured technical, scenario-based, and behavioral interview questions via Google Gemini API.
-          </p>
-        </div>
+      <div className="flex flex-col gap-2">
+        <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+          Question Bank
+        </h2>
+        <p className="text-sm text-slate-500 font-medium">
+          Select a job to view a clean AI-generated set of interview questions.
+        </p>
       </div>
 
-      {/* 2. Selection & Generating Controls Card */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100/80 dark:border-slate-800 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-stretch md:items-center gap-4">
-        
-        {/* Dropdown Job Select */}
-        <div className="flex-1 flex flex-col gap-1.5">
-          <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider pl-0.5">
-            Select Active Job Role
-          </label>
-          <select
-            value={selectedJobTitle}
-            onChange={(e) => setSelectedJobTitle(e.target.value)}
-            className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50 dark:bg-slate-950 dark:text-slate-250 font-bold text-xs"
-          >
-            {activeJobs.length > 0 ? (
-              activeJobs.map(job => (
-                <option key={job.id} value={job.title}>
-                  {job.title} ({job.department})
-                </option>
-              ))
-            ) : (
-              <option value="">No Active Job Openings</option>
-            )}
-          </select>
-        </div>
-
-        {/* Generate / Regenerate Controls */}
-        <div className="flex items-end gap-3 mt-auto">
-          {activeQuestionBank ? (
-            <>
-              <button
-                onClick={handleRegenerate}
-                disabled={isLoading || !selectedJobTitle}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800 transition-all text-xs font-bold text-slate-650 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 shadow-sm bg-white dark:bg-slate-900 active:scale-[0.98]"
-              >
-                <RefreshCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-                <span>Regenerate AI</span>
-              </button>
-              <button
-                onClick={handleExportPDF}
-                disabled={isLoading || !selectedJobTitle}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all text-xs font-bold shadow-md hover:shadow-lg active:scale-[0.98]"
-              >
-                <FileDown className={tw.iconMd} />
-                <span>Export PDF</span>
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={handleGenerate}
-              disabled={isLoading || !selectedJobTitle}
-              className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-all text-xs font-bold shadow-md hover:shadow-lg active:scale-[0.98]"
-            >
-              <Sparkles className="w-4 h-4 fill-white/20" />
-              <span>Generate Questions</span>
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* 3. Generating Loader */}
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="p-12 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center text-center shadow-sm"
-          >
-            <div className="relative mb-5 flex items-center justify-center">
-              <div className="w-12 h-12 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin" />
-              <Sparkles className="w-5 h-5 text-blue-500 absolute animate-pulse" />
+      <div className="grid grid-cols-1 xl:grid-cols-[340px_minmax(0,1fr)] gap-6 items-start h-[calc(100vh-210px)] min-h-[680px] overflow-hidden">
+        <div className="rounded-[24px] border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.05)] p-4 md:p-5 h-full min-h-0 flex flex-col">
+          <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Briefcase className="w-5 h-5" />
             </div>
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">Generating Screening Guidelines...</h4>
-            <p className="text-xs text-slate-450 dark:text-slate-400 mt-1.5 max-w-sm leading-relaxed">
-              Google Gemini is modeling 10 Easy, 10 Medium, 10 Hard, 5 Scenario, and 5 Behavioral questions tailored for the "{selectedJobTitle}" candidate pipeline.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* 4. Filter & Display Panel */}
-      {!isLoading && activeQuestionBank && (
-        <div className="space-y-5">
-          
-          {/* Search and Category Filter Row */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100/85 dark:border-slate-800 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            
-            {/* Tabs for Category selection */}
-            <div className="flex bg-slate-55 dark:bg-slate-950 p-0.5 rounded-xl border border-slate-150 dark:border-slate-800 text-[11px] font-bold text-slate-500 flex-wrap gap-0.5">
-              {CATEGORIES.map(cat => {
-                const count = cat === 'All' 
-                  ? activeQuestionBank.questions.length
-                  : activeQuestionBank.questions.filter(q => q.category === cat).length;
-                
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
-                    className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 ${
-                      activeCategory === cat 
-                        ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm' 
-                        : 'hover:text-slate-850 dark:hover:text-slate-350'
-                    }`}
-                  >
-                    <span>{cat === 'Scenario' ? 'Scenario-Based' : cat}</span>
-                    <span className={`text-[9px] px-1 rounded ${
-                      activeCategory === cat ? 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400' : 'bg-slate-100 dark:bg-slate-900 text-slate-450'
-                    }`}>
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
+            <div>
+              <h3 className="text-sm font-extrabold text-slate-900">Jobs</h3>
+              <p className="text-xs text-slate-500 font-medium">
+                Click any job to load its question set.
+              </p>
             </div>
-
-            {/* Search Input */}
-            <div className="relative min-w-[240px]">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-450 dark:text-slate-500" />
-              <input 
-                type="text"
-                placeholder="Search generated questions..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-xs border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50/50 focus:bg-white dark:bg-slate-950 dark:text-slate-250"
-              />
-            </div>
-
           </div>
 
-          {/* Questions List Grid */}
-          <div className="grid grid-cols-1 gap-4">
-            {filteredQuestions.length > 0 ? (
-              filteredQuestions.map((q, idx) => {
-                const globalIndex = activeQuestionBank.questions.findIndex(item => item.text === q.text);
-                const isCopied = copiedId === globalIndex;
+          <div className="mt-4">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search job title, department, location"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
+            />
+          </div>
 
+          <div className="mt-4 space-y-3 flex-1 min-h-0 overflow-y-auto pr-1">
+            {visibleJobs.length > 0 ? (
+              visibleJobs.map((job) => {
+                const isSelected = job.id === selectedJobId;
                 return (
-                  <div 
-                    key={globalIndex}
-                    className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100/80 dark:border-slate-850 shadow-[0_2px_12px_rgba(0,0,0,0.015)] hover:shadow-md transition-all flex justify-between items-start gap-4"
+                  <button
+                    key={job.id}
+                    type="button"
+                    onClick={() => setSelectedJobId(job.id)}
+                    className={`w-full text-left rounded-2xl border p-4 transition-all ${
+                      isSelected
+                        ? 'border-blue-300 bg-blue-50/60 shadow-[0_8px_20px_rgba(37,99,235,0.08)]'
+                        : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-[0_8px_20px_rgba(15,23,42,0.04)]'
+                    }`}
                   >
-                    <div className="space-y-3 flex-1 min-w-0">
-                      <div className={tw.flexItemsGap2}>
-                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-550 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 px-2 py-0.5 rounded">
-                          Question #{globalIndex + 1}
-                        </span>
-                        <span className={`text-[9px] font-extrabold uppercase tracking-wider border px-2 py-0.5 rounded-full ${getCategoryColor(q.category)}`}>
-                          {q.category === 'Scenario' ? 'Scenario-Based' : q.category}
-                        </span>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${getStatusStyle(job.status)}`}>
+                            {job.status}
+                          </span>
+                          <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                            {job.department}
+                          </span>
+                        </div>
+                        <div className="mt-2 text-sm font-extrabold text-slate-900 leading-snug">
+                          {job.title}
+                        </div>
+                        <div className="mt-2 flex items-center gap-3 text-xs font-medium text-slate-500">
+                          <span className="inline-flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5" />
+                            {job.location || 'Location not set'}
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-xs font-bold text-slate-750 dark:text-slate-200 leading-relaxed">
-                        {q.text}
-                      </p>
+                      <ChevronRight className={`w-4 h-4 shrink-0 mt-1 ${isSelected ? 'text-blue-600' : 'text-slate-300'}`} />
                     </div>
-
-                    <button
-                      onClick={() => handleCopy(q.text, globalIndex)}
-                      className={`p-2 rounded-xl border border-slate-150 dark:border-slate-800 shadow-sm flex items-center justify-center transition-all ${
-                        isCopied 
-                          ? 'bg-emerald-50 border-emerald-200 text-emerald-600 dark:bg-emerald-950/30 dark:border-emerald-900' 
-                          : 'bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-850 text-slate-450 hover:text-slate-850'
-                      }`}
-                      title="Copy question text to clipboard"
-                    >
-                      {isCopied ? <Check className={tw.iconLg} /> : <Copy className={tw.iconLg} />}
-                    </button>
-                  </div>
+                  </button>
                 );
               })
             ) : (
-              <div className="py-16 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center text-center p-8">
-                <HelpCircle className="w-10 h-10 text-slate-300 dark:text-slate-700 mb-2" />
-                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-250">No questions match filters</h4>
-                <p className="text-xs text-slate-400 mt-1 max-w-[280px]">
-                  Try clearing your search query or selecting a different difficulty filter category tab.
-                </p>
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center">
+                <HelpCircle className="w-10 h-10 text-slate-300 mx-auto" />
+                <p className="mt-3 text-sm font-semibold text-slate-700">No jobs match your search</p>
+                <p className="mt-1 text-xs text-slate-500">Clear the search to see all available jobs.</p>
               </div>
             )}
           </div>
-
         </div>
-      )}
 
-      {/* 5. Missing / Closed Job State Fallback */}
-      {!isLoading && !activeQuestionBank && (
-        <div className="py-20 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center text-center p-8 shadow-sm">
-          <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-2xl border border-blue-100 dark:border-blue-900/60 text-blue-600 dark:text-blue-400 mb-4 animate-bounce">
-            <Sparkles className="w-8 h-8 fill-blue-100 dark:fill-none" />
-          </div>
-          <h4 className="text-sm font-bold text-slate-850 dark:text-slate-200">
-            Generate Interview Guidelines
-          </h4>
-          <p className="text-xs text-slate-400 dark:text-slate-400 mt-1 max-w-sm leading-relaxed font-semibold">
-            No questions have been modeled for "{selectedJobTitle}" yet. Select generate above to automatically compile standard, scenario-based and behavioral categories.
-          </p>
-          <button
-            onClick={handleGenerate}
-            disabled={!selectedJobTitle}
-            className="flex items-center gap-1.5 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs mt-6 transition-all shadow-md hover:shadow-lg active:scale-[0.98]"
-          >
-            <Sparkles className="w-4 h-4 fill-white/10" />
-            <span>Generate 40 Questions</span>
-          </button>
+        <div className="rounded-[24px] border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.05)] p-5 md:p-6 h-full min-h-0 overflow-hidden">
+          <AnimatePresence mode="wait">
+            {selectedJob ? (
+              <motion.div
+                key={selectedJob.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: 0.22 }}
+                className="h-full min-h-0 flex flex-col overflow-hidden"
+              >
+                <div className="flex flex-col gap-5 border-b border-slate-100 pb-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${getStatusStyle(selectedJob.status)}`}>
+                          {selectedJob.status}
+                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
+                          Question Bank
+                        </span>
+                      </div>
+                      <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">
+                        {selectedJob.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-slate-500 font-medium max-w-2xl">
+                        {selectedJob.description || `AI-generated screening questions tailored for ${selectedJob.title}.`}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setIsAddingCustom(prev => !prev)}
+                        className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 active:scale-95 text-slate-700 px-4 py-2.5 md:px-5 md:py-3 shadow-sm transition-all duration-200 shrink-0"
+                      >
+                        <Plus className="w-4 h-4 text-slate-500" />
+                        <span className="text-xs md:text-sm font-bold">Add Question</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleGenerateMore()}
+                        disabled={isGenerating}
+                        className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white px-4 py-2.5 md:px-5 md:py-3 shadow-[0_4px_12px_rgba(37,99,235,0.2)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.3)] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed shrink-0"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <span className="text-xs md:text-sm font-bold">Generating...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-4 h-4 text-blue-200 animate-pulse" />
+                            <span className="text-xs md:text-sm font-bold">Generate Q</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Department</div>
+                      <div className="mt-1 text-sm font-bold text-slate-900 inline-flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-slate-400" />
+                        {selectedJob.department}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Location</div>
+                      <div className="mt-1 text-sm font-bold text-slate-900 inline-flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-slate-400" />
+                        {selectedJob.location || 'Not specified'}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                      <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Experience</div>
+                      <div className="mt-1 text-sm font-bold text-slate-900 inline-flex items-center gap-2">
+                        <Briefcase className="w-4 h-4 text-slate-400" />
+                        {selectedJob.experience || 'Not specified'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex-1 pt-5 min-h-0 flex flex-col overflow-hidden">
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <div>
+                      <h4 className="text-sm font-extrabold text-slate-900">AI Generated Questions</h4>
+                      <p className="text-xs text-slate-500 font-medium">
+                        Top questions for candidate screening.
+                      </p>
+                    </div>
+                    <div className="text-xs font-bold text-slate-500">
+                      {questions.length}/{questions.length} displayed
+                    </div>
+                  </div>
+
+                  {/* Inline Add Custom Question Form */}
+                  <AnimatePresence>
+                    {isAddingCustom && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+                        animate={{ height: 'auto', opacity: 1, marginBottom: 16 }}
+                        exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+                        className="overflow-hidden border border-slate-200 rounded-2xl p-4 bg-slate-50/50 flex flex-col sm:flex-row gap-3 items-end"
+                      >
+                        <div className="flex-1 w-full">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Write your custom question</label>
+                          <input
+                            type="text"
+                            placeholder="Type your question here..."
+                            value={customQuestionText}
+                            onChange={(e) => setCustomQuestionText(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleAddCustomQuestion();
+                            }}
+                            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
+                            autoFocus
+                          />
+                        </div>
+                        <div className="flex gap-2 w-full sm:w-auto justify-end">
+                          <button
+                            type="button"
+                            onClick={() => setIsAddingCustom(false)}
+                            className="rounded-xl border border-slate-200 bg-white hover:bg-slate-100 px-4 py-2.5 text-xs font-bold text-slate-600 transition-all active:scale-95"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleAddCustomQuestion}
+                            className="rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2.5 text-xs font-bold text-white transition-all active:scale-95 shadow-sm"
+                          >
+                            Add
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <div className="flex flex-col gap-2.5 flex-1 min-h-0 overflow-y-auto pr-1 hide-scrollbar">
+                    <AnimatePresence initial={false}>
+                      {questions.map((question, index) => {
+                        const isEditing = editingIndex === index;
+                        return (
+                          <motion.div
+                            key={`${selectedJob.id}-${question}`}
+                            layout
+                            initial={{ opacity: 0, y: 12 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.8 }}
+                            className="group flex items-start justify-between gap-2 p-2 -mx-2 rounded-xl hover:bg-slate-50 transition-colors"
+                          >
+                            <span className="text-sm font-bold text-slate-400 shrink-0 mt-1.5">{index + 1}.</span>
+                            
+                            {isEditing ? (
+                              <div className="flex-1 flex gap-2 items-center">
+                                <input
+                                  type="text"
+                                  value={editingText}
+                                  onChange={(e) => setEditingText(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleSaveEdit(index);
+                                    if (e.key === 'Escape') setEditingIndex(null);
+                                  }}
+                                  className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
+                                  autoFocus
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleSaveEdit(index)}
+                                  className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 flex items-center justify-center transition-colors shrink-0"
+                                  title="Save"
+                                >
+                                  <Check className="w-4 h-4" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingIndex(null)}
+                                  className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-colors shrink-0"
+                                  title="Cancel"
+                                >
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ) : (
+                              <>
+                                <p className="min-w-0 flex-1 text-sm font-semibold text-slate-800 leading-6 mt-1.5">
+                                  {question}
+                                </p>
+                                
+                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 bg-white shadow-sm border border-slate-100 rounded-lg p-0.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMoveUp(index)}
+                                    disabled={index === 0}
+                                    className="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                                    title="Move Up"
+                                  >
+                                    <ArrowUp className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleMoveDown(index)}
+                                    disabled={index === questions.length - 1}
+                                    className="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                                    title="Move Down"
+                                  >
+                                    <ArrowDown className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditingIndex(index);
+                                      setEditingText(question);
+                                    }}
+                                    className="w-7 h-7 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center transition-all"
+                                    title="Edit"
+                                  >
+                                    <Pencil className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteQuestion(index)}
+                                    className="w-7 h-7 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-all"
+                                    title="Delete"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </AnimatePresence>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="h-full min-h-0 flex items-center justify-center text-center rounded-[24px] border border-dashed border-slate-200 bg-slate-50/60 px-8"
+              >
+                <div className="max-w-md">
+                  <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
+                    <Sparkles className="w-7 h-7" />
+                  </div>
+                  <h3 className="mt-5 text-xl font-extrabold text-slate-900">Select a job to begin</h3>
+                  <p className="mt-2 text-sm text-slate-500 font-medium">
+                    Job select karte hi right side par AI-generated screening questions show ho jayengi.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      )}
-
+      </div>
     </div>
   );
 };

@@ -355,7 +355,7 @@ export const JobsPanel: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 lg:space-y-8 animate-in fade-in duration-500 relative">
+    <div className="space-y-6 lg:space-y-8 animate-in fade-in duration-500 relative overflow-x-hidden">
       <div className={`space-y-6 lg:space-y-8 transition-all duration-300 ${selectedJob ? 'pointer-events-none select-none opacity-60' : ''}`}>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">
@@ -477,13 +477,6 @@ export const JobsPanel: React.FC = () => {
                     : ''
                     }`}
                 >
-                  <div className="absolute top-0 left-0 w-1.5 h-full rounded-l-[15px]" style={{
-                    backgroundColor:
-                        job.status === 'Active' ? '#3B82F6' :
-                        job.status === 'Hold' ? '#F59E0B' :
-                          job.status === 'Closed' ? '#EF4444' : '#94A3B8'
-                  }} />
-
                   {/* Card Actions Header */}
                   <div className="flex items-start justify-between">
                     <div className="space-y-1 pl-1">

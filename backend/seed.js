@@ -176,7 +176,7 @@ const MOCK_JOBS = [
     aboutJob: 'Ensuring the highest quality for our AI-driven platforms.',
     skillsRequired: ['Selenium', 'Jest', 'Cypress'],
     experience: '3+ years',
-    salaryRange: '₹12,00,000 - ₹16,00,000',
+    salaryRange: '₹12,0,000 - ₹16,0,000',
     location: 'Pune (Remote)',
     employmentType: 'Full-time',
     aiQuestions: []
