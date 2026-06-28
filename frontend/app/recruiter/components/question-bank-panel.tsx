@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowDown, ArrowUp, Briefcase, Building2, Check, ChevronRight, HelpCircle, MapPin, Pencil, Plus, Sparkles, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Briefcase, Building2, Check, ChevronRight, HelpCircle, MapPin, MoreVertical, Pencil, Plus, RotateCcw, Sparkles, Trash2, X } from 'lucide-react';
 import { useRecruiterStore } from '../store';
 import { Job } from '../types';
 
@@ -140,15 +140,26 @@ const getPoolKey = (title: string): string => {
   return 'generic';
 };
 
+interface QuestionObject {
+  text: string;
+  origin: 'ai' | 'manual';
+}
+
 export const QuestionBankPanel: React.FC = () => {
   const { jobs } = useRecruiterStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedJobId, setSelectedJobId] = useState('');
-  const [jobQuestions, setJobQuestions] = useState<Record<string, string[]>>({});
+  const [jobQuestions, setJobQuestions] = useState<Record<string, QuestionObject[]>>({});
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAddingCustom, setIsAddingCustom] = useState(false);
   const [customQuestionText, setCustomQuestionText] = useState('');
   
+  // Header Actions 3-dot dropdown menu state
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Global edit mode toggle
+  const [isEditMode, setIsEditMode] = useState(false);
+
   // Edit state
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingText, setEditingText] = useState('');
@@ -186,10 +197,32 @@ export const QuestionBankPanel: React.FC = () => {
   const questions = useMemo(() => {
     if (!selectedJob) return [];
     if (!jobQuestions[selectedJob.id]) {
-      return buildQuestionsForJob(selectedJob);
+      return buildQuestionsForJob(selectedJob).map(text => ({ text, origin: 'ai' as const }));
     }
     return jobQuestions[selectedJob.id];
   }, [selectedJob, jobQuestions]);
+
+  useEffect(() => {
+    // Debug logs to help identify why UI might be empty — remove in production
+    // eslint-disable-next-line no-console
+    console.log('QuestionBank selectedJob:', selectedJob);
+    // eslint-disable-next-line no-console
+    console.log('QuestionBank questions (count):', questions.length, questions);
+  }, [selectedJob, questions]);
+
+  // Click-outside dropdown handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.header-menu-container')) {
+        setIsMenuOpen(false);
+      }
+    };
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
 
   const handleGenerateMore = () => {
     if (isGenerating || !selectedJob) return;
@@ -202,19 +235,20 @@ export const QuestionBankPanel: React.FC = () => {
       const pool = EXTRA_QUESTIONS_POOL[poolKey];
       const genericPool = EXTRA_QUESTIONS_POOL.generic;
 
-      const current = jobQuestions[selectedJob.id] || buildQuestionsForJob(selectedJob);
+      const current = jobQuestions[selectedJob.id] || buildQuestionsForJob(selectedJob).map(text => ({ text, origin: 'ai' as const }));
+      const currentTexts = current.map(q => q.text);
 
       // Find questions from the pool that are not already in the list
-      let newQs = pool.filter(q => !current.includes(q));
+      let newQs = pool.filter(q => !currentTexts.includes(q));
       
       // If we don't have enough in the specific pool, fill with generic questions
       if (newQs.length < 5) {
-        const extraGeneric = genericPool.filter(q => !current.includes(q) && !newQs.includes(q));
+        const extraGeneric = genericPool.filter(q => !currentTexts.includes(q) && !newQs.includes(q));
         newQs = [...newQs, ...extraGeneric];
       }
 
       // Take exactly 5
-      const selectedNewQs = newQs.slice(0, 5);
+      const selectedNewQs = newQs.slice(0, 5).map(text => ({ text, origin: 'ai' as const }));
 
       setJobQuestions(prev => {
         return {
@@ -227,12 +261,45 @@ export const QuestionBankPanel: React.FC = () => {
     }, 1200);
   };
 
+  const handleRegenerate = () => {
+    if (isGenerating || !selectedJob) return;
+
+    setIsGenerating(true);
+
+    // Generate a randomized fresh set of AI questions from the pool while preserving manual questions
+    setTimeout(() => {
+      setJobQuestions(prev => {
+        const current = prev[selectedJob.id] || buildQuestionsForJob(selectedJob).map(text => ({ text, origin: 'ai' as const }));
+        
+        // Preserve manual questions
+        const manualQs = current.filter(q => q.origin === 'manual');
+
+        // Fetch category & generic pools and combine them
+        const poolKey = getPoolKey(selectedJob.title);
+        const categoryPool = EXTRA_QUESTIONS_POOL[poolKey] || [];
+        const genericPool = EXTRA_QUESTIONS_POOL.generic || [];
+        const combinedPool = Array.from(new Set([...categoryPool, ...genericPool]));
+
+        // Shuffle the pool and select 8 questions
+        const shuffled = [...combinedPool].sort(() => 0.5 - Math.random());
+        const newAiQs = shuffled.slice(0, 8).map(text => ({ text, origin: 'ai' as const }));
+
+        return {
+          ...prev,
+          [selectedJob.id]: [...newAiQs, ...manualQs]
+        };
+      });
+      setIsGenerating(false);
+      setEditingIndex(null);
+    }, 1000);
+  };
+
   const handleAddCustomQuestion = () => {
     if (!customQuestionText.trim() || !selectedJob) return;
 
-    const newQuestion = customQuestionText.trim();
+    const newQuestion = { text: customQuestionText.trim(), origin: 'manual' as const };
     setJobQuestions(prev => {
-      const current = prev[selectedJob.id] || buildQuestionsForJob(selectedJob);
+      const current = prev[selectedJob.id] || buildQuestionsForJob(selectedJob).map(text => ({ text, origin: 'ai' as const }));
       return {
         ...prev,
         [selectedJob.id]: [...current, newQuestion]
@@ -247,7 +314,7 @@ export const QuestionBankPanel: React.FC = () => {
     if (!selectedJob) return;
 
     setJobQuestions(prev => {
-      const current = prev[selectedJob.id] || buildQuestionsForJob(selectedJob);
+      const current = prev[selectedJob.id] || buildQuestionsForJob(selectedJob).map(text => ({ text, origin: 'ai' as const }));
       return {
         ...prev,
         [selectedJob.id]: current.filter((_, index) => index !== indexToDelete)
@@ -266,10 +333,10 @@ export const QuestionBankPanel: React.FC = () => {
     if (!editingText.trim() || !selectedJob) return;
 
     setJobQuestions(prev => {
-      const current = prev[selectedJob.id] || buildQuestionsForJob(selectedJob);
+      const current = prev[selectedJob.id] || buildQuestionsForJob(selectedJob).map(text => ({ text, origin: 'ai' as const }));
       return {
         ...prev,
-        [selectedJob.id]: current.map((q, index) => index === indexToEdit ? editingText.trim() : q)
+        [selectedJob.id]: current.map((q, index) => index === indexToEdit ? { ...q, text: editingText.trim() } : q)
       };
     });
 
@@ -281,7 +348,7 @@ export const QuestionBankPanel: React.FC = () => {
     if (index === 0 || !selectedJob) return;
 
     setJobQuestions(prev => {
-      const current = [...(prev[selectedJob.id] || buildQuestionsForJob(selectedJob))];
+      const current = [...(prev[selectedJob.id] || buildQuestionsForJob(selectedJob).map(text => ({ text, origin: 'ai' as const })))];
       const temp = current[index];
       current[index] = current[index - 1];
       current[index - 1] = temp;
@@ -302,7 +369,7 @@ export const QuestionBankPanel: React.FC = () => {
     if (!selectedJob) return;
 
     setJobQuestions(prev => {
-      const current = [...(prev[selectedJob.id] || buildQuestionsForJob(selectedJob))];
+      const current = [...(prev[selectedJob.id] || buildQuestionsForJob(selectedJob).map(text => ({ text, origin: 'ai' as const })))];
       if (index === current.length - 1) return prev;
       
       const temp = current[index];
@@ -436,34 +503,98 @@ export const QuestionBankPanel: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3 shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => setIsAddingCustom(prev => !prev)}
-                        className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 active:scale-95 text-slate-700 px-4 py-2.5 md:px-5 md:py-3 shadow-sm transition-all duration-200 shrink-0"
-                      >
-                        <Plus className="w-4 h-4 text-slate-500" />
-                        <span className="text-xs md:text-sm font-bold">Add Question</span>
-                      </button>
+                    {/* Ellipsis actions menu */}
+                    <div className="relative header-menu-container shrink-0 flex items-center gap-3">
+                      {isGenerating && (
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-650 animate-pulse">
+                          <div className="w-3.5 h-3.5 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
+                          <span className="text-[10px] font-extrabold uppercase tracking-wider">Generating...</span>
+                        </div>
+                      )}
 
                       <button
                         type="button"
-                        onClick={() => handleGenerateMore()}
+                        onClick={() => setIsMenuOpen(prev => !prev)}
                         disabled={isGenerating}
-                        className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-95 text-white px-4 py-2.5 md:px-5 md:py-3 shadow-[0_4px_12px_rgba(37,99,235,0.2)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.3)] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed shrink-0"
+                        className="w-10 h-10 md:w-12 md:h-12 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-95 text-slate-600 disabled:opacity-50"
                       >
-                        {isGenerating ? (
-                          <>
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            <span className="text-xs md:text-sm font-bold">Generating...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-4 h-4 text-blue-200 animate-pulse" />
-                            <span className="text-xs md:text-sm font-bold">Generate Q</span>
-                          </>
-                        )}
+                        <MoreVertical className="w-5 h-5" />
                       </button>
+
+                      <AnimatePresence>
+                        {isMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-[0_12px_40px_rgba(15,23,42,0.15)] overflow-hidden z-[60] py-1.5"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsAddingCustom(prev => !prev);
+                                setIsMenuOpen(false);
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors text-left"
+                            >
+                              <Plus className="w-4 h-4 text-slate-500" />
+                              <span>Add Question</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsEditMode(prev => !prev);
+                                setEditingIndex(null);
+                                setIsMenuOpen(false);
+                              }}
+                              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors text-left ${
+                                isEditMode 
+                                  ? 'text-blue-650 bg-blue-50/50 hover:bg-blue-50' 
+                                  : 'text-slate-700 hover:bg-slate-50'
+                              }`}
+                            >
+                              {isEditMode ? (
+                                <>
+                                  <Check className="w-4 h-4 text-blue-600" />
+                                  <span>Done Editing</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Pencil className="w-4 h-4 text-slate-500" />
+                                  <span>Edit Questions</span>
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleGenerateMore();
+                                setIsMenuOpen(false);
+                              }}
+                              disabled={isGenerating}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 text-left"
+                            >
+                              <Sparkles className="w-4 h-4 text-slate-500" />
+                              <span>Generate More</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleRegenerate();
+                                setIsMenuOpen(false);
+                              }}
+                              disabled={isGenerating}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 text-left"
+                            >
+                              <RotateCcw className="w-4 h-4 text-slate-500" />
+                              <span>Regenerate</span>
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
 
@@ -548,19 +679,19 @@ export const QuestionBankPanel: React.FC = () => {
                     )}
                   </AnimatePresence>
 
-                  <div className="flex flex-col gap-2.5 flex-1 min-h-0 overflow-y-auto pr-1 hide-scrollbar">
+                  <div className="flex flex-col gap-2.5 flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 hide-scrollbar">
                     <AnimatePresence initial={false}>
                       {questions.map((question, index) => {
                         const isEditing = editingIndex === index;
                         return (
                           <motion.div
-                            key={`${selectedJob.id}-${question}`}
+                            key={`${selectedJob.id}-${question.text}`}
                             layout
                             initial={{ opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.8 }}
-                            className="group flex items-start justify-between gap-2 p-2 -mx-2 rounded-xl hover:bg-slate-50 transition-colors"
+                            className="group flex items-start justify-between gap-2 p-2 rounded-xl hover:bg-slate-50 transition-colors"
                           >
                             <span className="text-sm font-bold text-slate-400 shrink-0 mt-1.5">{index + 1}.</span>
                             
@@ -597,48 +728,58 @@ export const QuestionBankPanel: React.FC = () => {
                             ) : (
                               <>
                                 <p className="min-w-0 flex-1 text-sm font-semibold text-slate-800 leading-6 mt-1.5">
-                                  {question}
+                                  {question.text}
                                 </p>
                                 
-                                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 bg-white shadow-sm border border-slate-100 rounded-lg p-0.5">
-                                  <button
-                                    type="button"
-                                    onClick={() => handleMoveUp(index)}
-                                    disabled={index === 0}
-                                    className="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-transparent"
-                                    title="Move Up"
-                                  >
-                                    <ArrowUp className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleMoveDown(index)}
-                                    disabled={index === questions.length - 1}
-                                    className="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-transparent"
-                                    title="Move Down"
-                                  >
-                                    <ArrowDown className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setEditingIndex(index);
-                                      setEditingText(question);
-                                    }}
-                                    className="w-7 h-7 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center transition-all"
-                                    title="Edit"
-                                  >
-                                    <Pencil className="w-3.5 h-3.5" />
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleDeleteQuestion(index)}
-                                    className="w-7 h-7 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-all"
-                                    title="Delete"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
+                                {isEditMode ? (
+                                  <div className="flex items-center gap-1 shrink-0 bg-white shadow-sm border border-slate-100 rounded-lg p-0.5 animate-fade-in">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleMoveUp(index)}
+                                      disabled={index === 0}
+                                      className="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                                      title="Move Up"
+                                    >
+                                      <ArrowUp className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleMoveDown(index)}
+                                      disabled={index === questions.length - 1}
+                                      className="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                                      title="Move Down"
+                                    >
+                                      <ArrowDown className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setEditingIndex(index);
+                                        setEditingText(question.text);
+                                      }}
+                                      className="w-7 h-7 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center transition-all"
+                                      title="Edit"
+                                    >
+                                      <Pencil className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteQuestion(index)}
+                                      className="w-7 h-7 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-all"
+                                      title="Delete"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <span className={`text-[10px] font-bold uppercase tracking-[0.16em] whitespace-nowrap mt-2 px-2.5 py-1 rounded-full border ${
+                                    question.origin === 'ai' 
+                                      ? 'bg-blue-50 text-blue-700 border-blue-100' 
+                                      : 'bg-emerald-50 text-emerald-700 border-emerald-250'
+                                  }`}>
+                                    {question.origin === 'ai' ? 'AI Generated' : 'Manual'}
+                                  </span>
+                                )}
                               </>
                             )}
                           </motion.div>
