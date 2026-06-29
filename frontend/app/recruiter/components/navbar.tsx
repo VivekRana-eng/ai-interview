@@ -32,7 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
   const activeAlerts = alerts.filter(a => !a.resolved);
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 lg:px-8 bg-white border-b border-[#EEF1F6] shadow-[0_4px_16px_rgba(15,23,42,0.04)]">
+    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 lg:px-8 bg-white border-b border-[#EEF1F6]">
       
       {/* Left side: Hamburger (Mobile menu trigger) */}
       <div className="flex items-center gap-4">

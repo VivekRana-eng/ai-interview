@@ -340,10 +340,12 @@ const mappedScreenshotCandidates: Candidate[] = SCREENSHOT_CANDIDATES.map((c, id
   ...c
 } as Candidate));
 
+const TOTAL_RECRUITER_CANDIDATES = 25;
+
 export const INITIAL_CANDIDATES: Candidate[] = [
   ...mappedScreenshotCandidates,
-  ...generateRemaining(205 - mappedScreenshotCandidates.length)
-];
+  ...generateRemaining(Math.max(0, TOTAL_RECRUITER_CANDIDATES - mappedScreenshotCandidates.length))
+].slice(0, TOTAL_RECRUITER_CANDIDATES);
 
 // Exact Live Candidates from Screenshot 2
 export const INITIAL_LIVE_CANDIDATES: LiveCandidate[] = [
@@ -426,6 +428,15 @@ export const INITIAL_ALERTS: AiAlert[] = [
     severity: 'info',
     timestamp: 'Just now',
     resolved: false
+  },
+  {
+    id: 'alert-4',
+    candidateName: 'Sneha Verma',
+    type: 'Microphone Instability',
+    message: 'Sneha Verma: Mic input is dropping intermittently during live interview playback.',
+    severity: 'warning',
+    timestamp: '2m ago',
+    resolved: false
   }
 ];
 
@@ -491,6 +502,48 @@ export const MOCK_JOBS: Job[] = [
       'Describe how you audit code for OWASP Top 10 vulnerabilities.',
       'How do you secure multi-tenant cloud instances?',
       'Walk us through how you would configure a DevSecOps CI/CD scanner.'
+    ]
+  },
+  {
+    id: 'job-4',
+    title: 'Product Design Lead',
+    department: 'Design',
+    status: 'Hold',
+    candidatesCount: 3,
+    description: 'Lead the product design team and drive user-centered design for enterprise applications.',
+    role: 'Design Lead',
+    aboutJob: 'Guide cross-functional teams through product discovery, UX strategy, and execution while supporting key design programs.',
+    skillsRequired: ['Figma', 'Design Systems', 'User Research', 'Prototyping', 'Accessibility'],
+    experience: '6+ years',
+    salaryRange: '₹12,0,000 - ₹16,0,000',
+    location: 'Bengaluru (Hybrid)',
+    employmentType: 'Full-time',
+    aiSummary: 'Design leader focused on building inclusive and scalable digital experiences.',
+    aiQuestions: [
+      'How do you translate research insights into product design outcomes?',
+      'Describe your process for maintaining a scalable design system.',
+      'What metrics do you use to measure design impact?'
+    ]
+  },
+  {
+    id: 'job-5',
+    title: 'HR Operations Specialist',
+    department: 'People',
+    status: 'Closed',
+    candidatesCount: 0,
+    description: 'Manage HR operations, onboarding, and employee lifecycle activities for a fast-growing technology team.',
+    role: 'HR Operations Specialist',
+    aboutJob: 'Support recruitment operations and maintain smooth HR processes across employee onboarding and compliance.',
+    skillsRequired: ['HRIS', 'Onboarding', 'Employee Experience', 'Compliance', 'Data Reporting'],
+    experience: '2+ years',
+    salaryRange: '₹8,0,000 - ₹11,0,000',
+    location: 'New Delhi (On-site)',
+    employmentType: 'Full-time',
+    aiSummary: 'Operational HR role focused on candidate experience and internal process excellence.',
+    aiQuestions: [
+      'Explain how you ensure consistent onboarding experience at scale.',
+      'What tools do you use for HR operations and reporting?',
+      'How do you handle confidential employee data securely?'
     ]
   }
 ];

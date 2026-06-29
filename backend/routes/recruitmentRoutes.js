@@ -166,9 +166,9 @@ const MOCK_JOBS = [
     ]
   },
   {
-    title: 'Data Engineer (Legacy)',
+    title: 'Data Engineer (Platform)',
     department: 'Engineering',
-    status: 'Deactive',
+    status: 'Closed',
     candidatesCount: 8,
     description: 'Maintenance of legacy data pipelines and ETL processes.',
     skillsRequired: ['SQL', 'Hadoop', 'Apache Spark'],
@@ -176,8 +176,44 @@ const MOCK_JOBS = [
     salaryRange: '₹12,00,000 - ₹16,00,000',
     location: 'Chennai (On-site)',
     employmentType: 'Full-time',
-    aiSummary: 'This role is currently deactivated as we transition to new cloud-native pipelines.',
+    aiSummary: 'This role is currently closed as we transition to new cloud-native pipelines.',
     aiQuestions: []
+  },
+  {
+    title: 'Product Manager (Core AI)',
+    department: 'Product',
+    status: 'Hold',
+    candidatesCount: 0,
+    description: 'Strategize the next generation of AI-driven recruitment metrics and platform scalability.',
+    skillsRequired: ['Product Strategy', 'Deep Learning Basics', 'Agile', 'SQL'],
+    experience: '4+ years',
+    salaryRange: '₹15,00,000 - ₹22,00,000',
+    location: 'Mumbai (Hybrid)',
+    employmentType: 'Full-time',
+    aiSummary: 'Strategic leader for product roadmaps and recruitment analytics.',
+    aiQuestions: [
+      'How do you prioritize features in an AI product?',
+      'Describe your experience with data-driven decision making.',
+      'Explain a time you managed a complex stakeholder requirement change.'
+    ]
+  },
+  {
+    title: 'Mobile App Developer (React Native)',
+    department: 'Engineering',
+    status: 'Active',
+    candidatesCount: 0,
+    description: 'Develop and maintain cross-platform mobile applications for applicant interview experiences.',
+    skillsRequired: ['React Native', 'Javascript', 'Mobile UI', 'Expo'],
+    experience: '3+ years',
+    salaryRange: '₹10,00,000 - ₹16,00,000',
+    location: 'Remote',
+    employmentType: 'Full-time',
+    aiSummary: 'Expert mobile developer building seamless user journeys on iOS and Android.',
+    aiQuestions: [
+      'Explain how React Native bridge works.',
+      'How do you optimize mobile app performance for lower-end devices?',
+      'Detail your experience with push notification architectures.'
+    ]
   }
 ];
 
@@ -368,6 +404,10 @@ router.post('/jobs', async (req, res) => {
       jobData.aiSummary = jobData.aiSummary || generated.aiSummary;
       jobData.aiQuestions = jobData.aiQuestions && jobData.aiQuestions.length > 0 ? jobData.aiQuestions : generated.aiQuestions;
     }
+    // Clean up empty date strings to prevent Mongoose cast errors
+    if (jobData.lastDateToApply === '') delete jobData.lastDateToApply;
+    if (jobData.joiningDate === '') delete jobData.joiningDate;
+
     const job = new Job(jobData);
     await job.save();
     res.status(201).json(job);

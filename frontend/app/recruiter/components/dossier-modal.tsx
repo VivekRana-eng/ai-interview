@@ -37,8 +37,8 @@ export const DossierModal: React.FC<DossierModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
-          <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }} className="relative w-full max-w-5xl h-[80vh] bg-[#fafbfd] border border-slate-200 rounded-3xl shadow-2xl overflow-hidden z-10 flex flex-col">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/20 backdrop-blur-[6px]" onClick={onClose} />
+          <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }} className="relative w-full max-w-5xl h-[80vh] bg-[#fafbfd] border border-slate-200 rounded-[32px] shadow-[0_40px_100px_rgba(15,23,42,0.25)] overflow-hidden z-10 flex flex-col">
             
             <div className="p-6 bg-white border-b border-slate-150 flex justify-between items-start">
               <div className="space-y-1">

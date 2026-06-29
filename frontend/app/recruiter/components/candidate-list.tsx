@@ -17,7 +17,7 @@ export const CandidateList: React.FC<CandidateListProps> = ({
   onSelectCandidate 
 }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(20);
   const [sortBy, setSortBy] = useState<string>('Date (Des)');
 
   // Filter & Search are handled at the parent level, but let's do pagination here.
@@ -235,7 +235,7 @@ export const CandidateList: React.FC<CandidateListProps> = ({
       </div>
 
       {/* Numbered Pagination from Screenshot 3 */}
-      {totalPages > 1 && (
+      {candidates.length > 20 && totalPages > 1 && (
         <div className="flex items-center justify-center gap-1.5 pt-4 border-t border-slate-100">
           {/* Previous Arrow */}
           <button

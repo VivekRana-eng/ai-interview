@@ -160,6 +160,9 @@ export const QuestionBankPanel: React.FC = () => {
   // Global edit mode toggle
   const [isEditMode, setIsEditMode] = useState(false);
 
+  // Mobile state: 'list' or 'detail'
+  const [mobileView, setMobileView] = useState<'list' | 'detail'>('list');
+
   // Edit state
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editingText, setEditingText] = useState('');
@@ -188,6 +191,11 @@ export const QuestionBankPanel: React.FC = () => {
       setSelectedJobId(preferred.id);
     }
   }, [jobs, selectedJobId]);
+
+  const handleJobSelect = (id: string) => {
+    setSelectedJobId(id);
+    setMobileView('detail');
+  };
 
   const selectedJob = useMemo(
     () => jobs.find((job) => job.id === selectedJobId) ?? null,
@@ -389,15 +397,24 @@ export const QuestionBankPanel: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+    <div className="space-y-4 md:space-y-6 flex-1 h-full flex flex-col min-h-0">
+      <div className="flex items-center gap-3">
+        {mobileView === 'detail' && (
+          <button
+            onClick={() => setMobileView('list')}
+            className="xl:hidden p-2 -ml-2 rounded-xl hover:bg-slate-100 text-slate-500 transition-colors"
+            title="Back to jobs"
+          >
+            <ChevronRight className="w-5 h-5 rotate-180" />
+          </button>
+        )}
+        <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight">
           Question Bank
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[340px_minmax(0,1fr)] gap-6 items-start h-[calc(100vh-210px)] min-h-[680px] overflow-hidden">
-        <div className="rounded-[24px] border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.05)] p-4 md:p-5 h-full min-h-0 flex flex-col">
+      <div className="grid grid-cols-1 xl:grid-cols-[340px_minmax(0,1fr)] gap-6 items-start flex-1 min-h-0 overflow-hidden">
+        <div className={`rounded-[24px] border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.05)] p-4 md:p-5 h-full flex flex-col min-h-0 ${mobileView === 'detail' ? 'hidden xl:flex' : 'flex'}`}>
           <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
             <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <Briefcase className="w-5 h-5" />
@@ -428,7 +445,7 @@ export const QuestionBankPanel: React.FC = () => {
                   <button
                     key={job.id}
                     type="button"
-                    onClick={() => setSelectedJobId(job.id)}
+                    onClick={() => handleJobSelect(job.id)}
                     className={`w-full text-left rounded-2xl border p-4 transition-all ${
                       isSelected
                         ? 'border-blue-300 bg-blue-50/60 shadow-[0_8px_20px_rgba(37,99,235,0.08)]'
@@ -470,7 +487,7 @@ export const QuestionBankPanel: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-[24px] border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.05)] p-5 md:p-6 h-full min-h-0 overflow-hidden">
+        <div className={`rounded-[24px] border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.05)] p-4 md:p-6 h-full overflow-hidden flex flex-col min-h-0 ${mobileView === 'list' ? 'hidden xl:flex' : 'flex'}`}>
           <AnimatePresence mode="wait">
             {selectedJob ? (
               <motion.div
@@ -481,7 +498,8 @@ export const QuestionBankPanel: React.FC = () => {
                 transition={{ duration: 0.22 }}
                 className="h-full min-h-0 flex flex-col overflow-hidden"
               >
-                <div className="flex flex-col gap-5 border-b border-slate-100 pb-5">
+                {/* Header: Title & Actions (Sticky) */}
+                <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 shrink-0">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -492,12 +510,9 @@ export const QuestionBankPanel: React.FC = () => {
                           Question Bank
                         </span>
                       </div>
-                      <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">
+                      <h3 className="mt-3 text-xl md:text-2xl font-extrabold tracking-tight text-slate-900 truncate">
                         {selectedJob.title}
                       </h3>
-                      <p className="mt-2 text-sm text-slate-500 font-medium max-w-2xl">
-                        {selectedJob.description || `AI-generated screening questions tailored for ${selectedJob.title}.`}
-                      </p>
                     </div>
 
                     {/* Ellipsis actions menu */}
@@ -594,8 +609,19 @@ export const QuestionBankPanel: React.FC = () => {
                       </AnimatePresence>
                     </div>
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* Body: Metadata & Questions (Scrollable) */}
+                <div className="flex-1 min-h-0 overflow-y-auto pr-1 sm:pr-2 mt-5 space-y-8">
+                  {/* Job Detail Snippet */}
+                  {selectedJob.description && (
+                    <p className="text-xs md:text-sm text-slate-500 font-medium max-w-2xl">
+                      {selectedJob.description}
+                    </p>
+                  )}
+
+                  {/* Metadata Cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                       <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Department</div>
                       <div className="mt-1 text-sm font-bold text-slate-900 inline-flex items-center gap-2">
@@ -618,171 +644,172 @@ export const QuestionBankPanel: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex-1 pt-5 min-h-0 flex flex-col overflow-hidden">
-                  <div className="flex items-center justify-between gap-3 mb-4">
-                    <div>
-                      <h4 className="text-sm font-extrabold text-slate-900">AI Generated Questions</h4>
-                      <p className="text-xs text-slate-500 font-medium">
-                        Top questions for candidate screening.
-                      </p>
+                  {/* Questions Section */}
+                  <div className="space-y-4 pb-8">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h4 className="text-sm font-extrabold text-slate-900">AI Generated</h4>
+                        <p className="hidden sm:block text-xs text-slate-500 font-medium">
+                          Top questions for candidate screening.
+                        </p>
+                      </div>
+                      <div className="text-xs font-bold text-slate-500">
+                        {questions.length} total
+                      </div>
                     </div>
-                    <div className="text-xs font-bold text-slate-500">
-                      {questions.length}/{questions.length} displayed
-                    </div>
-                  </div>
 
-                  {/* Inline Add Custom Question Form */}
-                  <AnimatePresence>
-                    {isAddingCustom && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0, marginBottom: 0 }}
-                        animate={{ height: 'auto', opacity: 1, marginBottom: 16 }}
-                        exit={{ height: 0, opacity: 0, marginBottom: 0 }}
-                        className="overflow-hidden border border-slate-200 rounded-2xl p-4 bg-slate-50/50 flex flex-col sm:flex-row gap-3 items-end"
-                      >
-                        <div className="flex-1 w-full">
-                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Write your custom question</label>
-                          <input
-                            type="text"
-                            placeholder="Type your question here..."
-                            value={customQuestionText}
-                            onChange={(e) => setCustomQuestionText(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') handleAddCustomQuestion();
-                            }}
-                            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
-                            autoFocus
-                          />
-                        </div>
-                        <div className="flex gap-2 w-full sm:w-auto justify-end">
-                          <button
-                            type="button"
-                            onClick={() => setIsAddingCustom(false)}
-                            className="rounded-xl border border-slate-200 bg-white hover:bg-slate-100 px-4 py-2.5 text-xs font-bold text-slate-600 transition-all active:scale-95"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleAddCustomQuestion}
-                            className="rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2.5 text-xs font-bold text-white transition-all active:scale-95 shadow-sm"
-                          >
-                            Add
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <div className="flex flex-col gap-2.5 flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 hide-scrollbar">
-                    <AnimatePresence initial={false}>
-                      {questions.map((question, index) => {
-                        const isEditing = editingIndex === index;
-                        return (
-                          <motion.div
-                            key={`${selectedJob.id}-${question.text}`}
-                            layout
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.8 }}
-                            className="group flex items-start justify-between gap-2 p-2 rounded-xl hover:bg-slate-50 transition-colors"
-                          >
-                            <span className="text-sm font-bold text-slate-400 shrink-0 mt-1.5">{index + 1}.</span>
-                            
-                            {isEditing ? (
-                              <div className="flex-1 flex gap-2 items-center">
-                                <input
-                                  type="text"
-                                  value={editingText}
-                                  onChange={(e) => setEditingText(e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') handleSaveEdit(index);
-                                    if (e.key === 'Escape') setEditingIndex(null);
-                                  }}
-                                  className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
-                                  autoFocus
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => handleSaveEdit(index)}
-                                  className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 flex items-center justify-center transition-colors shrink-0"
-                                  title="Save"
-                                >
-                                  <Check className="w-4 h-4" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setEditingIndex(null)}
-                                  className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-colors shrink-0"
-                                  title="Cancel"
-                                >
-                                  <X className="w-4 h-4" />
-                                </button>
-                              </div>
-                            ) : (
-                              <>
-                                <p className="min-w-0 flex-1 text-sm font-semibold text-slate-800 leading-6 mt-1.5">
-                                  {question.text}
-                                </p>
-                                
-                                {isEditMode ? (
-                                  <div className="flex items-center gap-1 shrink-0 bg-white shadow-sm border border-slate-100 rounded-lg p-0.5 animate-fade-in">
-                                    <button
-                                      type="button"
-                                      onClick={() => handleMoveUp(index)}
-                                      disabled={index === 0}
-                                      className="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-transparent"
-                                      title="Move Up"
-                                    >
-                                      <ArrowUp className="w-3.5 h-3.5" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleMoveDown(index)}
-                                      disabled={index === questions.length - 1}
-                                      className="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-transparent"
-                                      title="Move Down"
-                                    >
-                                      <ArrowDown className="w-3.5 h-3.5" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        setEditingIndex(index);
-                                        setEditingText(question.text);
-                                      }}
-                                      className="w-7 h-7 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center transition-all"
-                                      title="Edit"
-                                    >
-                                      <Pencil className="w-3.5 h-3.5" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleDeleteQuestion(index)}
-                                      className="w-7 h-7 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-all"
-                                      title="Delete"
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <span className={`text-[10px] font-bold uppercase tracking-[0.16em] whitespace-nowrap mt-2 px-2.5 py-1 rounded-full border ${
-                                    question.origin === 'ai' 
-                                      ? 'bg-blue-50 text-blue-700 border-blue-100' 
-                                      : 'bg-emerald-50 text-emerald-700 border-emerald-250'
-                                  }`}>
-                                    {question.origin === 'ai' ? 'AI Generated' : 'Manual'}
-                                  </span>
-                                )}
-                              </>
-                            )}
-                          </motion.div>
-                        );
-                      })}
+                    {/* Inline Add Custom Question Form */}
+                    <AnimatePresence>
+                      {isAddingCustom && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+                          animate={{ height: 'auto', opacity: 1, marginBottom: 16 }}
+                          exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+                          className="overflow-hidden border border-slate-200 rounded-2xl p-4 bg-slate-50/50 flex flex-col sm:flex-row gap-3 items-end"
+                        >
+                          <div className="flex-1 w-full">
+                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Write your custom question</label>
+                            <input
+                              type="text"
+                              placeholder="Type your question here..."
+                              value={customQuestionText}
+                              onChange={(e) => setCustomQuestionText(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleAddCustomQuestion();
+                              }}
+                              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
+                              autoFocus
+                            />
+                          </div>
+                          <div className="flex gap-2 w-full sm:w-auto justify-end">
+                            <button
+                              type="button"
+                              onClick={() => setIsAddingCustom(false)}
+                              className="rounded-xl border border-slate-200 bg-white hover:bg-slate-100 px-4 py-2.5 text-xs font-bold text-slate-600 transition-all active:scale-95"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleAddCustomQuestion}
+                              className="rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2.5 text-xs font-bold text-white transition-all active:scale-95 shadow-sm"
+                            >
+                              Add
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
                     </AnimatePresence>
+
+                    <div className="flex flex-col gap-2.5">
+                      <AnimatePresence initial={false}>
+                        {questions.map((question, index) => {
+                          const isEditing = editingIndex === index;
+                          return (
+                            <motion.div
+                              key={`${selectedJob.id}-${question.text}`}
+                              layout
+                              initial={{ opacity: 0, y: 12 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.95 }}
+                              transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.8 }}
+                              className="group flex items-start justify-between gap-2 p-2 rounded-xl hover:bg-slate-50 transition-colors"
+                            >
+                              <span className="text-sm font-bold text-slate-400 shrink-0 mt-1.5">{index + 1}.</span>
+                              
+                              {isEditing ? (
+                                <div className="flex-1 flex gap-2 items-center">
+                                  <input
+                                    type="text"
+                                    value={editingText}
+                                    onChange={(e) => setEditingText(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') handleSaveEdit(index);
+                                      if (e.key === 'Escape') setEditingIndex(null);
+                                    }}
+                                    className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
+                                    autoFocus
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSaveEdit(index)}
+                                    className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 flex items-center justify-center transition-colors shrink-0"
+                                    title="Save"
+                                  >
+                                    <Check className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingIndex(null)}
+                                    className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 flex items-center justify-center transition-colors shrink-0"
+                                    title="Cancel"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <>
+                                  <p className="min-w-0 flex-1 text-sm font-semibold text-slate-800 leading-6 mt-1.5">
+                                    {question.text}
+                                  </p>
+                                  
+                                  {isEditMode ? (
+                                    <div className="flex items-center gap-0.5 sm:gap-1 shrink-0 bg-white shadow-sm border border-slate-100 rounded-lg p-0.5 animate-fade-in sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleMoveUp(index)}
+                                        disabled={index === 0}
+                                        className="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                                        title="Move Up"
+                                      >
+                                        <ArrowUp className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleMoveDown(index)}
+                                        disabled={index === questions.length - 1}
+                                        className="w-7 h-7 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                                        title="Move Down"
+                                      >
+                                        <ArrowDown className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setEditingIndex(index);
+                                          setEditingText(question.text);
+                                        }}
+                                        className="w-7 h-7 rounded-md text-slate-400 hover:text-blue-600 hover:bg-blue-50 flex items-center justify-center transition-all"
+                                        title="Edit"
+                                      >
+                                        <Pencil className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDeleteQuestion(index)}
+                                        className="w-7 h-7 rounded-md text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-all"
+                                        title="Delete"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
+                                  ) : (
+                                      <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.12em] sm:tracking-[0.16em] whitespace-nowrap mt-2 px-2.5 py-1 rounded-full border ${
+                                        question.origin === 'ai' 
+                                          ? 'bg-blue-50 text-blue-700 border-blue-100' 
+                                          : 'bg-emerald-50 text-emerald-700 border-emerald-250'
+                                      }`}>
+                                        {question.origin === 'ai' ? 'AI' : 'Manual'}
+                                      </span>
+                                  )}
+                                </>
+                              )}
+                            </motion.div>
+                          );
+                        })}
+                      </AnimatePresence>
+                    </div>
                   </div>
                 </div>
               </motion.div>

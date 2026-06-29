@@ -47,7 +47,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <aside className={`
         fixed inset-y-0 left-0 z-50 flex flex-col w-64 
         bg-[#080E1C] backdrop-blur-xl border-r border-white/8
-        shadow-[10px_0_30px_rgba(2,6,23,0.35)]
         transition-transform duration-350 lg:fixed lg:translate-x-0 lg:z-auto
         overflow-hidden
         lg:w-[228px]
