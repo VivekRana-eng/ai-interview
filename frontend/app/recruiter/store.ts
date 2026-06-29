@@ -52,7 +52,7 @@ interface RecruiterState {
 }
 
 const STAGES: Candidate['status'][] = ['Applied', 'Screening', 'Interviewing', 'Shortlisted', 'Hired'];
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   activeTab: 'Dashboard',
