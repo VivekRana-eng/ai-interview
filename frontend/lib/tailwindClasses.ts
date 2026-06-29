@@ -108,3 +108,5 @@ export const adminNavItemActive =
 
 export const recruiterCard =
   'p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)]'
+export const recruiterPanelCard =
+  'bg-white border border-slate-200 rounded-[24px] shadow-[0_10px_30px_rgba(15,23,42,0.05)]'
