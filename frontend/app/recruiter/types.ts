@@ -25,6 +25,16 @@ export interface Candidate {
   githubUrl?: string;
   resumeUrl?: string;
   resumeText?: string;
+  sendToHiringManager?: boolean;
+  sendToHr?: boolean;
+  needToCall?: boolean;
+  postedTime?: string;
+  postedDate?: string;
+  clearance?: string;
+  experienceYears?: string;
+  relocate?: string;
+  salaryRangeText?: string;
+  connectedStatus?: 'CONNECTED' | 'CONNECT';
   workExperienceDetails?: Array<{
     role: string;
     company: string;

@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation'
+'use client';
+
+import RecruiterDashboard from './recruiter/page';
 
 export default function Home() {
-  redirect('/recruiter')
+  return <RecruiterDashboard />;
 }

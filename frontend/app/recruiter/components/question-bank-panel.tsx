@@ -394,9 +394,6 @@ export const QuestionBankPanel: React.FC = () => {
         <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
           Question Bank
         </h2>
-        <p className="text-sm text-slate-500 font-medium">
-          Select a job to view a clean AI-generated set of interview questions.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[340px_minmax(0,1fr)] gap-6 items-start h-[calc(100vh-210px)] min-h-[680px] overflow-hidden">
