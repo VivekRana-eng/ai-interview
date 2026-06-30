@@ -104,31 +104,33 @@ export const Charts: React.FC = () => {
   });
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-4 md:gap-6">
 
       {/* 1. AI Recruitment Overview Area Chart */}
-      <div className="lg:col-span-2 p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div className="flex justify-between items-center mb-6">
+      <div className="p-4 sm:p-5 md:p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start mb-4 md:mb-6 min-w-0">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">AI Recruitment Overview</h3>
-            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">30-day analytics pipeline performance{filterJob !== 'All' ? ` for ${filterJob}` : ''}</p>
+            <h3 className="text-sm md:text-[15px] font-bold text-slate-900 leading-tight">AI Recruitment Overview</h3>
+            <p className="text-[10px] md:text-[11px] text-slate-400 font-semibold mt-0.5 leading-snug max-w-[22rem]">
+              30-day analytics pipeline performance{filterJob !== 'All' ? ` for ${filterJob}` : ''}
+            </p>
           </div>
-          <div className="flex gap-2">
-            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-slate-600">
+          <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
+            <button className="flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-slate-600 whitespace-nowrap shrink-0">
               <Calendar className={tw.iconSm} />
               <span>Last 30 Days</span>
             </button>
             <div className="relative">
               <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-colors text-[10px] font-bold ${filterJob !== 'All' ? 'bg-blue-50 text-blue-755 border-blue-200' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}
+                className={`flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl border transition-colors text-[10px] font-bold whitespace-nowrap shrink-0 ${filterJob !== 'All' ? 'bg-blue-50 text-blue-755 border-blue-200' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}
               >
                 <Filter className={tw.iconSm} />
-                <span className="truncate max-w-[100px]">Filter{filterJob !== 'All' ? `: ${filterJob}` : ''}</span>
+                <span className="truncate max-w-[10rem]">Filter{filterJob !== 'All' ? `: ${filterJob}` : ''}</span>
               </button>
 
               {isFilterOpen && (
-                <div className="absolute right-0 mt-1.5 w-56 rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700 max-h-60 overflow-y-auto">
+                <div className="absolute right-0 mt-1.5 w-56 max-w-[calc(100vw-2rem)] rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700 max-h-60 overflow-y-auto">
                   <div className="px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-50">
                     Filter by Job Role
                   </div>
@@ -160,33 +162,42 @@ export const Charts: React.FC = () => {
         </div>
 
         {/* Legend */}
-        <div className="flex gap-6 mb-4 text-[10px] font-bold text-slate-400">
-          <div className="flex items-center gap-1.5">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-x-4 gap-y-2 mb-4 text-[10px] font-bold text-slate-400">
+          <div className="flex items-center gap-1.5 min-w-0">
             <span className="w-2 h-2 rounded-full bg-blue-600 inline-block" />
             <span>Applications</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 min-w-0">
             <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
             <span>Hired</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 min-w-0">
             <span className="w-2 h-2 rounded-full bg-sky-400 inline-block" />
             <span>Interviews</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 min-w-0">
             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
             <span>Shortlisted</span>
           </div>
         </div>
 
         {/* Chart Viewport */}
-        <div className="h-64 w-full text-[10px] font-bold">
+        <div className="h-52 sm:h-64 w-full text-[10px] font-bold">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={dynamicOverviewData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-              <XAxis dataKey="name" stroke="#94a3b8" tickLine={false} axisLine={false} />
-              <YAxis stroke="#94a3b8" tickLine={false} axisLine={false} domain={[0, 8]} ticks={[0, 2, 4, 6, 8]} />
+              <XAxis dataKey="name" stroke="#94a3b8" tickLine={false} axisLine={false} tickMargin={8} tick={{ fontSize: 10 }} />
+              <YAxis
+                stroke="#94a3b8"
+                tickLine={false}
+                axisLine={false}
+                domain={[0, 8]}
+                ticks={[0, 2, 4, 6, 8]}
+                tickFormatter={(value) => Math.round(Number(value)).toString()}
+                tick={{ fontSize: 10 }}
+              />
               <Tooltip
+                formatter={(value, name) => [Math.round(Number(value)).toString(), String(name)]}
                 contentStyle={{
                   backgroundColor: '#ffffff',
                   borderColor: '#f1f5f9',
@@ -236,29 +247,31 @@ export const Charts: React.FC = () => {
       </div>
 
       {/* 2. Hiring Conversion Funnel */}
-      <div className="p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div className="flex justify-between items-start mb-4">
+      <div className="p-4 sm:p-5 md:p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start mb-4">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Hiring Conversion Funnel</h3>
-            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Recruiting conversion yield across current hiring cycles</p>
+            <h3 className="text-sm md:text-[15px] font-bold text-slate-900 leading-tight">Hiring Conversion Funnel</h3>
+            <p className="text-[10px] md:text-[11px] text-slate-400 font-semibold mt-0.5 leading-snug">
+              Recruiting conversion yield across current hiring cycles
+            </p>
           </div>
-          <div className="px-2.5 py-1.5 rounded bg-blue-50 text-blue-700 text-[9px] font-bold border border-blue-100 flex items-center gap-0.5 whitespace-nowrap shadow-sm">
+          <div className="px-2.5 py-1.5 rounded bg-blue-50 text-blue-700 text-[9px] font-bold border border-blue-100 flex items-center gap-0.5 whitespace-nowrap shadow-sm self-start sm:self-auto">
             <Sparkles className="w-2.5 h-2.5 text-blue-600" />
             <span>{hireRate.toFixed(1)}% Hire Rate</span>
           </div>
         </div>
 
         {/* Donut + legend */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-[190px_1fr] gap-5 items-center">
-          <div className="relative h-[210px] w-full">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-[minmax(0,210px)_1fr] gap-4 lg:gap-5 items-start lg:items-center">
+          <div className="relative h-[170px] sm:h-[190px] lg:h-[210px] w-full mx-auto max-w-[240px] lg:max-w-none">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={donutData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={62}
-                  outerRadius={84}
+                  innerRadius={52}
+                  outerRadius={72}
                   paddingAngle={3}
                   dataKey="value"
                   stroke="none"
@@ -283,40 +296,40 @@ export const Charts: React.FC = () => {
               </PieChart>
             </ResponsiveContainer>
 
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-2">
               <div className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">Total</div>
-              <div className="text-3xl font-extrabold text-slate-900 leading-none mt-1">{total}</div>
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-none mt-1">{total}</div>
               <div className="text-[10px] font-semibold text-slate-500 mt-1">
                 {hired} hired
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 gap-2 min-w-0 w-full">
             {funnelStages.map((stage, idx) => {
               const shade = ['bg-[#1d4ed8]', 'bg-[#2563eb]', 'bg-[#3b82f6]', 'bg-[#60a5fa]'][idx]
               return (
-                <div key={stage.label} className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/70 px-4 py-3">
+                <div key={stage.label} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50/70 px-3 sm:px-4 py-3 min-w-0">
                   <div className={tw.flexItemsGap3}>
                     <span className={`w-3 h-3 rounded-full ${shade}`} />
-                    <div className="flex flex-col">
-                      <span className="text-xs font-bold text-slate-800">{stage.label}</span>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs sm:text-sm font-bold text-slate-800">{stage.label}</span>
                       <span className="text-[10px] text-slate-400 font-semibold">{stage.count} candidates</span>
                     </div>
                   </div>
-                  <span className="text-xs font-extrabold text-slate-900">{stage.percentage}%</span>
+                  <span className="text-xs sm:text-sm font-extrabold text-slate-900 whitespace-nowrap">{stage.percentage}%</span>
                 </div>
               )
             })}
-            <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-blue-50 px-4 py-3">
+            <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-blue-50 px-3 sm:px-4 py-3 min-w-0">
               <div className={tw.flexItemsGap3}>
                 <span className="w-3 h-3 rounded-full bg-[#93c5fd]" />
-                <div className="flex flex-col">
-                  <span className="text-xs font-bold text-slate-800">Hired</span>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-xs sm:text-sm font-bold text-slate-800">Hired</span>
                   <span className="text-[10px] text-slate-400 font-semibold">{hired} candidates</span>
                 </div>
               </div>
-              <span className="text-xs font-extrabold text-slate-900">{total > 0 ? Math.round((hired / total) * 100) : 0}%</span>
+              <span className="text-xs sm:text-sm font-extrabold text-slate-900 whitespace-nowrap">{total > 0 ? Math.round((hired / total) * 100) : 0}%</span>
             </div>
           </div>
         </div>

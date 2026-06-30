@@ -109,17 +109,19 @@ export const InteractiveFlow: React.FC = () => {
 
   return (
     <>
-      <div className="p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col gap-6">
+      <div className="p-4 sm:p-5 md:p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col gap-5 sm:gap-6 min-w-0">
       
       {/* Brand Header */}
-      <div className="flex justify-between items-start pb-2 border-b border-slate-100">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start pb-2 border-b border-slate-100">
         <div>
-          <h3 className="text-sm font-bold text-slate-850">Applicant Interactive Progression Flow</h3>
-          <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Lays candidate applications horizontally on a timeline. Select or click any stage circle node to shift stages dynamically.</p>
+          <h3 className="text-sm md:text-[15px] font-bold text-slate-850 leading-tight">Applicant Interactive Progression Flow</h3>
+          <p className="text-[10px] md:text-[11px] text-slate-400 font-semibold mt-0.5 leading-snug max-w-2xl">
+            Lays candidate applications horizontally on a timeline. Select or click any stage circle node to shift stages dynamically.
+          </p>
         </div>
         <button 
           onClick={seedDemoPipeline}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-slate-600 bg-white shadow-sm"
+          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-slate-600 bg-white shadow-sm w-full sm:w-auto"
         >
           <RotateCcw className={tw.iconSm} />
           <span>Seed Demo Pipeline</span>
@@ -127,7 +129,7 @@ export const InteractiveFlow: React.FC = () => {
       </div>
 
       {/* 5-Stage Metrics Boxes */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3.5">
         {[
           { label: 'APPLIED', count: appliedCount, detail: 'Start Stage', color: 'text-blue-600 border-blue-100 bg-blue-50/30' },
           { label: 'SCREENING', count: screeningCount, detail: total > 0 ? `${Math.round((screeningCount/total)*100)}% yield` : '0% yield', color: 'text-sky-500 border-sky-100 bg-sky-50/30' },
@@ -135,7 +137,7 @@ export const InteractiveFlow: React.FC = () => {
           { label: 'SHORTLIST', count: shortlistCount, detail: total > 0 ? `${Math.round((shortlistCount/total)*100)}% yield` : '0% yield', color: 'text-purple-650 border-purple-100 bg-purple-50/30' },
           { label: 'HIRED', count: hiredCount, detail: 'Success', color: 'text-emerald-500 border-emerald-100 bg-emerald-50/30' }
         ].map((box) => (
-          <div key={box.label} className={`p-4 rounded-xl border flex flex-col items-center justify-center text-center ${box.color} shadow-sm`}>
+          <div key={box.label} className={`p-4 rounded-xl border flex flex-col items-center justify-center text-center ${box.color} shadow-sm min-w-0`}>
             <span className="text-[9px] font-bold tracking-wider uppercase text-slate-400">{box.label}</span>
             <span className="text-xl font-extrabold mt-1.5 leading-none">{box.count}</span>
             <span className="text-[9px] font-semibold text-slate-400 mt-1">{box.detail}</span>
@@ -145,7 +147,7 @@ export const InteractiveFlow: React.FC = () => {
 
       {/* Control bar */}
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 pt-2 border-t border-slate-100 text-[10px] font-bold text-slate-500">
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <div className="flex items-center gap-1.5">
             <span>Filter Stage:</span>
             <div className="relative">
@@ -241,7 +243,7 @@ export const InteractiveFlow: React.FC = () => {
           </div>
         </div>
 
-        <div className={tw.flexItemsGap2}>
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-slate-400">QUICK ADD:</span>
           <button
             onClick={() => {
@@ -320,10 +322,10 @@ export const InteractiveFlow: React.FC = () => {
           return (
             <div 
               key={cand.id} 
-              className="p-4 rounded-2xl border border-slate-100/80 shadow-[0_1px_4px_rgba(0,0,0,0.01)] hover:border-slate-200 transition-all flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-5 bg-white"
+              className="p-4 rounded-2xl border border-slate-100/80 shadow-[0_1px_4px_rgba(0,0,0,0.01)] hover:border-slate-200 transition-all flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-4 sm:gap-5 bg-white min-w-0"
             >
               {/* Profile column */}
-              <div className="flex items-center gap-3.5 min-w-[240px]">
+              <div className="flex items-center gap-3.5 min-w-0 xl:min-w-[240px]">
                 <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-650 flex items-center justify-center font-bold text-xs border border-indigo-100">
                   {cand.name.split(' ').map(n => n[0]).join('')}
                 </div>
@@ -334,19 +336,19 @@ export const InteractiveFlow: React.FC = () => {
                       {cand.recommendation}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{cand.position}</p>
-                  <p className="text-[9px] text-slate-400 font-semibold mt-0.5">@{cand.location} • Applied: {cand.interviewDate}</p>
+                  <p className="text-[10px] text-slate-400 font-semibold mt-0.5 break-words">{cand.position}</p>
+                  <p className="text-[9px] text-slate-400 font-semibold mt-0.5 break-words">@{cand.location} • Applied: {cand.interviewDate}</p>
                 </div>
               </div>
 
               {/* Progress circles column */}
-              <div className="flex flex-wrap gap-5">
+              <div className="flex flex-wrap gap-4 sm:gap-5">
                 <CircularProgress value={cand.aiMatchScore} label="AI MATCH" sublabel="Score index" />
                 <CircularProgress value={cand.integrityScore} label="INTEGRITY" sublabel="Secure rate" />
               </div>
 
               {/* Horizontal Timeline progression */}
-              <div className="flex-1 max-w-md flex items-center justify-between relative px-2">
+              <div className="flex-1 w-full xl:max-w-md flex items-center justify-between relative px-2">
                 {/* Horizontal Line background */}
                 <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 h-0.5 bg-slate-100" />
                 {/* Horizontal active progression line */}
@@ -385,7 +387,7 @@ export const InteractiveFlow: React.FC = () => {
               </div>
 
               {/* Action Buttons column */}
-              <div className="flex items-center gap-2 justify-end">
+              <div className="flex flex-wrap items-center gap-2 justify-end">
                 <button
                   onClick={() => promoteCandidate(cand.id)}
                   className="px-4 py-1.5 rounded-xl text-[9px] font-extrabold uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm"

@@ -14,7 +14,9 @@ export const ResumeScreener: React.FC = () => {
   const { 
     jobs, 
     candidates, 
-    screenResume 
+    screenResume,
+    filterJob,
+    setFilterJob
   } = useRecruiterStore();
 
   const [activeCandidate, setActiveCandidate] = useState<Candidate | null>(null);
@@ -22,7 +24,6 @@ export const ResumeScreener: React.FC = () => {
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [jobFilter, setJobFilter] = useState<string>('All Jobs');
   const [stageFilter, setStageFilter] = useState<string>('All Stages');
 
   // Modals state
@@ -50,8 +51,8 @@ export const ResumeScreener: React.FC = () => {
       (cand.skills && cand.skills.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())));
 
     const matchesJob = 
-      jobFilter === 'All Jobs' || 
-      cand.position.toLowerCase().includes(jobFilter.toLowerCase());
+      filterJob === 'All Jobs' || 
+      cand.position.toLowerCase().includes(filterJob.toLowerCase());
 
     const matchesStage = 
       stageFilter === 'All Stages' || 
@@ -138,8 +139,8 @@ export const ResumeScreener: React.FC = () => {
               className="px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             <select 
-              value={jobFilter} 
-              onChange={(e) => setJobFilter(e.target.value)}
+              value={filterJob} 
+              onChange={(e) => setFilterJob(e.target.value)}
               className="px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
             >
               <option value="All Jobs">All Jobs</option>
