@@ -246,6 +246,34 @@ router.get('/:jobTitle', async (req, res) => {
   }
 });
 
+// PUT save/update question bank for a specific job title
+router.put('/:jobTitle', async (req, res) => {
+  const { questions } = req.body;
+
+  if (!Array.isArray(questions)) {
+    return res.status(400).json({ message: 'Questions array is required' });
+  }
+
+  try {
+    const sanitizedQuestions = questions.map((q) => ({
+      text: q?.text || 'Tell us about your technical experience.',
+      category: ['Easy', 'Medium', 'Hard', 'Scenario', 'Behavioral'].includes(q?.category)
+        ? q.category
+        : 'Easy'
+    }));
+
+    const bank = await QuestionBank.findOneAndUpdate(
+      { jobTitle: req.params.jobTitle },
+      { questions: sanitizedQuestions, createdAt: new Date() },
+      { new: true, upsert: true }
+    );
+
+    res.status(200).json(bank);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // POST generate/regenerate question bank for a job role
 router.post('/generate', async (req, res) => {
   const { jobTitle } = req.body;

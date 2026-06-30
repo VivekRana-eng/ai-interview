@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Candidate, LiveCandidate, AiAlert, Job, QuestionBank } from './types';
+import { Candidate, LiveCandidate, AiAlert, Job, QuestionBank, QuestionItem } from './types';
 import { INITIAL_CANDIDATES, INITIAL_LIVE_CANDIDATES, INITIAL_ALERTS, MOCK_JOBS } from './mock-data';
 
 interface RecruiterState {
@@ -45,6 +45,7 @@ interface RecruiterState {
   questionBanks: QuestionBank[];
   activeQuestionBank: QuestionBank | null;
   fetchQuestionBank: (jobTitle: string) => Promise<void>;
+  saveQuestionBank: (jobTitle: string, questions: QuestionItem[]) => Promise<void>;
   generateQuestions: (jobTitle: string) => Promise<void>;
   regenerateQuestions: (jobTitle: string) => Promise<void>;
 
@@ -441,6 +442,36 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
     } catch (err) {
       console.error('Failed to fetch question bank:', err);
       set({ activeQuestionBank: null });
+    }
+  },
+
+  saveQuestionBank: async (jobTitle, questions) => {
+    try {
+      const res = await fetch(`${API_URL}/question-banks/${encodeURIComponent(jobTitle)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ questions })
+      });
+
+      if (res.ok) {
+        const bank = await res.json();
+        const mappedBank = {
+          id: bank._id,
+          jobTitle: bank.jobTitle,
+          questions: bank.questions || [],
+          createdAt: bank.createdAt
+        };
+
+        set((state) => ({
+          activeQuestionBank: mappedBank,
+          questionBanks: [
+            mappedBank,
+            ...state.questionBanks.filter(b => b.jobTitle !== jobTitle)
+          ]
+        }));
+      }
+    } catch (err) {
+      console.error('Failed to save question bank:', err);
     }
   },
 

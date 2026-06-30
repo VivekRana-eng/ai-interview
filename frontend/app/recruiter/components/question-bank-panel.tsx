@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowDown, ArrowUp, Briefcase, Building2, Check, ChevronRight, HelpCircle, MapPin, MoreVertical, Pencil, Plus, RotateCcw, Sparkles, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Briefcase, Building2, Check, ChevronRight, HelpCircle, MapPin, MoreVertical, Pencil, Plus, RotateCcw, Save, Sparkles, Trash2, X } from 'lucide-react';
 import { useRecruiterStore } from '../store';
 import { Job } from '../types';
 
@@ -146,11 +146,12 @@ interface QuestionObject {
 }
 
 export const QuestionBankPanel: React.FC = () => {
-  const { jobs, questionBankTargetJobId, setQuestionBankTargetJobId } = useRecruiterStore();
+  const { jobs, activeQuestionBank, fetchQuestionBank, saveQuestionBank, questionBankTargetJobId, setQuestionBankTargetJobId } = useRecruiterStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedJobId, setSelectedJobId] = useState('');
   const [jobQuestions, setJobQuestions] = useState<Record<string, QuestionObject[]>>({});
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isAddingCustom, setIsAddingCustom] = useState(false);
   const [customQuestionText, setCustomQuestionText] = useState('');
   
@@ -214,6 +215,24 @@ export const QuestionBankPanel: React.FC = () => {
     () => jobs.find((job) => job.id === selectedJobId) ?? null,
     [jobs, selectedJobId]
   );
+
+  useEffect(() => {
+    if (!selectedJob) return;
+    void fetchQuestionBank(selectedJob.title);
+  }, [selectedJob, fetchQuestionBank]);
+
+  useEffect(() => {
+    if (!selectedJob || !activeQuestionBank) return;
+    if (activeQuestionBank.jobTitle !== selectedJob.title) return;
+
+    setJobQuestions((prev) => ({
+      ...prev,
+      [selectedJob.id]: activeQuestionBank.questions.map((q) => ({
+        text: q.text,
+        origin: 'ai' as const
+      }))
+    }));
+  }, [activeQuestionBank, selectedJob]);
 
   const questions = useMemo(() => {
     if (!selectedJob) return [];
@@ -320,6 +339,32 @@ export const QuestionBankPanel: React.FC = () => {
       setIsGenerating(false);
       setEditingIndex(null);
     }, 1000);
+  };
+
+  const handleSaveQuestionBank = async () => {
+    if (!selectedJob) return;
+
+    setIsMenuOpen(false);
+    setIsSaving(true);
+
+    try {
+      const currentQuestions = questions.length > 0 ? questions : buildQuestionsForJob(selectedJob).map(text => ({ text, origin: 'ai' as const }));
+      const existingCategories = activeQuestionBank?.questions || [];
+
+      const payload = currentQuestions.map((q, index) => ({
+        text: q.text,
+        category: existingCategories[index]?.category || (q.origin === 'manual' ? 'Behavioral' : 'Easy')
+      }));
+
+      await saveQuestionBank(selectedJob.title, payload);
+      setIsEditMode(false);
+      setEditingIndex(null);
+      setEditingText('');
+    } catch (err) {
+      console.error('Failed to save question bank:', err);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleAddCustomQuestion = () => {
@@ -544,24 +589,33 @@ export const QuestionBankPanel: React.FC = () => {
                         </div>
                       )}
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (isEditMode) return;
-                          setIsMenuOpen(prev => !prev);
-                        }}
-                        disabled={isGenerating || isEditMode}
-                        className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl border flex items-center justify-center transition-all duration-200 shadow-sm active:scale-95 text-slate-600 ${
-                          isEditMode
-                            ? 'border-blue-200 bg-blue-50 text-blue-600 opacity-100'
-                            : 'border-slate-200 bg-white hover:bg-slate-50'
-                        } ${isGenerating ? 'opacity-50' : ''}`}
-                      >
-                        <MoreVertical className="w-5 h-5" />
-                      </button>
+                      {isEditMode ? (
+                        <button
+                          type="button"
+                          onClick={handleSaveQuestionBank}
+                          disabled={isSaving}
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-700 text-[11px] font-extrabold shadow-sm hover:bg-emerald-100 transition-all active:scale-95 disabled:opacity-60"
+                        >
+                          <Save className="w-4 h-4" />
+                          {isSaving ? 'Saving...' : 'Save'}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setIsMenuOpen(prev => !prev)}
+                          disabled={isGenerating}
+                          className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl border flex items-center justify-center transition-all duration-200 shadow-sm active:scale-95 text-slate-600 ${
+                            isGenerating
+                              ? 'opacity-50 border-slate-200 bg-white'
+                              : 'border-slate-200 bg-white hover:bg-slate-50'
+                          }`}
+                        >
+                          <MoreVertical className="w-5 h-5" />
+                        </button>
+                      )}
 
                       <AnimatePresence>
-                        {(isMenuOpen || isEditMode) && (
+                        {isMenuOpen && !isEditMode && (
                           <motion.div
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -583,30 +637,14 @@ export const QuestionBankPanel: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => {
-                                setIsEditMode(prev => {
-                                  const next = !prev;
-                                  if (!next) setIsMenuOpen(false);
-                                  return next;
-                                });
+                                setIsEditMode(true);
+                                setIsMenuOpen(false);
                                 setEditingIndex(null);
                               }}
-                              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors text-left ${
-                                isEditMode 
-                                  ? 'text-blue-650 bg-blue-50/50 hover:bg-blue-50' 
-                                  : 'text-slate-700 hover:bg-slate-50'
-                              }`}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors text-left text-slate-700 hover:bg-slate-50"
                             >
-                              {isEditMode ? (
-                                <>
-                                  <Check className="w-4 h-4 text-blue-600" />
-                                  <span>Done Editing</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Pencil className="w-4 h-4 text-slate-500" />
-                                  <span>Edit Questions</span>
-                                </>
-                              )}
+                              <Pencil className="w-4 h-4 text-slate-500" />
+                              <span>Edit Questions</span>
                             </button>
 
                             <button
