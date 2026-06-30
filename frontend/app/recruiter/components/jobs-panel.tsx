@@ -75,16 +75,18 @@ export const JobsPanel: React.FC = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
+      // Keep the action menu pinned while editing this job.
+      if (isEditModalOpen && editingJob?.id === activeJobMenuId) return;
       if (!target.closest('.job-action-menu-container')) {
         setActiveJobMenuId(null);
       }
     };
 
-    if (activeJobMenuId) {
+    if (activeJobMenuId && !(isEditModalOpen && editingJob?.id === activeJobMenuId)) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [activeJobMenuId]);
+  }, [activeJobMenuId, editingJob, isEditModalOpen]);
 
   // Sync edit form values when editingJob changes
   useEffect(() => {
@@ -251,6 +253,7 @@ export const JobsPanel: React.FC = () => {
 
       setIsEditModalOpen(false);
       setEditingJob(null);
+      setActiveJobMenuId(null);
     } catch (err) {
       console.error(err);
     } finally {
@@ -352,6 +355,13 @@ export const JobsPanel: React.FC = () => {
 
   const handleCloseJobDetails = () => {
     setSelectedJob(null);
+  };
+
+  const closeJobModals = () => {
+    setIsCreateModalOpen(false);
+    setIsEditModalOpen(false);
+    setEditingJob(null);
+    setActiveJobMenuId(null);
   };
 
   return (
@@ -459,6 +469,7 @@ export const JobsPanel: React.FC = () => {
           {filteredJobs.length > 0 ? (
             filteredJobs.map((job) => {
               const isSelected = selectedJob?.id === job.id;
+              const isPinnedOpen = activeJobMenuId === job.id || (isEditModalOpen && editingJob?.id === job.id);
 
               return (
                 <div
@@ -497,14 +508,14 @@ export const JobsPanel: React.FC = () => {
                           e.stopPropagation();
                           setActiveJobMenuId(activeJobMenuId === job.id ? null : job.id);
                         }}
-                        className={`p-1.5 rounded-lg transition-all ${activeJobMenuId === job.id ? 'bg-slate-100 text-slate-800' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
+                        className={`p-1.5 rounded-lg transition-all ${isPinnedOpen ? 'bg-slate-100 text-slate-800 opacity-100' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
                           }`}
                       >
                         <MoreVertical className="w-4 h-4" />
                       </button>
 
                       <AnimatePresence>
-                        {activeJobMenuId === job.id && (
+                        {isPinnedOpen && (
                           <motion.div
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -571,7 +582,7 @@ export const JobsPanel: React.FC = () => {
                               onClick={() => {
                                 setEditingJob(job);
                                 setIsEditModalOpen(true);
-                                setActiveJobMenuId(null);
+                                setActiveJobMenuId(job.id);
                               }}
                               className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                             >
@@ -692,7 +703,7 @@ export const JobsPanel: React.FC = () => {
                         View Applicants
                       </button>
                       <div className="text-[10px] font-bold text-slate-400 whitespace-nowrap">
-                        Created by {job.createdBy ?? 'Unknown'}
+                        Created by {job.createdBy ?? 'john'}
                       </div>
                     </div>
                   </div>
@@ -947,7 +958,7 @@ export const JobsPanel: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); setEditingJob(null); }}
+              onClick={closeJobModals}
               className="fixed inset-0 bg-slate-900/20 backdrop-blur-[6px]"
             />
 
@@ -963,7 +974,7 @@ export const JobsPanel: React.FC = () => {
                   {isCreateModalOpen ? 'Create New Role' : 'Update Job Details'}
                 </h3>
                 <button
-                  onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); setEditingJob(null); }}
+                  onClick={closeJobModals}
                   className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-200"
                 >
                   <X className="w-5 h-5 text-slate-500" />
@@ -1157,7 +1168,7 @@ export const JobsPanel: React.FC = () => {
                 <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 border-t border-slate-100">
                   <button
                     type="button"
-                    onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); setEditingJob(null); }}
+                    onClick={closeJobModals}
                     className="px-5 py-2.5 border border-slate-200 rounded-xl text-slate-500 font-bold hover:bg-slate-50 transition-colors"
                   >
                     Cancel

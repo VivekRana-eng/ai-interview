@@ -222,15 +222,22 @@ export const QuestionBankPanel: React.FC = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
+      if (isEditMode) return;
       if (!target.closest('.header-menu-container')) {
         setIsMenuOpen(false);
       }
     };
-    if (isMenuOpen) {
+    if (isMenuOpen && !isEditMode) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isMenuOpen]);
+  }, [isMenuOpen, isEditMode]);
+
+  useEffect(() => {
+    if (isEditMode) {
+      setIsMenuOpen(true);
+    }
+  }, [isEditMode]);
 
   const handleGenerateMore = () => {
     if (isGenerating || !selectedJob) return;
@@ -526,15 +533,22 @@ export const QuestionBankPanel: React.FC = () => {
 
                       <button
                         type="button"
-                        onClick={() => setIsMenuOpen(prev => !prev)}
-                        disabled={isGenerating}
-                        className="w-10 h-10 md:w-12 md:h-12 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center transition-all duration-200 shadow-sm active:scale-95 text-slate-600 disabled:opacity-50"
+                        onClick={() => {
+                          if (isEditMode) return;
+                          setIsMenuOpen(prev => !prev);
+                        }}
+                        disabled={isGenerating || isEditMode}
+                        className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl border flex items-center justify-center transition-all duration-200 shadow-sm active:scale-95 text-slate-600 ${
+                          isEditMode
+                            ? 'border-blue-200 bg-blue-50 text-blue-600 opacity-100'
+                            : 'border-slate-200 bg-white hover:bg-slate-50'
+                        } ${isGenerating ? 'opacity-50' : ''}`}
                       >
                         <MoreVertical className="w-5 h-5" />
                       </button>
 
                       <AnimatePresence>
-                        {isMenuOpen && (
+                        {(isMenuOpen || isEditMode) && (
                           <motion.div
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -556,9 +570,12 @@ export const QuestionBankPanel: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => {
-                                setIsEditMode(prev => !prev);
+                                setIsEditMode(prev => {
+                                  const next = !prev;
+                                  if (!next) setIsMenuOpen(false);
+                                  return next;
+                                });
                                 setEditingIndex(null);
-                                setIsMenuOpen(false);
                               }}
                               className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors text-left ${
                                 isEditMode 
@@ -755,7 +772,7 @@ export const QuestionBankPanel: React.FC = () => {
                                   </p>
                                   
                                   {isEditMode ? (
-                                    <div className="flex items-center gap-0.5 sm:gap-1 shrink-0 bg-white shadow-sm border border-slate-100 rounded-lg p-0.5 animate-fade-in sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                                    <div className="flex items-center gap-0.5 sm:gap-1 shrink-0 bg-white shadow-sm border border-slate-100 rounded-lg p-0.5 animate-fade-in opacity-100 transition-opacity">
                                       <button
                                         type="button"
                                         onClick={() => handleMoveUp(index)}
