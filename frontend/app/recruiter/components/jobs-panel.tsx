@@ -21,7 +21,9 @@ export const JobsPanel: React.FC = () => {
     deleteJob,
     initializeStore,
     seedDemoPipeline,
-    setIsJobOverlayOpen
+    setIsJobOverlayOpen,
+    setActiveTab,
+    setQuestionBankTargetJobId
   } = useRecruiterStore();
 
   // Search and Filter States
@@ -355,6 +357,12 @@ export const JobsPanel: React.FC = () => {
 
   const handleCloseJobDetails = () => {
     setSelectedJob(null);
+  };
+
+  const handleViewQuestionBank = (job: Job) => {
+    setQuestionBankTargetJobId(job.id);
+    setActiveTab('Question Bank');
+    handleCloseJobDetails();
   };
 
   const closeJobModals = () => {
@@ -941,6 +949,31 @@ export const JobsPanel: React.FC = () => {
                       <p className="mt-2 text-[11px] text-slate-500 leading-6 max-w-[240px] mx-auto">
                         Detailed applicant insights will appear here once candidates match the role criteria.
                       </p>
+                    </div>
+                  </section>
+
+                  <section className="rounded-[24px] border border-blue-100 bg-blue-50/70 px-5 py-5 shadow-[0_8px_24px_rgba(59,130,246,0.08)]">
+                    <div className="flex items-start gap-3">
+                      <div className="w-11 h-11 rounded-2xl bg-white border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
+                        <Sparkles className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-sm font-extrabold text-slate-900">Want to review screening questions?</h4>
+                        <p className="mt-1 text-[11px] text-slate-500 leading-6">
+                          Click below to view questions.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (selectedJob) handleViewQuestionBank(selectedJob);
+                          }}
+                          className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-[11px] font-extrabold shadow-[0_8px_20px_rgba(37,99,235,0.24)] hover:bg-blue-700 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          View Question Bank
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </section>
                 </div>

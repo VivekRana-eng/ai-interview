@@ -146,7 +146,7 @@ interface QuestionObject {
 }
 
 export const QuestionBankPanel: React.FC = () => {
-  const { jobs } = useRecruiterStore();
+  const { jobs, questionBankTargetJobId, setQuestionBankTargetJobId } = useRecruiterStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedJobId, setSelectedJobId] = useState('');
   const [jobQuestions, setJobQuestions] = useState<Record<string, QuestionObject[]>>({});
@@ -186,11 +186,24 @@ export const QuestionBankPanel: React.FC = () => {
     }
 
     const stillExists = jobs.some((job) => job.id === selectedJobId);
-    if (!selectedJobId || !stillExists) {
-      const preferred = jobs.find((job) => job.status === 'Active') ?? jobs[0];
-      setSelectedJobId(preferred.id);
+    if (selectedJobId && !stillExists) {
+      setSelectedJobId('');
     }
   }, [jobs, selectedJobId]);
+
+  useEffect(() => {
+    if (!questionBankTargetJobId) return;
+
+    const targetExists = jobs.some((job) => job.id === questionBankTargetJobId);
+    if (!targetExists) {
+      setQuestionBankTargetJobId(null);
+      return;
+    }
+
+    setSelectedJobId(questionBankTargetJobId);
+    setMobileView('detail');
+    setQuestionBankTargetJobId(null);
+  }, [jobs, questionBankTargetJobId, setQuestionBankTargetJobId]);
 
   const handleJobSelect = (id: string) => {
     setSelectedJobId(id);
@@ -841,10 +854,14 @@ export const QuestionBankPanel: React.FC = () => {
                   <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto">
                     <Sparkles className="w-7 h-7" />
                   </div>
-                  <h3 className="mt-5 text-xl font-extrabold text-slate-900">Select a job to begin</h3>
-                  <p className="mt-2 text-sm text-slate-500 font-medium">
-                    Job select karte hi right side par AI-generated screening questions show ho jayengi.
+                  <h3 className="mt-5 text-xl font-extrabold text-slate-900">No job selected</h3>
+                  <p className="mt-2 text-sm text-slate-500 font-medium leading-6">
+                    Left side se kisi job ko select karo. Yahan us job ki AI-generated questions, details, aur applicant insights dikhengi.
                   </p>
+                  <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-500 shadow-sm">
+                    <ChevronRight className="w-3.5 h-3.5 text-blue-500" />
+                    Click any job from the list
+                  </div>
                 </div>
               </motion.div>
             )}

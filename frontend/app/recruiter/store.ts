@@ -14,6 +14,7 @@ interface RecruiterState {
   sortBy: string;
   isDarkMode: boolean;
   isJobOverlayOpen: boolean;
+  questionBankTargetJobId: string | null;
 
   // MongoDB Aggregated Analytics State
   kpiData: { activeJobs: number; totalCandidates: number; interviewsToday: number; integrityAlerts: number } | null;
@@ -22,6 +23,7 @@ interface RecruiterState {
 
   setActiveTab: (tab: string) => void;
   setIsJobOverlayOpen: (isOpen: boolean) => void;
+  setQuestionBankTargetJobId: (jobId: string | null) => void;
   setSearchVal: (val: string) => void;
   setFilterJob: (job: string) => void;
   setFilterStage: (stage: string) => void;
@@ -68,6 +70,7 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   sortBy: 'Highest AI Match',
   isDarkMode: false,
   isJobOverlayOpen: false,
+  questionBankTargetJobId: null,
 
   kpiData: null,
   overviewData: null,
@@ -75,6 +78,7 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
 
   setActiveTab: (tab) => set({ activeTab: tab }),
   setIsJobOverlayOpen: (isOpen: boolean) => set({ isJobOverlayOpen: isOpen }),
+  setQuestionBankTargetJobId: (jobId) => set({ questionBankTargetJobId: jobId }),
   setSearchVal: (val) => set({ searchVal: val }),
   setFilterJob: (job) => set({ filterJob: job }),
   setFilterStage: (stage) => set({ filterStage: stage }),
