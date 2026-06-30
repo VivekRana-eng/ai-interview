@@ -74,7 +74,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
             }
           `}</style>
           
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/20 backdrop-blur-[6px] no-print" onClick={onClose} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-slate-900/20 backdrop-blur-[6px] no-print" onClick={onClose} />
           
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-3xl h-[85vh] bg-white border border-slate-150 rounded-[32px] shadow-[0_40px_100px_rgba(15,23,42,0.25)] overflow-hidden z-10 flex flex-col no-print">
             <div className="flex justify-between items-center px-6 py-3 border-b border-slate-100 bg-[#fafbfd]">
