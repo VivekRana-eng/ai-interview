@@ -106,7 +106,8 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
         certifications: c.certifications || [],
         strengths: c.strengths || [],
         missingSkills: c.missingSkills || [],
-        summary: c.summary || ''
+        summary: c.summary || '',
+        previousTrackRecord: c.previousTrackRecord || 'clean'
       }));
 
       const mappedAlerts = alertRes.map((a: any) => ({
@@ -235,7 +236,8 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
       certifications: candidate.certifications || [],
       strengths: candidate.strengths || [],
       missingSkills: candidate.missingSkills || [],
-      summary: candidate.summary || ''
+      summary: candidate.summary || '',
+      previousTrackRecord: candidate.previousTrackRecord || 'clean'
     };
     
     set((state) => ({ candidates: [newCand, ...state.candidates] }));
@@ -251,7 +253,8 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
         integrityScore: candidate.integrityScore,
         status: candidate.status,
         recommendation: candidate.recommendation,
-        interviewDate: candidate.interviewDate
+        interviewDate: candidate.interviewDate,
+        previousTrackRecord: candidate.previousTrackRecord || 'clean'
       };
 
       const res = await fetch(`${API_URL}/candidates`, {
@@ -406,7 +409,8 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
         certifications: cand.certifications || [],
         strengths: cand.strengths || [],
         missingSkills: cand.missingSkills || [],
-        summary: cand.summary || ''
+        summary: cand.summary || '',
+        previousTrackRecord: cand.previousTrackRecord || 'clean'
       };
     } catch (err) {
       console.error('Failed to screen resume:', err);

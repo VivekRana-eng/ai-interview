@@ -77,7 +77,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
         </div>
 
         {/* Row 2: Grid of Key-Value columns */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-slate-700">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 text-slate-700">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">EMAIL</span>
             <p className="text-xs font-bold text-slate-900 mt-1 truncate">{candidate.email}</p>
@@ -100,6 +100,18 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
                 : 'bg-rose-50 text-rose-700 border border-rose-200/60'
             }`}>
               {candidate.recommendation}
+            </span>
+          </div>
+          <div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">INTEGRITY STATUS</span>
+            <span className={`inline-block text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase tracking-wider mt-1.5 ${
+              candidate.previousTrackRecord === 'clean' || !candidate.previousTrackRecord
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
+                : candidate.previousTrackRecord === 'switched_tab'
+                ? 'bg-amber-50 text-amber-700 border border-amber-200/60'
+                : 'bg-rose-50 text-rose-700 border border-rose-200/60'
+            }`}>
+              Integrity: {candidate.integrityScore}%
             </span>
           </div>
         </div>

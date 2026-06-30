@@ -18,13 +18,33 @@ export const CandidateList: React.FC<CandidateListProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(20);
-  const [sortBy, setSortBy] = useState<string>('Date (Des)');
+  const [sortBy, setSortBy] = useState<string>('AI Match'); // Default to AI Match to match initial selection from user screenshot
 
-  // Filter & Search are handled at the parent level, but let's do pagination here.
-  const totalPages = Math.ceil(candidates.length / itemsPerPage);
+  const parseDate = (dStr: string | undefined) => {
+    if (!dStr) return 0;
+    const timestamp = Date.parse(dStr);
+    return isNaN(timestamp) ? 0 : timestamp;
+  };
+
+  // Sort candidates based on criteria
+  const sortedCandidates = [...candidates].sort((a, b) => {
+    if (sortBy === 'AI Match') {
+      return (b.aiMatchScore || 0) - (a.aiMatchScore || 0);
+    }
+    if (sortBy === 'Name') {
+      return a.name.localeCompare(b.name);
+    }
+    // Default: 'Date (Des)'
+    const dateA = parseDate(a.postedDate || a.interviewDate);
+    const dateB = parseDate(b.postedDate || b.interviewDate);
+    return dateB - dateA;
+  });
+
+  // Paginate sorted list
+  const totalPages = Math.ceil(sortedCandidates.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentCandidates = candidates.slice(startIndex, endIndex);
+  const currentCandidates = sortedCandidates.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -128,6 +148,22 @@ export const CandidateList: React.FC<CandidateListProps> = ({
                     {candidate.aiMatchScore >= 90 && (
                       <span className="px-1.5 py-0.5 rounded bg-blue-50 border border-blue-100 text-blue-600 text-[9px] font-extrabold">
                         AI: {candidate.aiMatchScore}%
+                      </span>
+                    )}
+                    {/* Previous Track Record Badge (Integrity Badge) */}
+                    {(candidate.previousTrackRecord === 'clean' || !candidate.previousTrackRecord) && (
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-100 text-emerald-700 text-[9px] font-extrabold uppercase tracking-wide">
+                        Integrity: {candidate.integrityScore}%
+                      </span>
+                    )}
+                    {candidate.previousTrackRecord === 'switched_tab' && (
+                      <span className="px-1.5 py-0.5 rounded bg-amber-50 border border-amber-100 text-amber-700 text-[9px] font-extrabold uppercase tracking-wide">
+                        Integrity: {candidate.integrityScore}%
+                      </span>
+                    )}
+                    {candidate.previousTrackRecord === 'cheated' && (
+                      <span className="px-1.5 py-0.5 rounded bg-rose-50 border border-rose-100 text-rose-700 text-[9px] font-extrabold uppercase tracking-wide">
+                        Integrity: {candidate.integrityScore}%
                       </span>
                     )}
                   </div>

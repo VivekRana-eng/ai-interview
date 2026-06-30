@@ -17,6 +17,7 @@ export interface Candidate {
   strengths?: string[];
   missingSkills?: string[];
   summary?: string;
+  previousTrackRecord?: 'cheated' | 'switched_tab' | 'clean';
 
   // ATS Candidate Profile Dashboard extensions
   phone?: string;

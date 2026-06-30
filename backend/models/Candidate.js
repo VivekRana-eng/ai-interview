@@ -70,6 +70,11 @@ const CandidateSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  previousTrackRecord: {
+    type: String,
+    enum: ['clean', 'switched_tab', 'cheated'],
+    default: 'clean'
+  },
   createdAt: {
     type: Date,
     default: Date.now,

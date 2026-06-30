@@ -1,4 +1,5 @@
 import { Candidate, LiveCandidate, AiAlert, Job } from './types';
+import { getDefaultExperiences } from './components/candidate-detail-data';
 
 // Specific candidates from screenshots
 const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
@@ -276,13 +277,23 @@ const generateRemaining = (count: number): Candidate[] => {
     const position = positions[i % positions.length];
     const location = locations[i % locations.length];
     const score = 65 + (i * 7) % 31;
-    const integrity = 80 + (i * 3) % 20;
     const clearance = clearances[i % clearances.length];
     const experience = `${3 + (i % 8)}+ yrs exp`;
     const salary = `$${50 + (i % 5) * 10} - $${80 + (i % 5) * 10}`;
     const status = statuses[i % statuses.length];
     const rec = recommendations[i % recommendations.length];
     const connectedStatus = i % 2 === 0 ? 'CONNECTED' : 'CONNECT';
+    const trackRecordOptions: Candidate['previousTrackRecord'][] = ['clean', 'switched_tab', 'cheated'];
+    const previousTrackRecord = trackRecordOptions[i % trackRecordOptions.length];
+    
+    let integrity = 95;
+    if (previousTrackRecord === 'cheated') {
+      integrity = 40 + (i * 3) % 20;
+    } else if (previousTrackRecord === 'switched_tab') {
+      integrity = 70 + (i * 3) % 15;
+    } else {
+      integrity = 90 + (i * 2) % 10;
+    }
 
     list.push({
       id: `cand-gen-${i}`,
@@ -302,6 +313,7 @@ const generateRemaining = (count: number): Candidate[] => {
       relocate: 'Willing to relocate',
       salaryRangeText: salary,
       connectedStatus,
+      previousTrackRecord,
       postedTime: i % 3 === 0 ? 'Today' : 'Nov 22, 2017',
       postedDate: 'Sept 19, 2016',
       sendToHiringManager: i % 5 === 0,
@@ -310,35 +322,56 @@ const generateRemaining = (count: number): Candidate[] => {
       skills: [position.split(' ')[0], 'Git', 'Agile', 'Teamwork'],
       missingSkills: [],
       strengths: ['Solid work ethic', 'Proactive communication skills'],
-      workExperienceDetails: [
-        { role: position, company: 'InnovateCorp', duration: '2023 - Present', description: ['Contributed to high performance teams.'] }
-      ]
+      workExperienceDetails: getDefaultExperiences({ position } as Candidate)
     });
   }
   return list;
 };
 
-const mappedScreenshotCandidates: Candidate[] = SCREENSHOT_CANDIDATES.map((c, idx) => ({
-  id: `cand-${idx + 1}`,
-  name: c.name || '',
-  position: c.position || '',
-  location: c.location || '',
-  avatarUrl: c.avatarUrl || `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.name?.replace(' ', '')}`,
-  email: c.email || `${c.name?.toLowerCase().replace(' ', '.')}@selectai.io`,
-  phone: c.phone || '+91 99888 77665',
-  aiMatchScore: c.aiMatchScore || 85,
-  integrityScore: c.integrityScore || 92,
-  status: c.status || 'Applied',
-  recommendation: c.recommendation || 'Maybe',
-  interviewDate: c.interviewDate || 'Jun 28, 2026',
-  skills: c.skills || ['Management', 'Communication', 'IT', 'Customer Support'],
-  missingSkills: c.missingSkills || [],
-  strengths: c.strengths || ['Highly skilled and adaptable'],
-  workExperienceDetails: c.workExperienceDetails || [
-    { role: c.position || 'Professional', company: 'Global Solutions', duration: '2022 - Present', description: ['Managed critical tasks.'] }
-  ],
-  ...c
-} as Candidate));
+const mappedScreenshotCandidates: Candidate[] = SCREENSHOT_CANDIDATES.map((c, idx) => {
+  let previousTrackRecord: Candidate['previousTrackRecord'] = 'clean';
+  let integrityScore = c.integrityScore || 92;
+
+  if (c.name === 'Robert Huber' || c.name === 'Brian Salazar') {
+    previousTrackRecord = 'cheated';
+    integrityScore = 45; // Reflect cheated status
+  } else if (c.name === 'Richard Alpert' || c.name === 'Nicole Morris' || c.name === 'David Taylor') {
+    previousTrackRecord = 'switched_tab';
+    integrityScore = 78; // Reflect switched tab warning
+  } else {
+    integrityScore = Math.max(90, integrityScore); // Ensure clean record shows 90%+
+  }
+
+  const tempCand = { position: c.position || '', name: c.name || '' } as Candidate;
+  const defaults = getDefaultExperiences(tempCand);
+  const workExperienceDetails = c.workExperienceDetails && c.workExperienceDetails.length > 0
+    ? [
+        ...c.workExperienceDetails,
+        ...defaults.slice(c.workExperienceDetails.length)
+      ]
+    : defaults;
+
+  return {
+    id: `cand-${idx + 1}`,
+    name: c.name || '',
+    position: c.position || '',
+    location: c.location || '',
+    avatarUrl: c.avatarUrl || `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.name?.replace(' ', '')}`,
+    email: c.email || `${c.name?.toLowerCase().replace(' ', '.')}@selectai.io`,
+    phone: c.phone || '+91 99888 77665',
+    aiMatchScore: c.aiMatchScore || 85,
+    status: c.status || 'Applied',
+    recommendation: c.recommendation || 'Maybe',
+    interviewDate: c.interviewDate || 'Jun 28, 2026',
+    skills: c.skills || ['Management', 'Communication', 'IT', 'Customer Support'],
+    missingSkills: c.missingSkills || [],
+    strengths: c.strengths || ['Highly skilled and adaptable'],
+    workExperienceDetails,
+    previousTrackRecord,
+    ...c,
+    integrityScore // Override with the aligned integrity score
+  } as Candidate;
+});
 
 const TOTAL_RECRUITER_CANDIDATES = 25;
 

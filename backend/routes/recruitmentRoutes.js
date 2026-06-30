@@ -19,6 +19,7 @@ const INITIAL_CANDIDATES = [
     integrityScore: 94,
     status: 'Interviewing',
     recommendation: 'Strong Hire',
+    previousTrackRecord: 'clean',
     interviewDate: 'Jun 20, 2026'
   },
   {
@@ -31,6 +32,7 @@ const INITIAL_CANDIDATES = [
     integrityScore: 98,
     status: 'Screening',
     recommendation: 'Strong Hire',
+    previousTrackRecord: 'clean',
     interviewDate: 'Jun 18, 2026'
   },
   {
@@ -43,6 +45,7 @@ const INITIAL_CANDIDATES = [
     integrityScore: 86,
     status: 'Applied',
     recommendation: 'Maybe',
+    previousTrackRecord: 'switched_tab',
     interviewDate: 'Jun 21, 2026'
   }
 ];
