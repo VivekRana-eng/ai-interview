@@ -413,13 +413,14 @@ router.patch('/jobs/:id', async (req, res) => {
 
 router.delete('/jobs/:id', async (req, res) => {
   try {
-    const job = await Job.findByIdAndDelete(req.params.id);
+    const job = await Job.findById(req.params.id);
     if (!job) return res.status(404).json({ message: 'Job not found' });
-    
-    // Optional: could delete candidates applied to this job or keep them. Let's keep them but clear position
-    await Candidate.updateMany({ position: job.title }, { position: '' });
 
-    res.status(200).json({ message: 'Job deleted successfully' });
+    const escapedTitle = job.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    await Candidate.deleteMany({ position: new RegExp(`^${escapedTitle}$`, 'i') });
+    await Job.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ message: 'Job and associated candidate data deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

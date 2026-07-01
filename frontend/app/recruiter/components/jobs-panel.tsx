@@ -273,7 +273,7 @@ export const JobsPanel: React.FC = () => {
   };
 
   const handleDeleteJob = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this job opening? Candidates linked to this role will have their position unlinked.')) {
+    if (window.confirm('Are you sure you want to delete this job opening? Candidates linked to this role will also be deleted.')) {
       try {
         await deleteJob(id);
       } catch (err) {

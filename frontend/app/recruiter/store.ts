@@ -374,7 +374,17 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   },
 
   deleteJob: async (id) => {
-    set((state) => ({ jobs: state.jobs.filter(j => j.id !== id) }));
+    const jobToDelete = get().jobs.find((j) => j.id === id);
+
+    set((state) => ({
+      jobs: state.jobs.filter((j) => j.id !== id),
+      candidates: jobToDelete
+        ? state.candidates.filter((c) => c.position.toLowerCase() !== jobToDelete.title.toLowerCase())
+        : state.candidates,
+      filterJob: jobToDelete && state.filterJob.toLowerCase() === jobToDelete.title.toLowerCase()
+        ? 'All Jobs'
+        : state.filterJob
+    }));
     try {
       const res = await fetch(`${API_URL}/jobs/${id}`, {
         method: 'DELETE'
