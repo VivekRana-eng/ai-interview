@@ -193,7 +193,14 @@ export const getDefaultExperiences = (candidate: Candidate): ExperienceDetail[] 
     ];
   }
 
-  if (titleLower.includes('designer') || titleLower.includes('ux') || titleLower.includes('ui') || titleLower.includes('visual')) {
+  if (
+    titleLower.includes('designer') ||
+    titleLower.includes('ux') ||
+    titleLower.includes('ui') ||
+    titleLower.includes('visual') ||
+    titleLower.includes('product design') ||
+    titleLower.includes('design lead')
+  ) {
     return [
       {
         role: `Lead UI/UX Designer`,
@@ -573,8 +580,10 @@ export const getDefaultInterviewPerformance = (candidate: Candidate): InterviewP
   const communication = Number(Math.min(10, (match - 3) / 10).toFixed(1));
   const problemSolving = Number(Math.min(10, (match + 2) / 10).toFixed(1));
 
-  const isML = candidate.position.toLowerCase().includes('machine') || candidate.position.toLowerCase().includes('ai');
-  const isSec = candidate.position.toLowerCase().includes('security') || candidate.position.toLowerCase().includes('devsecops');
+  const positionLower = candidate.position.toLowerCase();
+  const isML = positionLower.includes('machine') || positionLower.includes('ai');
+  const isSec = positionLower.includes('security') || positionLower.includes('devsecops');
+  const isDesign = positionLower.includes('designer') || positionLower.includes('ux') || positionLower.includes('ui') || positionLower.includes('visual') || positionLower.includes('product design') || positionLower.includes('design lead');
 
   return {
     overallScore: overall,
@@ -589,6 +598,10 @@ export const getDefaultInterviewPerformance = (candidate: Candidate): InterviewP
       'Excellent understanding of OWASP Top 10 vulnerabilities.',
       'Proactive network log auditing and threat modeling.',
       'Flawless integration of security checks in CI/CD.'
+    ] : isDesign ? [
+      'Exceptional taste for clean interaction patterns and visual hierarchy.',
+      'Strong user research synthesis and product thinking.',
+      'Consistent collaboration with engineering teams on design handoff quality.'
     ] : [
       'Flawless system design patterns.',
       'Excellent database indexing depth.',
@@ -598,6 +611,8 @@ export const getDefaultInterviewPerformance = (candidate: Candidate): InterviewP
       'Weak on frontend design aspects and styling frameworks.'
     ] : isSec ? [
       'Basic frontend integration knowledge, needs support on fullstack UI tasks.'
+    ] : isDesign ? [
+      'Needs stronger technical depth on backend APIs and data-layer constraints.'
     ] : [
       'Weak on frontend design aspects and styling frameworks.'
     ],
@@ -605,11 +620,15 @@ export const getDefaultInterviewPerformance = (candidate: Candidate): InterviewP
       ? ['Explaining transformer architecture details vs simple CNNs', 'Explaining vector indexing strategies for range queries']
       : isSec
       ? ['Explaining SQL injection mitigation strategies', 'Explaining Docker container escape isolation mechanics']
+      : isDesign
+      ? ['Explaining design system consistency across product surfaces', 'Explaining user research findings into interface decisions']
       : ['Explaining Go channels vs mutex locks', 'Explaining indexing strategies for range queries in PostgreSQL'],
     gotStuck: isML
       ? ['Explaining browser rendering engine pipelines (understandably outside ML domain)']
       : isSec
       ? ['Explaining browser CSS parsing engine rules (understandably outside backend security domain)']
+      : isDesign
+      ? ['Explaining low-level backend scaling trade-offs (understandably outside product design domain)']
       : ['Explaining browser rendering engine pipelines (understandably outside backend domain)'],
     qaList: [
       {
@@ -617,11 +636,15 @@ export const getDefaultInterviewPerformance = (candidate: Candidate): InterviewP
           ? 'Detail your experience scaling high-concurrency training or evaluation pipelines.'
           : isSec
           ? 'Detail your experience scaling high-concurrency log-monitoring and firewall alerts.'
+          : isDesign
+          ? 'How do you translate user research into clear product design decisions?'
           : 'Detail your experience scaling high-concurrency Node.js or Python endpoints.',
         answer: isML 
           ? 'With Python, model serving runs on Ray utilizing asynchronous inference loops. To scale, we run multiple model worker processes, put Redis as manager, load balance across containers, and shift heavy preprocessing tasks to Celery.'
           : isSec
           ? 'With Python, threat scanning runs on Uvicorn utilizing an asyncio loop. To scale, we run multiple worker processes, put Redis as manager, load balance across containers, and shift expensive packet inspections to Celery.'
+          : isDesign
+          ? 'I start with user interviews and workflow mapping, then convert findings into journey maps, wireframes, and iterative prototypes. I keep engineers involved early so constraints are visible before final handoff.'
           : 'With Python, FastAPI runs on Uvicorn utilizing an asyncio loop. To scale, we run multiple worker processes, put Gunicorn as a manager, load balance across containers, and shift expensive tasks to Celery with Redis as a broker.',
         score: 9.2,
         aiEvaluation: 'Very precise. Accurately highlighted asynchronous bottlenecks and worker models.'

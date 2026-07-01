@@ -129,7 +129,7 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
           }))
         : INITIAL_ALERTS;
 
-      const mappedJobs = Array.isArray(jobRes) && jobRes.length > 0
+      const mappedJobs: Job[] = Array.isArray(jobRes) && jobRes.length > 0
         ? jobRes.map((j: any) => ({
             id: j._id,
             title: j.title,
@@ -137,6 +137,8 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
             status: j.status,
             candidatesCount: j.candidatesCount,
             description: j.description || '',
+            role: j.role || '',
+            aboutJob: j.aboutJob || '',
             skillsRequired: j.skillsRequired || [],
             experience: j.experience || '',
             salaryRange: j.salaryRange || '',

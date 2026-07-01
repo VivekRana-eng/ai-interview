@@ -385,7 +385,7 @@ export const INITIAL_LIVE_CANDIDATES: LiveCandidate[] = [
   {
     id: 'live-1',
     name: "Liam O'Connor",
-    position: 'DevOps Architect',
+    position: 'Security Engineer (DevSecOps)',
     status: 'Secure',
     timeElapsed: '12m 40s',
     avatarUrl: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Liam',
@@ -402,7 +402,7 @@ export const INITIAL_LIVE_CANDIDATES: LiveCandidate[] = [
   {
     id: 'live-2',
     name: 'Yuki Tanaka',
-    position: 'UI/UX Designer',
+    position: 'Product Design Lead',
     status: 'Warning',
     timeElapsed: '0m 0s',
     avatarUrl: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Yuki',
@@ -418,7 +418,7 @@ export const INITIAL_LIVE_CANDIDATES: LiveCandidate[] = [
   {
     id: 'live-3',
     name: 'Daniel Kim',
-    position: 'Frontend Developer',
+    position: 'Senior Full Stack Engineer',
     status: 'Critical',
     timeElapsed: '28m 15s',
     avatarUrl: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Daniel',
