@@ -26,7 +26,16 @@ const OVERVIEW_DATA = [
 export const Charts: React.FC = () => {
   const { candidates, jobs, filterJob, setFilterJob } = useRecruiterStore();
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
+  const [isRangeOpen, setIsRangeOpen] = React.useState(false);
   const isAllJobs = filterJob === 'All' || filterJob === 'All Jobs';
+  const [selectedRange, setSelectedRange] = React.useState<'7' | '30' | '90' | 'all'>('30');
+
+  const rangeOptions: Array<{ value: '7' | '30' | '90' | 'all'; label: string; days: number | null }> = [
+    { value: '7', label: 'Last 7 Days', days: 7 },
+    { value: '30', label: 'Last 30 Days', days: 30 },
+    { value: '90', label: 'Last 90 Days', days: 90 },
+    { value: 'all', label: 'All Time', days: null }
+  ];
 
   // Filter candidates by job role
   const filteredCandidates = candidates.filter(
@@ -104,6 +113,28 @@ export const Charts: React.FC = () => {
     return dateA - dateB;
   });
 
+  const parseChartDate = (label: string) => {
+    const parsed = new Date(`${label}, 2026`);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const selectedRangeConfig = rangeOptions.find(option => option.value === selectedRange) || rangeOptions[1];
+  const latestChartDate = dynamicOverviewData.reduce<Date | null>((latest, item) => {
+    const itemDate = parseChartDate(item.name);
+    if (!itemDate) return latest;
+    if (!latest || itemDate.getTime() > latest.getTime()) return itemDate;
+    return latest;
+  }, null);
+
+  const filteredOverviewData = selectedRangeConfig.days === null || !latestChartDate
+    ? dynamicOverviewData
+    : dynamicOverviewData.filter(item => {
+        const itemDate = parseChartDate(item.name);
+        if (!itemDate) return true;
+        const diffDays = (latestChartDate.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24);
+        return diffDays <= selectedRangeConfig.days!;
+      });
+
   return (
     <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-4 md:gap-6">
 
@@ -117,10 +148,35 @@ export const Charts: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
-            <button className="flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-slate-600 whitespace-nowrap shrink-0">
-              <Calendar className={tw.iconSm} />
-              <span>Last 30 Days</span>
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setIsFilterOpen(false);
+                  setIsRangeOpen(!isRangeOpen);
+                }}
+                className="flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-slate-600 whitespace-nowrap shrink-0"
+              >
+                <Calendar className={tw.iconSm} />
+                <span>{selectedRangeConfig.label}</span>
+              </button>
+
+              {isRangeOpen && (
+                <div className="absolute right-0 mt-1.5 w-40 rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700">
+                  {rangeOptions.map(option => (
+                    <button
+                      key={option.value}
+                      onClick={() => {
+                        setSelectedRange(option.value);
+                        setIsRangeOpen(false);
+                      }}
+                      className={`w-full text-left px-2.5 py-2 rounded-lg text-[10px] font-bold transition-colors ${selectedRange === option.value ? 'bg-blue-50/50 text-blue-650' : 'hover:bg-slate-50'}`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <div className="relative">
               <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -185,7 +241,7 @@ export const Charts: React.FC = () => {
         {/* Chart Viewport */}
         <div className="h-52 sm:h-64 w-full text-[10px] font-bold">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={dynamicOverviewData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+            <LineChart data={filteredOverviewData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
               <XAxis dataKey="name" stroke="#94a3b8" tickLine={false} axisLine={false} tickMargin={8} tick={{ fontSize: 10 }} />
               <YAxis
