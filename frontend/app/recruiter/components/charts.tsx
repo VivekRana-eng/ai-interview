@@ -26,10 +26,11 @@ const OVERVIEW_DATA = [
 export const Charts: React.FC = () => {
   const { candidates, jobs, filterJob, setFilterJob } = useRecruiterStore();
   const [isFilterOpen, setIsFilterOpen] = React.useState(false);
+  const isAllJobs = filterJob === 'All' || filterJob === 'All Jobs';
 
   // Filter candidates by job role
   const filteredCandidates = candidates.filter(
-    c => filterJob === 'All' || c.position === filterJob
+    c => isAllJobs || c.position === filterJob
   );
 
   // Dynamic funnel totals based on filtered candidates
@@ -112,7 +113,7 @@ export const Charts: React.FC = () => {
           <div>
             <h3 className="text-sm md:text-[15px] font-bold text-slate-900 leading-tight">AI Recruitment Overview</h3>
             <p className="text-[10px] md:text-[11px] text-slate-400 font-semibold mt-0.5 leading-snug max-w-[22rem]">
-              30-day analytics pipeline performance{filterJob !== 'All' ? ` for ${filterJob}` : ''}
+              30-day analytics pipeline performance{isAllJobs ? '' : ` for ${filterJob}`}
             </p>
           </div>
           <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
@@ -123,10 +124,10 @@ export const Charts: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className={`flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl border transition-colors text-[10px] font-bold whitespace-nowrap shrink-0 ${filterJob !== 'All' ? 'bg-blue-50 text-blue-755 border-blue-200' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}
+                className={`flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl border transition-colors text-[10px] font-bold whitespace-nowrap shrink-0 ${!isAllJobs ? 'bg-blue-50 text-blue-755 border-blue-200' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}
               >
                 <Filter className={tw.iconSm} />
-                <span className="truncate max-w-[10rem]">Filter{filterJob !== 'All' ? `: ${filterJob}` : ''}</span>
+                <span className="truncate max-w-[10rem]">Filter{!isAllJobs ? `: ${filterJob}` : ''}</span>
               </button>
 
               {isFilterOpen && (
@@ -136,10 +137,10 @@ export const Charts: React.FC = () => {
                   </div>
                   <button
                     onClick={() => {
-                      setFilterJob('All');
+                      setFilterJob('All Jobs');
                       setIsFilterOpen(false);
                     }}
-                    className={`w-full text-left px-2.5 py-2 rounded-lg text-[10px] font-bold transition-colors ${filterJob === 'All' ? 'bg-blue-50/50 text-blue-650' : 'hover:bg-slate-50'}`}
+                    className={`w-full text-left px-2.5 py-2 rounded-lg text-[10px] font-bold transition-colors ${isAllJobs ? 'bg-blue-50/50 text-blue-650' : 'hover:bg-slate-50'}`}
                   >
                     All Jobs
                   </button>

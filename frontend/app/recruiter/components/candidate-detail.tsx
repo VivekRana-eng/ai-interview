@@ -20,7 +20,6 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
   onScheduleInterview
 }) => {
   const [activeProfileTab, setActiveProfileTab] = useState<'experience' | 'interview'>('experience');
-  const [showStrugglesOnly, setShowStrugglesOnly] = useState(false);
   const initials = candidate.name.split(' ').map(n => n[0]).join('');
 
   // Hydrate experiences (at least 4) if empty
@@ -29,7 +28,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
     : getDefaultExperiences(candidate);
 
   return (
-    <div className="space-y-6 animate-fadeIn text-slate-800">
+    <div className="space-y-4 animate-fadeIn text-slate-800">
       {/* Back to list navigation / Breadcrumb */}
       <div className="flex items-center gap-2 text-xs font-bold">
         <button onClick={onBackToList} className="flex items-center gap-1 text-slate-500 hover:text-blue-650 transition-colors">
@@ -41,10 +40,10 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
       </div>
 
       {/* Main Light Profile Card (Matching Job Details Layout) */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl p-6 lg:p-8 shadow-[0_4px_16px_rgba(15,23,42,0.04)] space-y-6">
+      <div className="bg-white border border-slate-200/80 rounded-3xl p-5 lg:p-6 shadow-[0_4px_16px_rgba(15,23,42,0.04)] space-y-5">
         
         {/* Row 1: Squircle Initials & Name & Actions */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-100 pb-5">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-4">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white text-lg flex-shrink-0 shadow-md">
               {initials}
@@ -63,7 +62,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto mt-2 md:mt-0">
+          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto mt-1 md:mt-0">
 
             <button onClick={onDownloadResume} className="px-3.5 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 active:scale-95 bg-white">
               <Download className="w-3.5 h-3.5" />
@@ -77,7 +76,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
         </div>
 
         {/* Row 2: Grid of Key-Value columns */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 text-slate-700">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-5 text-slate-700">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">EMAIL</span>
             <p className="text-xs font-bold text-slate-900 mt-1 truncate">{candidate.email}</p>
@@ -117,7 +116,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
         </div>
 
         {/* Row 3: Grid of Pills (Skills & Gaps) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-100 pt-5 text-slate-700">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border-t border-slate-100 pt-4 text-slate-700">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">CORE SKILLS</span>
             <div className="flex flex-wrap gap-1.5 pt-1.5">
@@ -172,7 +171,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
         </div>
 
         {/* Tab Content Body */}
-        <div className="p-6 bg-white text-slate-800">
+        <div className="p-5 bg-white text-slate-800">
           
           {/* TAB: WORK EXPERIENCE */}
           {activeProfileTab === 'experience' && (

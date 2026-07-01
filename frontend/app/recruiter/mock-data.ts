@@ -5,7 +5,7 @@ import { getDefaultExperiences } from './components/candidate-detail-data';
 const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   {
     name: 'Sneha Verma',
-    position: 'UI/UX Designer',
+    position: 'Product Design Lead',
     location: 'New Delhi, India',
     email: 'sneha.verma@selectai.gov.in',
     phone: '+91 98765 43210',
@@ -42,7 +42,7 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   },
   {
     name: 'Richard Alpert',
-    position: 'Senior Office Manager',
+    position: 'Senior Full Stack Engineer',
     location: 'Washington, DC',
     email: 'richard.alpert@selectai.io',
     phone: '+1 (555) 123-4567',
@@ -64,7 +64,7 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   },
   {
     name: 'Joice McNair',
-    position: 'Enlisted Medical Veteran',
+    position: 'Security Engineer (DevSecOps)',
     location: 'Jacksonville, FL',
     email: 'joice.mcnair@selectai.io',
     phone: '+1 (555) 234-5678',
@@ -87,7 +87,7 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   },
   {
     name: 'Robert Huber',
-    position: 'Exploitation SME',
+    position: 'Security Engineer (DevSecOps)',
     location: 'Mansfield, TX',
     email: 'robert.huber@selectai.io',
     phone: '+1 (555) 345-6789',
@@ -108,7 +108,7 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   },
   {
     name: 'Bruce Timothy Queen',
-    position: 'Web Developer - IT Professional',
+    position: 'Senior Full Stack Engineer',
     location: 'Falls Church, VA',
     email: 'bruce.queen@selectai.io',
     phone: '+1 (555) 456-7890',
@@ -129,7 +129,7 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   },
   {
     name: 'Marlaina Hawthorne',
-    position: 'Logistics Specialist',
+    position: 'Product Design Lead',
     location: 'Gaithersburg, MD',
     email: 'marlaina.hawthorne@selectai.io',
     phone: '+1 (555) 567-8901',
@@ -153,7 +153,7 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   },
   {
     name: 'Jacob Schultz',
-    position: 'National Security Professional',
+    position: 'Security Engineer (DevSecOps)',
     location: 'Alexandria, VA',
     email: 'jacob.schultz@selectai.io',
     phone: '+1 (555) 678-9012',
@@ -174,7 +174,7 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   },
   {
     name: 'Nicole Morris',
-    position: 'Help Desk',
+    position: 'Senior Full Stack Engineer',
     location: 'Centreville, VA',
     email: 'nicole.morris@selectai.io',
     phone: '+1 (555) 789-0123',
@@ -195,7 +195,7 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   },
   {
     name: 'Henry Lynch',
-    position: 'Manager and Analyst',
+    position: 'AI / Machine Learning Researcher',
     location: 'Fayetteville, NC',
     email: 'henry.lynch@selectai.io',
     phone: '+1 (555) 890-1234',
@@ -216,7 +216,7 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   },
   {
     name: 'Brian Salazar',
-    position: 'Security Specialist',
+    position: 'Security Engineer (DevSecOps)',
     location: 'Hamilton Township, NJ',
     email: 'brian.salazar@selectai.io',
     phone: '+1 (555) 901-2345',
@@ -239,7 +239,7 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
   },
   {
     name: 'Rachel Lee',
-    position: 'Program Manager',
+    position: 'Product Design Lead',
     location: 'Odenton, MD',
     email: 'rachel.lee@selectai.io',
     phone: '+1 (555) 012-3456',
@@ -264,7 +264,7 @@ const generateRemaining = (count: number): Candidate[] => {
   const list: Candidate[] = [];
   const firstNames = ['Amit', 'Raj', 'Priya', 'John', 'Sarah', 'Sunita', 'Michael', 'David', 'Jane', 'Neha', 'Vikram', 'Anil', 'Emily', 'Chris', 'Jessica'];
   const lastNames = ['Sharma', 'Verma', 'Kumar', 'Smith', 'Doe', 'Gupta', 'Patel', 'Singh', 'Johnson', 'Davis', 'Taylor', 'Brown', 'Wilson', 'Malhotra', 'Sen'];
-  const positions = ['UI/UX Designer', 'Senior Full Stack Engineer', 'AI / Machine Learning Researcher', 'Security Engineer (DevSecOps)', 'Mobile App Developer', 'QA Automation Engineer', 'Senior Office Manager', 'Program Manager'];
+  const positions = ['AI / Machine Learning Researcher', 'Senior Full Stack Engineer', 'Security Engineer (DevSecOps)', 'Product Design Lead'];
   const locations = ['New Delhi, India', 'Bengaluru, India', 'San Francisco, CA', 'Seattle, WA', 'London, UK', 'New York, NY', 'Washington, DC', 'Fayetteville, NC', 'Jacksonville, FL'];
   const clearances = ['TS/SCI w Poly', 'Secret', 'None'];
   const recommendations: Candidate['recommendation'][] = ['Strong Hire', 'Hire', 'Maybe', 'Reject'];

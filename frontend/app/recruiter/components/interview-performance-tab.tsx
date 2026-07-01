@@ -12,15 +12,17 @@ interface InterviewPerformanceTabProps {
 export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = ({
   candidate
 }) => {
-  const [showStrugglesOnly, setShowStrugglesOnly] = useState(false);
+  const [showWeakOnly, setShowWeakOnly] = useState(false);
 
   const performance = candidate.interviewPerformance && candidate.interviewPerformance.qaList && candidate.interviewPerformance.qaList.length > 0
     ? candidate.interviewPerformance
     : getDefaultInterviewPerformance(candidate);
 
-  const filteredQaList = showStrugglesOnly 
+  const filteredQaList = showWeakOnly
     ? performance.qaList.filter(qa => qa.score < 7.5)
     : performance.qaList;
+
+  const weakCount = performance.qaList.filter(qa => qa.score < 7.5).length;
 
   const ringMetrics = [
     { label: 'Technical depth', score: performance.technicalScore, color: '#10B981' },
@@ -36,38 +38,54 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
   };
 
   return (
-    <div className="space-y-6">
-      {/* Score cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-4">
-        <div className="p-5 bg-slate-50 border border-slate-100 rounded-3xl text-center shadow-sm">
-          <p className="text-[10px] font-extrabold uppercase tracking-[0.28em] text-slate-400">Overall Rating</p>
-          <div className="mt-5 flex flex-col items-center justify-center">
-            <div className="w-28 h-28 rounded-full bg-white grid place-items-center border border-slate-200 shadow-sm">
-              <span className="text-4xl font-extrabold text-slate-900">{performance.overallScore}</span>
+    <div className="space-y-4">
+      <div className="relative overflow-hidden rounded-[28px] border border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50/40 p-4 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.08),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.06),transparent_30%)]" />
+        <div className="relative grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div className="rounded-[24px] border border-blue-100/80 bg-white/85 backdrop-blur-sm p-4 shadow-[0_8px_24px_rgba(37,99,235,0.05)] flex flex-col justify-between min-h-[172px]">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.28em] text-slate-400">Overall Rating</p>
+              <span className="text-[9px] font-extrabold uppercase tracking-[0.22em] text-blue-600 bg-blue-50 px-2 py-1 rounded-full border border-blue-100">Summary</span>
             </div>
-            <p className="mt-4 text-xs uppercase tracking-[0.35em] text-slate-500 font-bold">out of 10</p>
+            <div className="py-3 flex flex-col items-center justify-center">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-white to-slate-50 grid place-items-center border border-slate-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                <span className="text-3xl font-extrabold text-slate-900">{performance.overallScore}</span>
+              </div>
+              <p className="mt-3 text-[10px] uppercase tracking-[0.32em] text-slate-500 font-bold">Out of 10</p>
+            </div>
+            <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
+              Balanced score across technical, communication, and problem solving signals.
+            </p>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {ringMetrics.map((metric) => (
-            <div key={metric.label} className="p-4 bg-slate-50 border border-slate-100 rounded-3xl text-center shadow-sm">
-              <div className="mx-auto w-28 h-28 rounded-full relative" style={getRingStyle(metric.score, metric.color)}>
-                <div className="absolute inset-3 rounded-full bg-white grid place-items-center shadow-inner">
-                  <div>
-                    <p className="text-3xl font-extrabold" style={{ color: metric.color }}>{metric.score.toFixed(1)}</p>
-                    <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 mt-1">/ 10</p>
+          {ringMetrics.map((metric, idx) => (
+            <div key={metric.label} className="rounded-[24px] border border-slate-100 bg-white/90 backdrop-blur-sm p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)] flex flex-col justify-between min-h-[172px]">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-extrabold uppercase tracking-[0.28em] text-slate-400">Metric {idx + 1}</span>
+                <span className="text-[9px] font-extrabold uppercase tracking-[0.22em]" style={{ color: metric.color }}>
+                  {metric.score.toFixed(1)}
+                </span>
+              </div>
+              <div className="flex items-center justify-center py-2">
+                <div className="mx-auto w-24 h-24 rounded-full relative" style={getRingStyle(metric.score, metric.color)}>
+                  <div className="absolute inset-3 rounded-full bg-white grid place-items-center shadow-inner">
+                    <div className="text-center">
+                      <p className="text-2xl font-extrabold" style={{ color: metric.color }}>{metric.score.toFixed(1)}</p>
+                      <p className="text-[9px] uppercase tracking-[0.22em] text-slate-500 mt-0.5">/ 10</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <p className="mt-4 text-[11px] font-extrabold uppercase tracking-[0.2em] text-slate-500">{metric.label}</p>
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-slate-600">{metric.label}</p>
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: metric.color }} />
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Strengths & Gaps */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="p-4 bg-emerald-50/45 border border-emerald-100 text-emerald-800 rounded-xl space-y-2">
           <h5 className="text-[11px] font-extrabold text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-555" />
@@ -89,8 +107,7 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
         </div>
       </div>
 
-      {/* Excelled / Struggled Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-2">
           <h5 className="text-[11px] font-extrabold text-blue-600 uppercase tracking-wider">Excelled At</h5>
           <p className="text-[11px] text-slate-600 font-semibold leading-relaxed">{(performance.performedWell || []).join(', and ')}.</p>
@@ -101,30 +118,28 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
         </div>
       </div>
 
-      {/* QA transcript header with filter action */}
-      <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="pt-3 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h4 className="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Interview QA Transcript</h4>
-        
+
         <button
-          onClick={() => setShowStrugglesOnly(!showStrugglesOnly)}
+          onClick={() => setShowWeakOnly(!showWeakOnly)}
           className={`px-3 py-1.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 transition-all active:scale-95 border ${
-            showStrugglesOnly 
-              ? 'bg-amber-50 border-amber-200 text-amber-700 shadow-sm' 
+            showWeakOnly
+              ? 'bg-amber-50 border-amber-200 text-amber-700 shadow-sm'
               : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100/50'
           }`}
         >
           <AlertCircle className="w-3.5 h-3.5" />
-          <span>{showStrugglesOnly ? 'Showing Weak Answers' : 'Show Low-Performing Questions'}</span>
+          <span>{showWeakOnly ? `Showing Weak Answers (${weakCount})` : `Show Weak Answers Only (${weakCount})`}</span>
         </button>
       </div>
 
-      {/* QA Transcript List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {filteredQaList.length > 0 ? (
           filteredQaList.map((qa, idx) => {
             const isLowScore = qa.score < 7.5;
             return (
-              <div key={idx} className={`p-4 bg-slate-50 border rounded-xl space-y-3 transition-all ${
+              <div key={idx} className={`p-3.5 bg-slate-50 border rounded-xl space-y-2.5 transition-all ${
                 isLowScore ? 'border-amber-200 shadow-sm bg-amber-50/10' : 'border-slate-150'
               }`}>
                 <div className="flex justify-between items-start gap-4">
@@ -138,7 +153,7 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
                     Score: {qa.score}/10
                   </span>
                 </div>
-                <div className="text-xs space-y-2.5">
+                <div className="text-xs space-y-2">
                   <div>
                     <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest block">CANDIDATE ANSWER</span>
                     <p className="italic text-slate-600 font-semibold leading-relaxed mt-0.5">"{qa.answer}"</p>
@@ -152,7 +167,7 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
             );
           })
         ) : (
-          <p className="text-xs text-slate-400 italic text-center py-6">No low-performing questions found for this candidate.</p>
+          <p className="text-xs text-slate-400 italic text-center py-5">No weak answers found for this candidate.</p>
         )}
       </div>
     </div>

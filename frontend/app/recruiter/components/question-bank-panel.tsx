@@ -487,7 +487,7 @@ export const QuestionBankPanel: React.FC = () => {
             <div>
               <h3 className="text-sm font-extrabold text-slate-900">Jobs</h3>
               <p className="text-xs text-slate-500 font-medium">
-                Click any job to load its question set.
+                Select a job to view its question set.
               </p>
             </div>
           </div>
@@ -894,11 +894,11 @@ export const QuestionBankPanel: React.FC = () => {
                   </div>
                   <h3 className="mt-5 text-xl font-extrabold text-slate-900">No job selected</h3>
                   <p className="mt-2 text-sm text-slate-500 font-medium leading-6">
-                    Left side se kisi job ko select karo. Yahan us job ki AI-generated questions, details, aur applicant insights dikhengi.
+                    Select a job from the left panel. Its AI-generated questions, job details, and applicant insights will appear here.
                   </p>
                   <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-500 shadow-sm">
                     <ChevronRight className="w-3.5 h-3.5 text-blue-500" />
-                    Click any job from the list
+                    Choose a job from the list
                   </div>
                 </div>
               </motion.div>

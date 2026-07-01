@@ -80,6 +80,8 @@ export const InteractiveFlow: React.FC = () => {
     addCandidate,
     deleteCandidate
   } = useRecruiterStore();
+  const isAllJobs = filterJob === 'All' || filterJob === 'All Jobs';
+  const isAllStages = filterStage === 'All' || filterStage === 'All Stages' || filterStage === 'All Stages (3)';
 
   // Counts for pipeline summary
   const appliedCount = candidates.filter(c => c.status === 'Applied').length;
@@ -95,8 +97,8 @@ export const InteractiveFlow: React.FC = () => {
     .filter((c) => {
       const matchesSearch = c.name.toLowerCase().includes(searchVal.toLowerCase()) || 
                             c.position.toLowerCase().includes(searchVal.toLowerCase());
-      const matchesJob = filterJob === 'All' || c.position === filterJob;
-      const matchesStage = filterStage === 'All' || c.status.toLowerCase() === filterStage.toLowerCase();
+      const matchesJob = isAllJobs || c.position === filterJob;
+      const matchesStage = isAllStages || c.status.toLowerCase() === filterStage.toLowerCase();
       return matchesSearch && matchesJob && matchesStage;
     })
     .sort((a, b) => {
@@ -158,10 +160,10 @@ export const InteractiveFlow: React.FC = () => {
                   setIsSortOpen(false);
                 }}
                 className={`flex items-center justify-between gap-1.5 px-3 py-1.5 rounded-xl border transition-colors text-[10px] font-bold min-w-[110px] ${
-                  filterStage !== 'All' ? 'bg-blue-50 text-blue-755 border-blue-200' : 'border-slate-200 hover:bg-slate-50 bg-white text-slate-700'
+                  !isAllStages ? 'bg-blue-50 text-blue-755 border-blue-200' : 'border-slate-200 hover:bg-slate-50 bg-white text-slate-700'
                 }`}
               >
-                <span>{filterStage === 'All' ? 'All Stages' : filterStage}</span>
+                <span>{isAllStages ? 'All Stages' : filterStage}</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
@@ -186,7 +188,7 @@ export const InteractiveFlow: React.FC = () => {
                         setIsStageFilterOpen(false);
                       }}
                       className={`w-full text-left px-2.5 py-2 rounded-lg text-[10px] font-bold transition-colors ${
-                        filterStage === stage.value ? 'bg-blue-50/50 text-blue-650' : 'hover:bg-slate-50'
+                        (filterStage === stage.value || (stage.value === 'All' && isAllStages)) ? 'bg-blue-50/50 text-blue-650' : 'hover:bg-slate-50'
                       }`}
                     >
                       {stage.label}

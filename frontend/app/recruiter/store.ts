@@ -66,8 +66,8 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   questionBanks: [],
   activeQuestionBank: null,
   searchVal: '',
-  filterJob: 'All',
-  filterStage: 'All Stages (3)',
+  filterJob: 'All Jobs',
+  filterStage: 'All',
   sortBy: 'Highest AI Match',
   isDarkMode: false,
   isJobOverlayOpen: false,
@@ -93,54 +93,60 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
         fetch(`${API_URL}/alerts`).then(r => r.json())
       ]);
 
-      const mappedCands = candRes.map((c: any) => ({
-        id: c._id,
-        name: c.name,
-        position: c.position,
-        location: c.location,
-        email: c.email,
-        avatarUrl: c.avatarUrl || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + c.name,
-        aiMatchScore: c.aiMatchScore,
-        integrityScore: c.integrityScore,
-        status: c.status,
-        recommendation: c.recommendation,
-        interviewDate: c.interviewDate,
-        skills: c.skills || [],
-        education: c.education || [],
-        experience: c.experience || [],
-        certifications: c.certifications || [],
-        strengths: c.strengths || [],
-        missingSkills: c.missingSkills || [],
-        summary: c.summary || '',
-        previousTrackRecord: c.previousTrackRecord || 'clean'
-      }));
+      const mappedCands = Array.isArray(candRes) && candRes.length > 0
+        ? candRes.map((c: any) => ({
+            id: c._id,
+            name: c.name,
+            position: c.position,
+            location: c.location,
+            email: c.email,
+            avatarUrl: c.avatarUrl || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + c.name,
+            aiMatchScore: c.aiMatchScore,
+            integrityScore: c.integrityScore,
+            status: c.status,
+            recommendation: c.recommendation,
+            interviewDate: c.interviewDate,
+            skills: c.skills || [],
+            education: c.education || [],
+            experience: c.experience || [],
+            certifications: c.certifications || [],
+            strengths: c.strengths || [],
+            missingSkills: c.missingSkills || [],
+            summary: c.summary || '',
+            previousTrackRecord: c.previousTrackRecord || 'clean'
+          }))
+        : INITIAL_CANDIDATES;
 
-      const mappedAlerts = alertRes.map((a: any) => ({
-        id: a._id,
-        candidateName: a.candidateName,
-        type: a.type,
-        message: a.message,
-        severity: a.severity,
-        timestamp: a.timestamp,
-        resolved: a.resolved
-      }));
+      const mappedAlerts = Array.isArray(alertRes) && alertRes.length > 0
+        ? alertRes.map((a: any) => ({
+            id: a._id,
+            candidateName: a.candidateName,
+            type: a.type,
+            message: a.message,
+            severity: a.severity,
+            timestamp: a.timestamp,
+            resolved: a.resolved
+          }))
+        : INITIAL_ALERTS;
 
-      const mappedJobs = jobRes.map((j: any) => ({
-        id: j._id,
-        title: j.title,
-        department: j.department,
-        status: j.status,
-        candidatesCount: j.candidatesCount,
-        description: j.description || '',
-        skillsRequired: j.skillsRequired || [],
-        experience: j.experience || '',
-        salaryRange: j.salaryRange || '',
-        location: j.location || '',
-        employmentType: j.employmentType || 'Full-time',
-        aiSummary: j.aiSummary || '',
-        aiQuestions: j.aiQuestions || [],
-        createdAt: j.createdAt
-      }));
+      const mappedJobs = Array.isArray(jobRes) && jobRes.length > 0
+        ? jobRes.map((j: any) => ({
+            id: j._id,
+            title: j.title,
+            department: j.department,
+            status: j.status,
+            candidatesCount: j.candidatesCount,
+            description: j.description || '',
+            skillsRequired: j.skillsRequired || [],
+            experience: j.experience || '',
+            salaryRange: j.salaryRange || '',
+            location: j.location || '',
+            employmentType: j.employmentType || 'Full-time',
+            aiSummary: j.aiSummary || '',
+            aiQuestions: j.aiQuestions || [],
+            createdAt: j.createdAt
+          }))
+        : MOCK_JOBS;
 
       set({ 
         candidates: mappedCands, 

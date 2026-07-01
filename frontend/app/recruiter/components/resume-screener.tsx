@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRecruiterStore } from '../store';
 import { Candidate } from '../types';
-import { Layers, Upload, Sparkles } from 'lucide-react';
+import { Layers, Sparkles } from 'lucide-react';
 import { CandidateList } from './candidate-list';
 import { CandidateDetail } from './candidate-detail';
 import { UploadModal, ScheduleModal } from './candidate-modals';
@@ -51,11 +51,11 @@ export const ResumeScreener: React.FC = () => {
       (cand.skills && cand.skills.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())));
 
     const matchesJob = 
-      filterJob === 'All Jobs' || 
+      filterJob === 'All' || filterJob === 'All Jobs' || 
       cand.position.toLowerCase().includes(filterJob.toLowerCase());
 
     const matchesStage = 
-      stageFilter === 'All Stages' || 
+      stageFilter === 'All' || stageFilter === 'All Stages' || 
       cand.status === stageFilter;
 
     return matchesSearch && matchesJob && matchesStage;
@@ -113,19 +113,7 @@ export const ResumeScreener: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      
-      {/* 1. Dashboard Header */}
-      <div className="flex justify-end gap-4">
-        <button
-          onClick={() => setIsUploadModalOpen(true)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2 hover:shadow-lg active:scale-95"
-        >
-          <Upload className="w-4 h-4" />
-          <span>Upload & Screen CV</span>
-        </button>
-      </div>
-
+    <div className={viewMode === 'detail' ? 'space-y-4' : 'space-y-6'}>
       {/* Main Area */}
       {viewMode === 'list' ? (
         <div className="space-y-6">

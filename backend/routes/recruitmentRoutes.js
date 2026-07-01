@@ -6,49 +6,8 @@ const Alert = require('../models/Alert');
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
+const { INITIAL_CANDIDATES } = require('../mock-candidates');
 const upload = multer({ storage: multer.memoryStorage() });
-
-const INITIAL_CANDIDATES = [
-  {
-    name: 'Alexander Wright',
-    position: 'AI / Machine Learning Researcher',
-    location: 'San Francisco, CA',
-    email: 'alex.wright@selectai.io',
-    avatarUrl: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Alexander',
-    aiMatchScore: 96,
-    integrityScore: 94,
-    status: 'Interviewing',
-    recommendation: 'Strong Hire',
-    previousTrackRecord: 'clean',
-    interviewDate: 'Jun 20, 2026'
-  },
-  {
-    name: 'Sophia Chen',
-    position: 'Senior Full Stack Engineer',
-    location: 'Seattle, WA',
-    email: 'sophia.chen@selectai.io',
-    avatarUrl: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Sophia',
-    aiMatchScore: 94,
-    integrityScore: 98,
-    status: 'Screening',
-    recommendation: 'Strong Hire',
-    previousTrackRecord: 'clean',
-    interviewDate: 'Jun 18, 2026'
-  },
-  {
-    name: 'Emma Watson',
-    position: 'Security Engineer (DevSecOps)',
-    location: 'London, UK',
-    email: 'emma.watson@selectai.io',
-    avatarUrl: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Emma',
-    aiMatchScore: 89,
-    integrityScore: 86,
-    status: 'Applied',
-    recommendation: 'Maybe',
-    previousTrackRecord: 'switched_tab',
-    interviewDate: 'Jun 21, 2026'
-  }
-];
 
 const INITIAL_ALERTS = [
   {
@@ -82,7 +41,7 @@ const MOCK_JOBS = [
     title: 'AI / Machine Learning Researcher',
     department: 'Engineering',
     status: 'Active',
-    candidatesCount: 1,
+    candidatesCount: 7,
     description: 'Research and develop advanced neural architectures for high-throughput decision-making systems.',
     skillsRequired: ['PyTorch', 'TensorFlow', 'NLP', 'Transformers', 'CUDA'],
     experience: '3+ years',
@@ -100,7 +59,7 @@ const MOCK_JOBS = [
     title: 'Senior Full Stack Engineer',
     department: 'Engineering',
     status: 'Active',
-    candidatesCount: 1,
+    candidatesCount: 6,
     description: 'Build responsive interfaces and robust API backends that scale seamlessly under heavy load.',
     skillsRequired: ['Next.js', 'React', 'Node.js', 'Express', 'MongoDB'],
     experience: '5+ years',
@@ -118,7 +77,7 @@ const MOCK_JOBS = [
     title: 'Security Engineer (DevSecOps)',
     department: 'Security',
     status: 'Active',
-    candidatesCount: 1,
+    candidatesCount: 6,
     description: 'Audit cloud infrastructure, set container security parameters, and configure access control lists.',
     skillsRequired: ['Docker', 'Kubernetes', 'AWS', 'IAM', 'OWASP'],
     experience: '4+ years',
@@ -172,7 +131,7 @@ const MOCK_JOBS = [
     title: 'Data Engineer (Platform)',
     department: 'Engineering',
     status: 'Closed',
-    candidatesCount: 8,
+    candidatesCount: 0,
     description: 'Maintenance of legacy data pipelines and ETL processes.',
     skillsRequired: ['SQL', 'Hadoop', 'Apache Spark'],
     experience: '4+ years',
