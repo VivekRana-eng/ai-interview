@@ -1,7 +1,8 @@
 'use client';
 import * as tw from '@/lib/tailwindClasses'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useRecruiterStore } from '../store';
 import { Candidate } from '../types';
 import { motion } from 'framer-motion';
@@ -64,6 +65,32 @@ export const InteractiveFlow: React.FC = () => {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [isStageFilterOpen, setIsStageFilterOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Pagination state for progress flow
+  const [currentPageFlow, setCurrentPageFlow] = useState(1);
+  const itemsPerPageFlow = 5;
+
+  // Toast state for hired notification
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Confirm dialog state to prevent accidental click on promote/delete
+  const [confirmDialog, setConfirmDialog] = useState<{
+    type: 'promote' | 'stage' | 'delete';
+    candidate: Candidate;
+    targetStage?: Candidate['status'];
+  } | null>(null);
+
+  const showHiredToast = (name: string, position: string) => {
+    setToastMessage(`${name} is hired as ${position}`);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 4000);
+  };
 
   const { 
     candidates, 
@@ -80,6 +107,91 @@ export const InteractiveFlow: React.FC = () => {
     addCandidate,
     deleteCandidate
   } = useRecruiterStore();
+
+  const replaceHiredCandidate = async (hiredCandId: string) => {
+    const firstNames = ['Arjun', 'Priya', 'Aditya', 'Ananya', 'Rohan', 'Sneha', 'Rahul', 'Kriti', 'Vikram', 'Neha', 'Kabir', 'Divya'];
+    const lastNames = ['Sharma', 'Patel', 'Verma', 'Mehta', 'Rao', 'Joshi', 'Gupta', 'Sen', 'Nair', 'Singh', 'Kapoor', 'Reddy'];
+    const randomName = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+    const randomEmail = `${randomName.toLowerCase().replace(' ', '.')}@selectai.gov.in`;
+
+    const activeJobs = jobs.filter(j => j.status === 'Active');
+    const positions = activeJobs.length > 0 
+      ? activeJobs.map(j => j.title)
+      : ['AI / Machine Learning Researcher', 'Senior Full Stack Engineer', 'Security Engineer (DevSecOps)', 'UI/UX Designer'];
+    const randomPos = positions[Math.floor(Math.random() * positions.length)];
+    
+    const id = 'cand-' + Date.now();
+    
+    // Promote candidate to Hired in the database & store so the circle chart is updated
+    await setCandidateStage(hiredCandId, 'Hired');
+
+    // Add the new candidate
+    await addCandidate({
+      id,
+      name: randomName,
+      position: randomPos,
+      location: 'New Delhi, IN',
+      email: randomEmail,
+      avatarUrl: `https://api.dicebear.com/7.x/adventurer/svg?seed=${randomName}`,
+      aiMatchScore: Math.floor(Math.random() * 26) + 70,
+      integrityScore: Math.floor(Math.random() * 16) + 82,
+      status: 'Applied',
+      recommendation: Math.random() > 0.5 ? 'Hire' : 'Maybe',
+      interviewDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    });
+  };
+
+  const handlePromoteClick = (cand: Candidate) => {
+    const currIdx = STAGES.indexOf(cand.status);
+    const nextIdx = Math.min(currIdx + 1, STAGES.length - 1);
+    const nextStatus = STAGES[nextIdx];
+
+    setConfirmDialog({
+      type: 'promote',
+      candidate: cand,
+      targetStage: nextStatus
+    });
+  };
+
+  const handleStageClick = (cand: Candidate, stage: Candidate['status']) => {
+    if (stage === cand.status) return; // No stage changes needed
+    setConfirmDialog({
+      type: 'stage',
+      candidate: cand,
+      targetStage: stage
+    });
+  };
+
+  const handleDeleteClick = (cand: Candidate) => {
+    setConfirmDialog({
+      type: 'delete',
+      candidate: cand
+    });
+  };
+
+  const handleConfirmAction = () => {
+    if (!confirmDialog) return;
+    const { type, candidate, targetStage } = confirmDialog;
+    setConfirmDialog(null);
+
+    if (type === 'promote' && targetStage) {
+      if (targetStage === 'Hired') {
+        showHiredToast(candidate.name, candidate.position);
+        replaceHiredCandidate(candidate.id);
+      } else {
+        promoteCandidate(candidate.id);
+      }
+    } else if (type === 'stage' && targetStage) {
+      if (targetStage === 'Hired' && candidate.status !== 'Hired') {
+        showHiredToast(candidate.name, candidate.position);
+        replaceHiredCandidate(candidate.id);
+      } else {
+        setCandidateStage(candidate.id, targetStage);
+      }
+    } else if (type === 'delete') {
+      deleteCandidate(candidate.id);
+    }
+  };
   const isAllJobs = filterJob === 'All' || filterJob === 'All Jobs';
   const isAllStages = filterStage === 'All' || filterStage === 'All Stages' || filterStage === 'All Stages (3)';
 
@@ -95,6 +207,9 @@ export const InteractiveFlow: React.FC = () => {
   // Filter candidates based on controls
   const filteredCandidates = candidates
     .filter((c) => {
+      // Hide hired candidates from the active timeline flow
+      if (c.status === 'Hired') return false;
+
       const matchesSearch = c.name.toLowerCase().includes(searchVal.toLowerCase()) || 
                             c.position.toLowerCase().includes(searchVal.toLowerCase());
       const matchesJob = isAllJobs || c.position === filterJob;
@@ -108,6 +223,10 @@ export const InteractiveFlow: React.FC = () => {
       if (sortBy === 'Name') return a.name.localeCompare(b.name);
       return 0;
     });
+
+  const totalPagesFlow = Math.ceil(filteredCandidates.length / itemsPerPageFlow);
+  const currentPage = Math.max(1, Math.min(currentPageFlow, totalPagesFlow || 1));
+  const displayCandidates = filteredCandidates.slice((currentPage - 1) * itemsPerPageFlow, currentPage * itemsPerPageFlow);
 
   return (
     <>
@@ -244,81 +363,11 @@ export const InteractiveFlow: React.FC = () => {
             </div>
           </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-slate-400">QUICK ADD:</span>
-          <button
-            onClick={() => {
-              const firstNames = ['Arjun', 'Priya', 'Aditya', 'Ananya', 'Rohan', 'Sneha', 'Rahul', 'Kriti'];
-              const lastNames = ['Sharma', 'Patel', 'Verma', 'Mehta', 'Rao', 'Joshi', 'Gupta', 'Sen'];
-              const randomName = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
-              const randomEmail = `${randomName.toLowerCase().replace(' ', '.')}@selectai.gov.in`;
-              
-              const activeJobs = jobs.filter(j => j.status === 'Active');
-              const positions = activeJobs.length > 0 
-                ? activeJobs.map(j => j.title)
-                : ['AI / Machine Learning Researcher', 'Senior Full Stack Engineer', 'Security Engineer (DevSecOps)'];
-              const randomPos = positions[Math.floor(Math.random() * positions.length)];
-              
-              const id = 'cand-' + Date.now();
-              addCandidate({
-                id,
-                name: randomName,
-                position: randomPos,
-                location: 'New Delhi, IN',
-                email: randomEmail,
-                avatarUrl: `https://api.dicebear.com/7.x/adventurer/svg?seed=${randomName}`,
-                aiMatchScore: Math.floor(Math.random() * 26) + 70,
-                integrityScore: Math.floor(Math.random() * 16) + 82,
-                status: 'Applied',
-                recommendation: Math.random() > 0.5 ? 'Hire' : 'Maybe',
-                interviewDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-              });
-            }}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 font-extrabold text-[9px] text-slate-700"
-          >
-            <Plus className="w-3 h-3 text-slate-400" />
-            <span>Applied</span>
-          </button>
-          <button
-            onClick={() => {
-              const firstNames = ['Vikram', 'Neha', 'Kabir', 'Divya', 'Siddharth', 'Ishita', 'Aarav', 'Kiara'];
-              const lastNames = ['Nair', 'Singh', 'Kapoor', 'Reddy', 'Choudhury', 'Bose', 'Mishra', 'Das'];
-              const randomName = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
-              const randomEmail = `${randomName.toLowerCase().replace(' ', '.')}@selectai.gov.in`;
-              
-              const activeJobs = jobs.filter(j => j.status === 'Active');
-              const positions = activeJobs.length > 0 
-                ? activeJobs.map(j => j.title)
-                : ['AI / Machine Learning Researcher', 'Senior Full Stack Engineer', 'Security Engineer (DevSecOps)'];
-              const randomPos = positions[Math.floor(Math.random() * positions.length)];
-              
-              const id = 'cand-' + Date.now();
-              addCandidate({
-                id,
-                name: randomName,
-                position: randomPos,
-                location: 'Bengaluru, IN',
-                email: randomEmail,
-                avatarUrl: `https://api.dicebear.com/7.x/adventurer/svg?seed=${randomName}`,
-                aiMatchScore: Math.floor(Math.random() * 21) + 80,
-                integrityScore: Math.floor(Math.random() * 11) + 88,
-                status: 'Interviewing',
-                recommendation: Math.random() > 0.4 ? 'Strong Hire' : 'Hire',
-                interviewDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-              });
-            }}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 font-extrabold text-[9px] text-slate-700"
-          >
-            <Plus className="w-3 h-3 text-slate-400" />
-            <span>Interviewed</span>
-          </button>
-        </div>
       </div>
 
       {/* Interactive timeline candidate rows */}
       <div className="space-y-4 pt-1">
-        {filteredCandidates.map((cand) => {
+        {displayCandidates.map((cand) => {
           const currentStageIdx = STAGES.indexOf(cand.status);
 
           return (
@@ -366,7 +415,7 @@ export const InteractiveFlow: React.FC = () => {
                   return (
                     <button
                       key={stage}
-                      onClick={() => setCandidateStage(cand.id, stage)}
+                      onClick={() => handleStageClick(cand, stage)}
                       className="relative z-10 flex flex-col items-center group focus:outline-none"
                     >
                       <div className={`
@@ -390,12 +439,14 @@ export const InteractiveFlow: React.FC = () => {
 
               {/* Action Buttons column */}
               <div className="flex flex-wrap items-center gap-2 justify-end">
-                <button
-                  onClick={() => promoteCandidate(cand.id)}
-                  className="px-4 py-1.5 rounded-xl text-[9px] font-extrabold uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm"
-                >
-                  Promote &gt;
-                </button>
+                {cand.status !== 'Hired' && (
+                  <button
+                    onClick={() => handlePromoteClick(cand)}
+                    className="px-4 py-1.5 rounded-xl text-[9px] font-extrabold uppercase tracking-wider bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm"
+                  >
+                    Promote &gt;
+                  </button>
+                )}
                 <button
                   onClick={() => setSelectedCandidate(cand)}
                   className="p-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-colors shadow-sm"
@@ -403,7 +454,7 @@ export const InteractiveFlow: React.FC = () => {
                   <User className={tw.iconSm} />
                 </button>
                 <button
-                  onClick={() => deleteCandidate(cand.id)}
+                  onClick={() => handleDeleteClick(cand)}
                   className="p-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 hover:text-rose-500 transition-colors shadow-sm"
                 >
                   <Trash2 className={tw.iconSm} />
@@ -414,11 +465,36 @@ export const InteractiveFlow: React.FC = () => {
           );
         })}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPagesFlow > 1 && (
+        <div className="flex justify-between items-center pt-4 border-t border-slate-100 text-[10px] font-bold text-slate-500">
+          <span>
+            Showing {Math.min(filteredCandidates.length, (currentPage - 1) * itemsPerPageFlow + 1)}–{Math.min(filteredCandidates.length, currentPage * itemsPerPageFlow)} of {filteredCandidates.length} candidates
+          </span>
+          <div className="flex gap-1.5">
+            <button
+              onClick={() => setCurrentPageFlow(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:hover:bg-white text-slate-700 transition-colors shadow-sm"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setCurrentPageFlow(prev => Math.min(totalPagesFlow, prev + 1))}
+              disabled={currentPage === totalPagesFlow}
+              className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:hover:bg-white text-slate-700 transition-colors shadow-sm"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
 
     {/* Candidate Profile Details Modal */}
-    {selectedCandidate && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    {mounted && selectedCandidate && createPortal(
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6 relative animate-in fade-in zoom-in-95 duration-200 text-slate-800">
           <button 
             onClick={() => setSelectedCandidate(null)}
@@ -431,7 +507,7 @@ export const InteractiveFlow: React.FC = () => {
               {selectedCandidate.name.split(' ').map(n => n[0]).join('')}
             </div>
             <div>
-              <h4 className="font-extrabold text-slate-800 text-sm leading-tight">{selectedCandidate.name}</h4>
+              <h4 className="font-extrabold text-slate-850 text-slate-800 text-sm leading-tight">{selectedCandidate.name}</h4>
               <p className="text-xs text-[#7B8AA3] font-semibold mt-0.5">{selectedCandidate.position}</p>
             </div>
           </div>
@@ -491,7 +567,77 @@ export const InteractiveFlow: React.FC = () => {
             </button>
           </div>
         </div>
+      </div>,
+      document.body
+    )}
+
+    {/* Hired Toast Alert */}
+    {toastMessage && (
+      <div 
+        className="fixed top-8 left-1/2 -translate-x-1/2 z-[9999] bg-slate-900/95 backdrop-blur-md text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-800/80 transition-all duration-300"
+        style={{
+          animation: 'toast-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+        }}
+      >
+        <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px] font-black shadow-sm">
+          ✓
+        </div>
+        <span className="text-xs font-bold tracking-tight text-slate-100">{toastMessage}</span>
+        <style>{`
+          @keyframes toast-enter {
+            from { opacity: 0; transform: translate3d(-50%, -20px, 0) scale(0.95); }
+            to { opacity: 1; transform: translate3d(-50%, 0, 0) scale(1); }
+          }
+        `}</style>
       </div>
+    )}
+
+    {/* Action Confirmation Modal */}
+    {mounted && confirmDialog && createPortal(
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        <div 
+          className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-sm w-full p-6 relative animate-in fade-in zoom-in-95 duration-200 text-slate-800"
+          style={{
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.15)'
+          }}
+        >
+          <h4 className="font-extrabold text-slate-850 text-sm leading-tight mb-2">
+            {confirmDialog.type === 'delete' ? 'Delete Candidate' : confirmDialog.type === 'promote' ? 'Promote Candidate' : 'Move Stage'}
+          </h4>
+          
+          <p className="text-xs font-semibold text-slate-500 mb-5 leading-normal">
+            {confirmDialog.type === 'delete' && (
+              <>Are you sure you want to delete <span className="font-extrabold text-slate-800">{confirmDialog.candidate.name}</span> from the pipeline? This action cannot be undone.</>
+            )}
+            {confirmDialog.type === 'promote' && (
+              <>Are you sure you want to promote <span className="font-extrabold text-slate-800">{confirmDialog.candidate.name}</span> to the <span className="font-extrabold text-blue-600 uppercase tracking-wider">{confirmDialog.targetStage}</span> stage?</>
+            )}
+            {confirmDialog.type === 'stage' && (
+              <>Are you sure you want to manually change <span className="font-extrabold text-slate-800">{confirmDialog.candidate.name}</span>'s stage to <span className="font-extrabold text-blue-600 uppercase tracking-wider">{confirmDialog.targetStage}</span>?</>
+            )}
+          </p>
+
+          <div className="flex justify-end gap-2.5">
+            <button
+              onClick={() => setConfirmDialog(null)}
+              className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 text-[10px] font-bold rounded-xl transition-colors bg-white shadow-sm"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmAction}
+              className={`px-4 py-2 text-white text-[10px] font-bold rounded-xl transition-colors shadow-sm ${
+                confirmDialog.type === 'delete' 
+                  ? 'bg-rose-600 hover:bg-rose-700' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
     )}
     </>
   );

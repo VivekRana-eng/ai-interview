@@ -51,35 +51,25 @@ const roleTemplates = {
     strengths: ['Automation coverage', 'Regression discipline', 'Bug triage'],
     missingSkills: ['Performance testing'],
     summary: 'Reliable QA automation profile with strong regression and test stability habits.'
+  },
+  design: {
+    position: 'UI/UX Designer',
+    skills: ['Figma', 'Adobe XD', 'Wireframing', 'User Research', 'CSS', 'TailwindCSS'],
+    education: ['B.Des in Communication Design - NID Ahmedabad'],
+    experience: ['Lead UI/UX Designer - IndiaTech Solutions (2024 - Present)'],
+    certifications: ['Interaction Design Foundation Certified'],
+    strengths: ['Pixel-perfect design standards', 'Excellent user empathy', 'Collaborates well with developers'],
+    missingSkills: [],
+    summary: 'Lead interface designer drafting layout paradigms and component specs.'
   }
 };
 
 const candidateSpecs = [
+  { role: 'design', name: 'Sneha Verma', location: 'New Delhi, India', email: 'sneha.verma@selectai.gov.in', aiMatchScore: 90, integrityScore: 96, status: 'Interviewing', recommendation: 'Hire', interviewDate: 'Jun 26, 2026' },
+  { role: 'security', name: 'Emma Watson', location: 'London, UK', email: 'emma.watson@selectai.io', aiMatchScore: 89, integrityScore: 86, status: 'Applied', recommendation: 'Maybe', interviewDate: 'Jun 21, 2026', previousTrackRecord: 'switched_tab' },
   { role: 'ml', name: 'Alexander Wright', location: 'San Francisco, CA', email: 'alexander.wright@selectai.io', aiMatchScore: 97, integrityScore: 95, status: 'Interviewing', recommendation: 'Strong Hire', interviewDate: 'Jun 20, 2026' },
   { role: 'ml', name: 'Priya Nair', location: 'Bengaluru, India', email: 'priya.nair@selectai.io', aiMatchScore: 94, integrityScore: 92, status: 'Screening', recommendation: 'Hire', interviewDate: 'Jun 21, 2026' },
-  { role: 'ml', name: 'Ethan Brooks', location: 'Seattle, WA', email: 'ethan.brooks@selectai.io', aiMatchScore: 90, integrityScore: 88, status: 'Applied', recommendation: 'Maybe', interviewDate: 'Jun 22, 2026', previousTrackRecord: 'switched_tab' },
-  { role: 'ml', name: 'Meera Iyer', location: 'New Delhi, India', email: 'meera.iyer@selectai.io', aiMatchScore: 96, integrityScore: 97, status: 'Shortlisted', recommendation: 'Strong Hire', interviewDate: 'Jun 23, 2026' },
-  { role: 'ml', name: 'Daniel Kim', location: 'Toronto, Canada', email: 'daniel.kim@selectai.io', aiMatchScore: 93, integrityScore: 91, status: 'Interviewing', recommendation: 'Hire', interviewDate: 'Jun 24, 2026' },
-  { role: 'ml', name: 'Olivia Martinez', location: 'Austin, TX', email: 'olivia.martinez@selectai.io', aiMatchScore: 91, integrityScore: 89, status: 'Screening', recommendation: 'Hire', interviewDate: 'Jun 25, 2026' },
-  { role: 'ml', name: 'Rahul Sen', location: 'Hyderabad, India', email: 'rahul.sen@selectai.io', aiMatchScore: 95, integrityScore: 96, status: 'Hired', recommendation: 'Strong Hire', interviewDate: 'Jun 26, 2026' },
-  { role: 'fullstack', name: 'Sophia Chen', location: 'Seattle, WA', email: 'sophia.chen@selectai.io', aiMatchScore: 95, integrityScore: 98, status: 'Screening', recommendation: 'Strong Hire', interviewDate: 'Jun 18, 2026' },
-  { role: 'fullstack', name: "Liam O'Connor", location: 'Dublin, Ireland', email: 'liam.oconnor@selectai.io', aiMatchScore: 92, integrityScore: 90, status: 'Interviewing', recommendation: 'Hire', interviewDate: 'Jun 19, 2026' },
-  { role: 'fullstack', name: 'Ananya Sharma', location: 'Pune, India', email: 'ananya.sharma@selectai.io', aiMatchScore: 88, integrityScore: 93, status: 'Applied', recommendation: 'Maybe', interviewDate: 'Jun 20, 2026' },
-  { role: 'fullstack', name: 'Carlos Mendes', location: 'Lisbon, Portugal', email: 'carlos.mendes@selectai.io', aiMatchScore: 90, integrityScore: 88, status: 'Shortlisted', recommendation: 'Hire', interviewDate: 'Jun 21, 2026', previousTrackRecord: 'switched_tab' },
-  { role: 'fullstack', name: 'Tanvi Malhotra', location: 'Mumbai, India', email: 'tanvi.malhotra@selectai.io', aiMatchScore: 93, integrityScore: 94, status: 'Interviewing', recommendation: 'Hire', interviewDate: 'Jun 22, 2026' },
-  { role: 'fullstack', name: 'Kevin Brown', location: 'Chicago, IL', email: 'kevin.brown@selectai.io', aiMatchScore: 97, integrityScore: 96, status: 'Hired', recommendation: 'Strong Hire', interviewDate: 'Jun 23, 2026' },
-  { role: 'security', name: 'Emma Watson', location: 'London, UK', email: 'emma.watson@selectai.io', aiMatchScore: 89, integrityScore: 86, status: 'Applied', recommendation: 'Maybe', interviewDate: 'Jun 21, 2026', previousTrackRecord: 'switched_tab' },
-  { role: 'security', name: 'Arjun Patel', location: 'Ahmedabad, India', email: 'arjun.patel@selectai.io', aiMatchScore: 92, integrityScore: 94, status: 'Screening', recommendation: 'Hire', interviewDate: 'Jun 22, 2026' },
-  { role: 'security', name: 'Yuki Tanaka', location: 'Tokyo, Japan', email: 'yuki.tanaka@selectai.io', aiMatchScore: 95, integrityScore: 93, status: 'Interviewing', recommendation: 'Strong Hire', interviewDate: 'Jun 23, 2026' },
-  { role: 'security', name: 'Sana Khan', location: 'Dubai, UAE', email: 'sana.khan@selectai.io', aiMatchScore: 91, integrityScore: 90, status: 'Shortlisted', recommendation: 'Hire', interviewDate: 'Jun 24, 2026' },
-  { role: 'security', name: 'Jason Miller', location: 'Austin, TX', email: 'jason.miller@selectai.io', aiMatchScore: 87, integrityScore: 58, status: 'Applied', recommendation: 'Reject', interviewDate: 'Jun 25, 2026', previousTrackRecord: 'cheated' },
-  { role: 'security', name: 'Kavya Rao', location: 'Bengaluru, India', email: 'kavya.rao@selectai.io', aiMatchScore: 96, integrityScore: 97, status: 'Hired', recommendation: 'Strong Hire', interviewDate: 'Jun 26, 2026' },
-  { role: 'qa', name: 'Nikhil Verma', location: 'Gurugram, India', email: 'nikhil.verma@selectai.io', aiMatchScore: 89, integrityScore: 91, status: 'Screening', recommendation: 'Hire', interviewDate: 'Jun 24, 2026' },
-  { role: 'qa', name: 'Emily Davis', location: 'New York, NY', email: 'emily.davis@selectai.io', aiMatchScore: 94, integrityScore: 95, status: 'Interviewing', recommendation: 'Strong Hire', interviewDate: 'Jun 25, 2026' },
-  { role: 'qa', name: 'Rohan Kapoor', location: 'Chandigarh, India', email: 'rohan.kapoor@selectai.io', aiMatchScore: 86, integrityScore: 87, status: 'Applied', recommendation: 'Maybe', interviewDate: 'Jun 26, 2026' },
-  { role: 'qa', name: 'Grace Lee', location: 'Singapore', email: 'grace.lee@selectai.io', aiMatchScore: 91, integrityScore: 92, status: 'Shortlisted', recommendation: 'Hire', interviewDate: 'Jun 27, 2026' },
-  { role: 'qa', name: 'Harsh Mehta', location: 'Ahmedabad, India', email: 'harsh.mehta@selectai.io', aiMatchScore: 95, integrityScore: 94, status: 'Interviewing', recommendation: 'Strong Hire', interviewDate: 'Jun 28, 2026' },
-  { role: 'qa', name: 'Priyanka Bose', location: 'Kolkata, India', email: 'priyanka.bose@selectai.io', aiMatchScore: 93, integrityScore: 96, status: 'Hired', recommendation: 'Strong Hire', interviewDate: 'Jun 29, 2026' }
+  { role: 'ml', name: 'Ethan Brooks', location: 'Seattle, WA', email: 'ethan.brooks@selectai.io', aiMatchScore: 90, integrityScore: 88, status: 'Applied', recommendation: 'Maybe', interviewDate: 'Jun 22, 2026', previousTrackRecord: 'switched_tab' }
 ];
 
 const INITIAL_CANDIDATES = candidateSpecs.map((spec) => {

@@ -8,6 +8,10 @@ import { ExternalLink, Sparkles, Circle } from 'lucide-react';
 
 export const EvaluationsTable: React.FC = () => {
   const { candidates, setActiveTab } = useRecruiterStore();
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(candidates.length / itemsPerPage);
+  const displayCandidates = candidates.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const getRecommendationBadge = (rec: Candidate['recommendation']) => {
     switch (rec) {
@@ -75,7 +79,7 @@ export const EvaluationsTable: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-xs font-semibold text-slate-700">
-            {candidates.map((cand) => (
+            {displayCandidates.map((cand) => (
               <tr key={cand.id} className="hover:bg-slate-50/50 transition-colors">
                 
                 {/* Candidate name & avatar */}
@@ -129,6 +133,31 @@ export const EvaluationsTable: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-between items-center pt-4 border-t border-slate-100 text-[10px] font-bold text-slate-500">
+          <span>
+            Showing {Math.min(candidates.length, (currentPage - 1) * itemsPerPage + 1)}–{Math.min(candidates.length, currentPage * itemsPerPage)} of {candidates.length} candidates
+          </span>
+          <div className="flex gap-1.5">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:hover:bg-white text-slate-700 transition-colors shadow-sm"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:hover:bg-white text-slate-700 transition-colors shadow-sm"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
