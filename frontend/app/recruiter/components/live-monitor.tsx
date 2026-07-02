@@ -66,7 +66,7 @@ export const LiveMonitor: React.FC = () => {
   };
 
   return (
-    <div className="p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col gap-6">
+    <div className="p-5 lg:p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col gap-5">
       
       {/* Header */}
       <div className="flex justify-between items-center pb-2 border-b border-slate-55">
@@ -86,10 +86,10 @@ export const LiveMonitor: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
         {/* Left Column: Candidates feeds */}
-        <div className="lg:col-span-4 space-y-2.5 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
+        <div className="lg:col-span-4 space-y-2.5 overflow-y-auto pr-1 scrollbar-thin">
           {liveCandidates.map((cand, idx) => (
             <button
               key={cand.id}
@@ -121,7 +121,7 @@ export const LiveMonitor: React.FC = () => {
 
         {/* Right Column: Inspect telemetry details */}
         {selectedCandidate && (
-          <div className="lg:col-span-8 flex flex-col justify-between gap-5">
+          <div className="lg:col-span-8 flex flex-col gap-4">
             {/* Header info */}
             <div className="flex justify-between items-start">
               <div>
@@ -143,7 +143,7 @@ export const LiveMonitor: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               
               {/* Telemetry Target camera scan */}
-              <div className="relative rounded-2xl bg-slate-50 border border-slate-100 h-36 flex items-center justify-center overflow-hidden shadow-inner">
+              <div className="relative rounded-2xl bg-slate-50 border border-slate-100 h-44 flex items-center justify-center overflow-hidden shadow-inner">
                 {/* Dotted target overlays */}
                 <div className="absolute w-24 h-24 border border-dashed border-indigo-300/40 rounded-full animate-spin duration-15000" />
                 <div className="absolute w-16 h-16 border border-dashed border-indigo-400/40 rounded-full animate-reverse-spin" />
@@ -167,7 +167,7 @@ export const LiveMonitor: React.FC = () => {
               </div>
 
               {/* System Console Logs */}
-              <div className="rounded-2xl bg-slate-900 border border-slate-950 p-4 flex flex-col h-36 shadow-md">
+              <div className="rounded-2xl bg-slate-900 border border-slate-950 p-4 flex flex-col h-44 shadow-md">
                 <div className="flex items-center gap-1.5 pb-2 border-b border-slate-800 text-[10px] text-slate-400 font-bold">
                   <Terminal className="w-3.5 h-3.5 text-indigo-400" />
                   <span>SYSTEM CONSOLE LOGS</span>
