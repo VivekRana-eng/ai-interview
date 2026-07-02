@@ -949,13 +949,48 @@ export const JobsPanel: React.FC = () => {
                         {matchingApplicants.length}
                       </span>
                     </div>
-                    <div className="rounded-[24px] border border-dashed border-slate-200 bg-white/70 px-5 py-8 text-center">
-                      <Users className="w-11 h-11 text-slate-200 mx-auto" />
-                      <h4 className="mt-3 text-sm font-semibold text-slate-700">Screening in Progress</h4>
-                      <p className="mt-2 text-[11px] text-slate-500 leading-6 max-w-[240px] mx-auto">
-                        Detailed applicant insights will appear here once candidates match the role criteria.
-                      </p>
-                    </div>
+                    {matchingApplicants.length > 0 ? (
+                      <>
+                        <div className="grid grid-cols-1 gap-3">
+                          {matchingApplicants.slice(0, 3).map((applicant) => (
+                            <div key={applicant.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4 rounded-3xl border border-slate-100 bg-slate-50">
+                              <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+                                {applicant.name.split(' ').map((part) => part[0]).join('')}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h5 className="text-sm font-bold text-slate-900 truncate">{applicant.name}</h5>
+                                <p className="text-[11px] text-slate-500 truncate">{applicant.position}</p>
+                                <div className="mt-2 flex flex-wrap gap-2 text-[10px] font-semibold">
+                                  <span className="px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">AI Match {applicant.aiMatchScore}%</span>
+                                  <span className="px-2 py-1 rounded-full bg-slate-50 text-slate-600 border border-slate-200">{applicant.status}</span>
+                                  <span className="px-2 py-1 rounded-full bg-slate-50 text-slate-600 border border-slate-200">Integrity {applicant.integrityScore}%</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-3 flex items-center justify-between">
+                          <p className="text-[11px] text-slate-500">
+                            Showing {Math.min(3, matchingApplicants.length)} of {matchingApplicants.length} matched applicants.
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => selectedJob && handleViewApplicants(selectedJob)}
+                            className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-blue-600 text-white text-[11px] font-bold uppercase tracking-[0.12em] shadow-sm hover:bg-blue-700 transition-colors"
+                          >
+                            View More
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="rounded-[24px] border border-dashed border-slate-200 bg-white/70 px-5 py-8 text-center">
+                        <Users className="w-11 h-11 text-slate-200 mx-auto" />
+                        <h4 className="mt-3 text-sm font-semibold text-slate-700">Screening in Progress</h4>
+                        <p className="mt-2 text-[11px] text-slate-500 leading-6 max-w-[240px] mx-auto">
+                          No candidates currently match this role. Add a candidate or update the job criteria to populate matched applicants here.
+                        </p>
+                      </div>
+                    )}
                   </section>
 
                   <section className="rounded-[24px] border border-blue-100 bg-blue-50/70 px-5 py-5 shadow-[0_8px_24px_rgba(59,130,246,0.08)]">
