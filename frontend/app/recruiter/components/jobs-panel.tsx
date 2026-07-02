@@ -685,7 +685,7 @@ export const JobsPanel: React.FC = () => {
                               <li
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleOpenJobDetails(job);
+                                  handleViewQuestionBank(job);
                                 }}
                                 className="list-none text-[10px] font-bold text-blue-500 hover:underline cursor-pointer pl-1 mt-0.5"
                               >

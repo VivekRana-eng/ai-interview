@@ -24,6 +24,17 @@ const OVERVIEW_DATA = [
 ];
 
 const RADIAN = Math.PI / 180;
+
+const chartTooltipContentStyle = {
+  backgroundColor: '#ffffff',
+  borderColor: '#e2e8f0',
+  borderRadius: '12px',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+  color: '#1e293b'
+};
+
+const chartContainerClass = 'h-52 sm:h-64 w-full text-[10px] font-bold';
+
 const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, payload }: any) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.45;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -287,7 +298,7 @@ export const Charts: React.FC = () => {
         </div>
 
         {/* Chart Viewport */}
-        <div className="h-52 sm:h-64 w-full text-[10px] font-bold">
+        <div className={chartContainerClass}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={filteredOverviewData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
@@ -303,13 +314,7 @@ export const Charts: React.FC = () => {
               />
               <Tooltip
                 formatter={(value, name) => [Math.round(Number(value)).toString(), String(name)]}
-                contentStyle={{
-                  backgroundColor: '#ffffff',
-                  borderColor: '#f1f5f9',
-                  borderRadius: '12px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                  color: '#1e293b'
-                }}
+                contentStyle={chartTooltipContentStyle}
               />
               <Line
                 type="linear"
@@ -442,13 +447,7 @@ export const Charts: React.FC = () => {
                     const pct = (item as any)?.payload?.funnelPercentage ?? 0;
                     return [`${raw} candidates (${pct}%)`, String(name)] as [string, string];
                   }}
-                  contentStyle={{
-                    backgroundColor: '#ffffff',
-                    borderColor: '#e2e8f0',
-                    borderRadius: '12px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                    color: '#1e293b'
-                  }}
+                  contentStyle={chartTooltipContentStyle}
                 />
               </PieChart>
             </ResponsiveContainer>
