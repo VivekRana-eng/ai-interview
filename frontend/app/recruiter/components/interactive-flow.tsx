@@ -240,13 +240,6 @@ export const InteractiveFlow: React.FC = () => {
             Lays candidate applications horizontally on a timeline. Select or click any stage circle node to shift stages dynamically.
           </p>
         </div>
-        <button 
-          onClick={seedDemoPipeline}
-          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition-colors text-[10px] font-bold text-slate-600 bg-white shadow-sm w-full sm:w-auto"
-        >
-          <RotateCcw className={tw.iconSm} />
-          <span>Seed Demo Pipeline</span>
-        </button>
       </div>
 
       {/* 5-Stage Metrics Boxes */}
