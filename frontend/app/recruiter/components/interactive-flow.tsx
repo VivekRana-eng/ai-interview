@@ -245,7 +245,7 @@ export const InteractiveFlow: React.FC = () => {
       </div>
 
       {/* 5-Stage Metrics Boxes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3.5">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3.5">
         {[
           { label: 'APPLIED', count: appliedCount, detail: 'Start Stage', color: 'text-blue-600 border-blue-100 bg-blue-50/30' },
           { label: 'SCREENING', count: screeningCount, detail: total > 0 ? `${Math.round((screeningCount/total)*100)}% yield` : '0% yield', color: 'text-sky-500 border-sky-100 bg-sky-50/30' },

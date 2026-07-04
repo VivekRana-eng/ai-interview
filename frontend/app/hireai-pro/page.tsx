@@ -10,6 +10,7 @@ import { Charts } from './components/charts';
 import { KanbanBoard } from './components/kanban';
 import { InterviewsTable } from './components/interviews-table';
 import { LiveMonitor } from './components/live-monitor';
+import { InterviewCalendar } from './components/interview-calendar';
 import { AlertsPanel } from './components/alerts-panel';
 import { motion } from 'framer-motion';
 import { AlertCircle, RotateCcw } from 'lucide-react';
@@ -107,7 +108,7 @@ export default function HireAiProDashboard() {
                 <KpiCards />
                 <Charts />
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                  <LiveMonitor />
+                  <InterviewCalendar />
                   <AlertsPanel />
                 </div>
                 <InterviewsTable />

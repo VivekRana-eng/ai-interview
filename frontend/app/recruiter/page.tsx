@@ -7,6 +7,7 @@ import { Navbar } from './components/navbar';
 import { KpiCards } from './components/kpi-cards';
 import { Charts } from './components/charts';
 import { LiveMonitor } from './components/live-monitor';
+import { InterviewCalendar } from './components/interview-calendar';
 import { AlertsPanel } from './components/alerts-panel';
 import { EvaluationsTable } from './components/evaluations-table';
 import { InteractiveFlow } from './components/interactive-flow';
@@ -56,10 +57,10 @@ export default function RecruiterDashboard() {
                 {/* Analytical Charts */}
                 <Charts />
 
-                {/* Live Monitor and AI Alerts row */}
+                {/* Interview Calendar and AI Alerts row */}
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                   <div className="xl:col-span-2">
-                    <LiveMonitor />
+                    <InterviewCalendar />
                   </div>
                   <div className="xl:col-span-1">
                     <AlertsPanel />
