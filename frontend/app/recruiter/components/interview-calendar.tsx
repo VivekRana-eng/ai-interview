@@ -160,10 +160,10 @@ export const InterviewCalendar: React.FC = () => {
       </div>
 
       {/* ── Responsive body ── */}
-      <div className="grid gap-5 min-h-0 lg:grid-cols-[53%_1fr]">
+      <div className="grid gap-5 min-h-0 lg:flex lg:flex-row">
 
         {/* ─── LEFT: Mini Calendar ─── */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 w-full lg:w-[53%]">
 
           {/* Month navigation */}
           <div className="flex items-center justify-between">
