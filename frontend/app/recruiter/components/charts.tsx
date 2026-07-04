@@ -220,7 +220,7 @@ export const Charts: React.FC = () => {
               </button>
 
               {isRangeOpen && (
-                <div className="absolute right-0 mt-1.5 w-40 rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700">
+                <div className="absolute left-0 sm:left-auto sm:right-0 mt-1.5 w-40 rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700">
                   {rangeOptions.map(option => (
                     <button
                       key={option.value}
@@ -246,7 +246,7 @@ export const Charts: React.FC = () => {
               </button>
 
               {isFilterOpen && (
-                <div className="absolute right-0 mt-1.5 w-56 max-w-[calc(100vw-2rem)] rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700 max-h-60 overflow-y-auto">
+                <div className="absolute left-0 sm:left-auto sm:right-0 mt-1.5 w-56 max-w-[calc(100vw-2rem)] rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700 max-h-60 overflow-y-auto">
                   <div className="px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-50">
                     Filter by Job Role
                   </div>
@@ -379,7 +379,7 @@ export const Charts: React.FC = () => {
               </button>
 
               {isFunnelFilterOpen && (
-                <div className="absolute right-0 mt-1.5 w-52 max-w-[calc(100vw-2rem)] rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700 max-h-60 overflow-y-auto">
+                <div className="absolute left-0 sm:left-auto sm:right-0 mt-1.5 w-52 max-w-[calc(100vw-2rem)] rounded-xl bg-white border border-slate-100 shadow-[0_8px_24px_rgba(15,23,42,0.08)] p-1 z-50 text-slate-700 max-h-60 overflow-y-auto">
                   <div className="px-2.5 py-1.5 text-[9px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-50">
                     Filter by Job Role
                   </div>

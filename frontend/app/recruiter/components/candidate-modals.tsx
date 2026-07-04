@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Candidate, Job } from '../types';
 import { 
   X, Upload, FileText, Loader2, Sparkles, Calendar, ClipboardCheck, 
@@ -142,9 +142,51 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({
   const [interviewer, setInterviewer] = useState('Akash Patel (AI Lead)');
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    if (isOpen && candidate) {
+      if (candidate.interviewDate && candidate.interviewDate !== 'TBD') {
+        try {
+          const parsedDate = new Date(candidate.interviewDate);
+          if (!isNaN(parsedDate.getTime())) {
+            setDate(parsedDate.toISOString().split('T')[0]);
+          } else {
+            setDate('2026-07-02');
+          }
+        } catch (e) {
+          setDate('2026-07-02');
+        }
+      } else {
+        setDate('2026-07-02');
+      }
+      setTime('14:30');
+    }
+  }, [isOpen, candidate]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSchedule(date, time, interviewer);
+
+    // Google Calendar template URL construction
+    const cleanDate = date.replace(/-/g, ''); // e.g. "20260702"
+    const cleanTime = time.replace(/:/g, ''); // e.g. "1430"
+    
+    // Parse time to add 1 hour for end time
+    const [hours, minutes] = time.split(':').map(Number);
+    const endHours = (hours + 1) % 24;
+    const endHoursStr = String(endHours).padStart(2, '0');
+    const cleanEndTime = `${endHoursStr}${String(minutes).padStart(2, '0')}`;
+    
+    const start = `${cleanDate}T${cleanTime}00`;
+    const end = `${cleanDate}T${cleanEndTime}00`;
+    
+    const text = encodeURIComponent(`AI Interview: ${candidate?.name}`);
+    const details = encodeURIComponent(`Candidate: ${candidate?.name}\nRole: ${candidate?.position}\nInterviewer: ${interviewer}\nScheduled via SelectAI.`);
+    
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${start}/${end}&details=${details}&location=Online`;
+    
+    // Open in a new tab/window
+    window.open(googleCalendarUrl, '_blank');
+
     setSuccess(true);
     setTimeout(() => {
       setSuccess(false);

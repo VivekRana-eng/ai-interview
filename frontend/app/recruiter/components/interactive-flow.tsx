@@ -14,7 +14,9 @@ import {
   Trash2, 
   Sparkles, 
   User, 
-  Plus
+  Plus,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 const STAGES: Candidate['status'][] = ['Applied', 'Screening', 'Interviewing', 'Shortlisted', 'Hired'];
@@ -465,20 +467,38 @@ export const InteractiveFlow: React.FC = () => {
           <span>
             Showing {Math.min(filteredCandidates.length, (currentPage - 1) * itemsPerPageFlow + 1)}–{Math.min(filteredCandidates.length, currentPage * itemsPerPageFlow)} of {filteredCandidates.length} candidates
           </span>
-          <div className="flex gap-1.5">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={() => setCurrentPageFlow(prev => Math.max(1, prev - 1))}
               disabled={currentPage === 1}
-              className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:hover:bg-white text-slate-700 transition-colors shadow-sm"
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 disabled:opacity-50 hover:bg-slate-50 transition-all font-bold text-xs bg-white shadow-sm"
             >
-              Previous
+              <ChevronLeft className="w-4 h-4" />
             </button>
+
+            {Array.from({ length: totalPagesFlow }, (_, i) => i + 1).map((pageNum) => {
+              const isActive = pageNum === currentPage;
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPageFlow(pageNum)}
+                  className={`w-8 h-8 flex items-center justify-center rounded-lg border text-xs font-bold transition-all shadow-sm ${
+                    isActive 
+                      ? 'bg-slate-800 border-slate-800 text-white' 
+                      : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
             <button
               onClick={() => setCurrentPageFlow(prev => Math.min(totalPagesFlow, prev + 1))}
               disabled={currentPage === totalPagesFlow}
-              className="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:hover:bg-white text-slate-700 transition-colors shadow-sm"
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 disabled:opacity-50 hover:bg-slate-50 transition-all font-bold text-xs bg-white shadow-sm"
             >
-              Next
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>

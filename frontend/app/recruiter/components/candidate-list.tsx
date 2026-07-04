@@ -4,17 +4,19 @@ import React, { useState } from 'react';
 import { Candidate } from '../types';
 import { 
   Clock, Calendar, Layers, Briefcase, MapPin, 
-  Activity, Phone, Mail, User, Check, MoreHorizontal, ChevronLeft, ChevronRight 
+  Activity, Phone, Mail, User, Check, ChevronLeft, ChevronRight 
 } from 'lucide-react';
 
 interface CandidateListProps {
   candidates: Candidate[];
   onSelectCandidate: (candidate: Candidate) => void;
+  onConnectCandidate?: (candidateId: string) => void;
 }
 
 export const CandidateList: React.FC<CandidateListProps> = ({ 
   candidates, 
-  onSelectCandidate 
+  onSelectCandidate,
+  onConnectCandidate
 }) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(20);
@@ -242,15 +244,21 @@ export const CandidateList: React.FC<CandidateListProps> = ({
 
                 {candidate.connectedStatus === 'CONNECTED' ? (
                   <button 
-                    onClick={(e) => e.stopPropagation()}
-                    className="px-3.5 py-1.5 border border-blue-500 bg-white text-blue-600 text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-blue-50/50 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onConnectCandidate) onConnectCandidate(candidate.id);
+                    }}
+                    className="px-3.5 py-1.5 border border-blue-500 bg-white text-blue-600 text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-blue-50 transition-colors shadow-sm"
                   >
                     <Check className="w-3.5 h-3.5" />
                     <span>CONNECTED</span>
                   </button>
                 ) : (
                   <button 
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onConnectCandidate) onConnectCandidate(candidate.id);
+                    }}
                     className="px-3.5 py-1.5 border border-slate-200 hover:border-slate-350 bg-white text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-slate-50 transition-colors"
                   >
                     <User className="w-3.5 h-3.5" />
@@ -258,12 +266,7 @@ export const CandidateList: React.FC<CandidateListProps> = ({
                   </button>
                 )}
 
-                <button 
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-slate-400 hover:text-slate-600 p-1"
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
+
               </div>
             </div>
           );

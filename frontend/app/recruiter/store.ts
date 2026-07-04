@@ -30,6 +30,7 @@ interface RecruiterState {
   setSortBy: (sort: string) => void;
   promoteCandidate: (id: string) => void;
   setCandidateStage: (id: string, stage: Candidate['status']) => void;
+  updateCandidate: (id: string, updates: Partial<Candidate>) => Promise<void>;
   resolveAlert: (id: string) => void;
   updateLiveCandidate: (id: string, progress: number, currentQuestion: number, log?: string) => void;
   seedDemoPipeline: () => void;
@@ -223,6 +224,26 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
       if (res.ok) await get().initializeStore();
     } catch (err) {
       console.error('Failed to set candidate stage in MongoDB:', err);
+    }
+  },
+
+  updateCandidate: async (id, updates) => {
+    // Optimistic Update
+    set((state) => ({
+      candidates: state.candidates.map(c => 
+        c.id === id ? { ...c, ...updates } : c
+      )
+    }));
+
+    try {
+      const res = await fetch(`${API_URL}/candidates/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+      if (res.ok) await get().initializeStore();
+    } catch (err) {
+      console.error('Failed to update candidate in MongoDB:', err);
     }
   },
 

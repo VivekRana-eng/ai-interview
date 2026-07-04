@@ -72,27 +72,86 @@ const candidateSpecs = [
   { role: 'ml', name: 'Ethan Brooks', location: 'Seattle, WA', email: 'ethan.brooks@selectai.io', aiMatchScore: 90, integrityScore: 88, status: 'Applied', recommendation: 'Maybe', interviewDate: 'Jun 22, 2026', previousTrackRecord: 'switched_tab' }
 ];
 
-const INITIAL_CANDIDATES = candidateSpecs.map((spec) => {
-  const template = roleTemplates[spec.role];
-  return makeCandidate({
-    name: spec.name,
-    position: template.position,
-    location: spec.location,
-    email: spec.email,
-    aiMatchScore: spec.aiMatchScore,
-    integrityScore: spec.integrityScore,
-    status: spec.status,
-    recommendation: spec.recommendation,
-    interviewDate: spec.interviewDate,
-    skills: template.skills,
-    education: template.education,
-    experience: template.experience,
-    certifications: template.certifications,
-    strengths: template.strengths,
-    missingSkills: template.missingSkills,
-    summary: `${spec.name} is a ${template.position.toLowerCase()} candidate with strong alignment to the current open role.`,
-    previousTrackRecord: spec.previousTrackRecord || 'clean'
-  });
-});
+const generateRemaining = (count) => {
+  const list = [];
+  const firstNames = ['Amit', 'Raj', 'Sunita', 'Michael', 'David', 'Neha', 'Vikram', 'Anil', 'Emily', 'Jessica'];
+  const lastNames = ['Sharma', 'Kumar', 'Gupta', 'Patel', 'Singh', 'Johnson', 'Davis', 'Taylor', 'Wilson', 'Sen'];
+  const roleKeys = ['ml', 'fullstack', 'security', 'qa', 'design'];
+  const locations = ['New Delhi, India', 'Bengaluru, India', 'San Francisco, CA', 'Seattle, WA', 'London, UK', 'New York, NY', 'Washington, DC', 'Mumbai, India', 'Hyderabad, India'];
+  const clearances = ['TS/SCI w Poly', 'Secret', 'None'];
+  const recommendations = ['Strong Hire', 'Hire', 'Maybe', 'Reject'];
+  const statuses = ['Applied', 'Screening', 'Interviewing', 'Shortlisted', 'Hired'];
+
+  for (let i = 0; i < count; i++) {
+    const fName = firstNames[i % firstNames.length];
+    const lName = lastNames[(i + 3) % lastNames.length];
+    const name = `${fName} ${lName}`;
+    const roleKey = roleKeys[i % roleKeys.length];
+    const template = roleTemplates[roleKey];
+    const location = locations[i % locations.length];
+    const score = 65 + (i * 7) % 31;
+    const clearance = clearances[i % clearances.length];
+    const status = statuses[i % statuses.length];
+    const rec = recommendations[i % recommendations.length];
+    const previousTrackRecord = ['clean', 'switched_tab', 'cheated'][i % 3];
+
+    let integrity = 95;
+    if (previousTrackRecord === 'cheated') {
+      integrity = 40 + (i * 3) % 20;
+    } else if (previousTrackRecord === 'switched_tab') {
+      integrity = 70 + (i * 3) % 15;
+    } else {
+      integrity = 90 + (i * 2) % 10;
+    }
+
+    list.push(makeCandidate({
+      name,
+      position: template.position,
+      location,
+      email: `${fName.toLowerCase()}.${lName.toLowerCase()}@selectai.io`,
+      phone: `+91 9${(i * 1234567) % 100000000}`,
+      aiMatchScore: score,
+      integrityScore: integrity,
+      status,
+      recommendation: rec,
+      interviewDate: 'Jun 28, 2026',
+      skills: template.skills,
+      education: template.education,
+      experience: template.experience,
+      certifications: template.certifications,
+      strengths: template.strengths,
+      missingSkills: template.missingSkills,
+      summary: `${name} is a ${template.position.toLowerCase()} candidate with strong alignment to the current open role.`,
+      previousTrackRecord
+    }));
+  }
+  return list;
+};
+
+const INITIAL_CANDIDATES = [
+  ...candidateSpecs.map((spec) => {
+    const template = roleTemplates[spec.role];
+    return makeCandidate({
+      name: spec.name,
+      position: template.position,
+      location: spec.location,
+      email: spec.email,
+      aiMatchScore: spec.aiMatchScore,
+      integrityScore: spec.integrityScore,
+      status: spec.status,
+      recommendation: spec.recommendation,
+      interviewDate: spec.interviewDate,
+      skills: template.skills,
+      education: template.education,
+      experience: template.experience,
+      certifications: template.certifications,
+      strengths: template.strengths,
+      missingSkills: template.missingSkills,
+      summary: `${spec.name} is a ${template.position.toLowerCase()} candidate with strong alignment to the current open role.`,
+      previousTrackRecord: spec.previousTrackRecord || 'clean'
+    });
+  }),
+  ...generateRemaining(20)
+];
 
 module.exports = { INITIAL_CANDIDATES };

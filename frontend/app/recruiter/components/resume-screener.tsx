@@ -16,7 +16,8 @@ export const ResumeScreener: React.FC = () => {
     candidates, 
     screenResume,
     filterJob,
-    setFilterJob
+    setFilterJob,
+    updateCandidate
   } = useRecruiterStore();
 
   const [activeCandidate, setActiveCandidate] = useState<Candidate | null>(null);
@@ -92,18 +93,28 @@ export const ResumeScreener: React.FC = () => {
     }
   };
 
-  const handleScheduleConfirm = (date: string, time: string, interviewer: string) => {
+  const handleScheduleConfirm = async (date: string, time: string, interviewer: string) => {
     if (!activeCandidate) return;
-    const updated: Candidate = {
-      ...activeCandidate,
+    const formattedDate = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timelineComment = `Scheduled with ${interviewer}.`;
+    
+    const nextTimeline = [
+      ...(activeCandidate.hiringTimeline || []),
+      { stage: 'AI Interview Scheduled', date: `${date} at ${time}`, status: 'completed' as const, comment: timelineComment }
+    ];
+
+    const updatedFields: Partial<Candidate> = {
       status: 'Interviewing',
-      interviewDate: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      hiringTimeline: [
-        ...(activeCandidate.hiringTimeline || []),
-        { stage: 'AI Interview Scheduled', date: `${date} at ${time}`, status: 'completed', comment: `Scheduled with ${interviewer}.` }
-      ]
+      interviewDate: formattedDate,
+      hiringTimeline: nextTimeline
     };
-    setActiveCandidate(updated);
+
+    await updateCandidate(activeCandidate.id, updatedFields);
+
+    setActiveCandidate({
+      ...activeCandidate,
+      ...updatedFields
+    });
   };
 
   const triggerDownload = () => {
@@ -156,6 +167,12 @@ export const ResumeScreener: React.FC = () => {
               setActiveCandidate(cand);
               setViewMode('detail');
             }} 
+            onConnectCandidate={async (candId) => {
+              const target = candidates.find(c => c.id === candId);
+              if (!target) return;
+              const nextStatus = target.connectedStatus === 'CONNECTED' ? 'CONNECT' : 'CONNECTED';
+              await updateCandidate(candId, { connectedStatus: nextStatus });
+            }}
           />
         </div>
       ) : (

@@ -68,10 +68,17 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
               <Download className="w-3.5 h-3.5" />
               <span>Download Resume</span>
             </button>
-            <button onClick={onScheduleInterview} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Schedule Interview</span>
-            </button>
+            {candidate.status === 'Interviewing' ? (
+              <button onClick={onScheduleInterview} className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95">
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Reschedule Interview</span>
+              </button>
+            ) : (
+              <button onClick={onScheduleInterview} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95">
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Schedule Interview</span>
+              </button>
+            )}
           </div>
         </div>
 
