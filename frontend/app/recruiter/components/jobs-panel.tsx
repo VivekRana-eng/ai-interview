@@ -40,6 +40,7 @@ export const JobsPanel: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
   const [activeJobMenuId, setActiveJobMenuId] = useState<string | null>(null);
+  const [isJobDetailMenuOpen, setIsJobDetailMenuOpen] = useState(false);
 
   // Loading indicator for API calls
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -758,8 +759,8 @@ export const JobsPanel: React.FC = () => {
               transition={{ duration: 0.22 }}
               className="relative w-full max-w-6xl max-h-[88vh] overflow-hidden rounded-[28px] bg-white border border-slate-200 shadow-[0_30px_80px_rgba(15,23,42,0.18)] flex flex-col"
             >
-              <div className="p-5 md:p-6 border-b border-white/70 flex flex-col gap-4 md:flex-row md:items-start md:justify-between flex-shrink-0">
-                <div className="space-y-2">
+              <div className="p-5 md:p-6 border-b border-white/70 flex flex-row flex-wrap items-start justify-between gap-4 flex-shrink-0">
+                <div className="space-y-2 min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50/80 px-2.5 py-1 rounded-full border border-blue-100/80 backdrop-blur-md uppercase tracking-wider">
                       {selectedJob.department}
@@ -774,37 +775,65 @@ export const JobsPanel: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSetStatus(selectedJob, selectedJob.status === 'Hold' ? 'Active' : 'Hold');
-                    }}
-                    className={`px-3.5 py-2 rounded-xl border text-xs font-bold transition-all shadow-[0_4px_12px_rgba(15,23,42,0.06)] ${selectedJob.status === 'Hold' ? 'bg-amber-100 border-amber-200 text-amber-600' : 'bg-white/80 border-white/80 text-slate-600 hover:bg-white'}`}
-                  >
-                    {selectedJob.status === 'Hold' ? 'Resume' : 'Hold'}
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setEditingJob(selectedJob);
-                      setIsEditModalOpen(true);
-                      handleCloseJobDetails();
-                    }}
-                    className="px-5 py-2.5 rounded-2xl bg-blue-600 text-white text-[11px] font-extrabold shadow-[0_8px_20px_rgba(37,99,235,0.24)] hover:bg-blue-700 transition-all hover:scale-[1.02]"
-                  >
-                    Edit Job
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteJob(selectedJob.id);
-                      handleCloseJobDetails();
-                    }}
-                    className="px-3.5 py-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 text-xs font-bold hover:bg-rose-100 transition-all"
-                  >
-                    Delete
-                  </button>
+                <div className="flex items-center gap-3 ml-auto">
+                  <div className="relative job-detail-action-menu">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsJobDetailMenuOpen((prev) => !prev);
+                      }}
+                      className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-500 transition-colors"
+                    >
+                      <MoreVertical className="w-5 h-5" />
+                    </button>
+
+                    <AnimatePresence>
+                      {isJobDetailMenuOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-white border border-slate-200 shadow-[0_12px_40px_rgba(15,23,42,0.15)] overflow-hidden z-[60] py-1.5"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            onClick={() => {
+                              handleSetStatus(selectedJob, selectedJob.status === 'Hold' ? 'Active' : 'Hold');
+                              setIsJobDetailMenuOpen(false);
+                            }}
+                            className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold transition-colors ${selectedJob.status === 'Hold' ? 'text-emerald-600 hover:bg-emerald-50' : 'text-slate-600 hover:bg-amber-50 hover:text-amber-600'}`}
+                          >
+                            <Clock className="w-4 h-4" />
+                            <span>{selectedJob.status === 'Hold' ? 'Resume Opening' : 'Hold'}</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingJob(selectedJob);
+                              setIsEditModalOpen(true);
+                              setIsJobDetailMenuOpen(false);
+                              handleCloseJobDetails();
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                            <span>Edit Job</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleDeleteJob(selectedJob.id);
+                              setIsJobDetailMenuOpen(false);
+                              handleCloseJobDetails();
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-xs font-bold text-rose-500 hover:bg-rose-50 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            <span>Delete Job</span>
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   <button onClick={handleCloseJobDetails} className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors border border-slate-200">
                     <X className="w-5 h-5 text-slate-500" />
                   </button>

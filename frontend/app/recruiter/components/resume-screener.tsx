@@ -6,9 +6,21 @@ import { Candidate } from '../types';
 import { Layers, Sparkles } from 'lucide-react';
 import { CandidateList } from './candidate-list';
 import { CandidateDetail } from './candidate-detail';
-import { UploadModal, ScheduleModal } from './candidate-modals';
+import { UploadModal, ScheduleModal, MeetingListModal } from './candidate-modals';
 import { DossierModal } from './dossier-modal';
 import { ResumeModal } from './resume-modal';
+
+type MeetingItem = {
+  key: string;
+  candidateId: string;
+  candidateName: string;
+  position: string;
+  date: string;
+  comment: string;
+  status: string;
+  source: 'timeline' | 'interviewDate';
+  entryIndex: number | null;
+};
 
 export const ResumeScreener: React.FC = () => {
   const { 
@@ -30,6 +42,7 @@ export const ResumeScreener: React.FC = () => {
   // Modals state
   const [isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState<boolean>(false);
+  const [isMeetingsModalOpen, setIsMeetingsModalOpen] = useState<boolean>(false);
   const [isDossierModalOpen, setIsDossierModalOpen] = useState<boolean>(false);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState<boolean>(false);
   
@@ -93,14 +106,49 @@ export const ResumeScreener: React.FC = () => {
     }
   };
 
+  const [meetingToEdit, setMeetingToEdit] = useState<MeetingItem | null>(null);
+
   const handleScheduleConfirm = async (date: string, time: string, interviewer: string) => {
     if (!activeCandidate) return;
     const formattedDate = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const timelineComment = `Scheduled with ${interviewer}.`;
-    
+    const nextDateString = `${formattedDate} at ${time}`;
+
+    if (meetingToEdit) {
+      const candidate = candidates.find(c => c.id === meetingToEdit.candidateId) || activeCandidate;
+      const updatedTimeline = (candidate.hiringTimeline || []).map((entry, idx) => {
+        if (meetingToEdit.source === 'timeline' && meetingToEdit.entryIndex === idx) {
+          return { ...entry, date: nextDateString, comment: timelineComment, status: 'upcoming' as const };
+        }
+        return entry;
+      });
+
+      await updateCandidate(meetingToEdit.candidateId, {
+        hiringTimeline: updatedTimeline,
+        interviewDate: formattedDate,
+        status: 'Interviewing'
+      });
+
+      if (activeCandidate?.id === meetingToEdit.candidateId) {
+        setActiveCandidate({
+          ...activeCandidate,
+          interviewDate: formattedDate,
+          status: 'Interviewing',
+          hiringTimeline: updatedTimeline
+        });
+      }
+
+      setMeetingToEdit(null);
+      setIsScheduleModalOpen(false);
+      return;
+    }
+
+    const candidate = activeCandidate;
+    if (!candidate) return;
+
     const nextTimeline = [
-      ...(activeCandidate.hiringTimeline || []),
-      { stage: 'AI Interview Scheduled', date: `${date} at ${time}`, status: 'completed' as const, comment: timelineComment }
+      ...(candidate.hiringTimeline || []),
+      { stage: 'AI Interview Scheduled', date: nextDateString, status: 'upcoming' as const, comment: timelineComment }
     ];
 
     const updatedFields: Partial<Candidate> = {
@@ -109,10 +157,10 @@ export const ResumeScreener: React.FC = () => {
       hiringTimeline: nextTimeline
     };
 
-    await updateCandidate(activeCandidate.id, updatedFields);
+    await updateCandidate(candidate.id, updatedFields);
 
     setActiveCandidate({
-      ...activeCandidate,
+      ...candidate,
       ...updatedFields
     });
   };
@@ -123,13 +171,57 @@ export const ResumeScreener: React.FC = () => {
     setTimeout(() => setDownloadSuccess(null), 3000);
   };
 
+  const scheduledMeetings = (() => {
+    const meetingsMap = new Map<string, MeetingItem>();
+
+    const addMeeting = (meeting: MeetingItem) => {
+      if (!meetingsMap.has(meeting.key)) {
+        meetingsMap.set(meeting.key, meeting);
+      }
+    };
+
+    candidates.forEach((candidate) => {
+      (candidate.hiringTimeline || []).forEach((entry, idx) => {
+        if (entry.stage === 'AI Interview Scheduled' || entry.stage.toLowerCase().includes('interview')) {
+          addMeeting({
+            key: `${candidate.id}-${idx}-${entry.date}`,
+            candidateId: candidate.id,
+            candidateName: candidate.name,
+            position: candidate.position,
+            date: entry.date,
+            comment: entry.comment || 'Interview scheduled',
+            status: entry.status,
+            source: 'timeline',
+            entryIndex: idx
+          });
+        }
+      });
+
+      if ((!candidate.hiringTimeline || candidate.hiringTimeline.length === 0) && candidate.status === 'Interviewing' && candidate.interviewDate) {
+        addMeeting({
+          key: `${candidate.id}-interviewDate-${candidate.interviewDate}`,
+          candidateId: candidate.id,
+          candidateName: candidate.name,
+          position: candidate.position,
+          date: candidate.interviewDate,
+          comment: 'Interview scheduled',
+          status: 'upcoming',
+          source: 'interviewDate',
+          entryIndex: null
+        });
+      }
+    });
+
+    return Array.from(meetingsMap.values());
+  })();
+
   return (
     <div className={viewMode === 'detail' ? 'space-y-4' : 'space-y-6'}>
       {/* Main Area */}
       {viewMode === 'list' ? (
         <div className="space-y-6">
           {/* Top Search & Filter Bar */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white border border-slate-100 p-4 rounded-2xl shadow-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-white border border-slate-100 p-4 rounded-2xl shadow-sm">
             <input 
               type="text" 
               placeholder="Search by name, role or skill..." 
@@ -159,6 +251,15 @@ export const ResumeScreener: React.FC = () => {
               <option value="Shortlisted">Shortlisted</option>
               <option value="Hired">Hired</option>
             </select>
+            <div className="flex items-center justify-end">
+              <button
+                type="button"
+                onClick={() => setIsMeetingsModalOpen(true)}
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm"
+              >
+                Meeting
+              </button>
+            </div>
           </div>
 
           <CandidateList 
@@ -206,9 +307,24 @@ export const ResumeScreener: React.FC = () => {
 
       <ScheduleModal
         isOpen={isScheduleModalOpen}
-        onClose={() => setIsScheduleModalOpen(false)}
+        onClose={() => {
+          setIsScheduleModalOpen(false);
+          setMeetingToEdit(null);
+        }}
         candidate={activeCandidate}
+        meeting={meetingToEdit}
         onSchedule={handleScheduleConfirm}
+      />
+
+      <MeetingListModal
+        isOpen={isMeetingsModalOpen}
+        onClose={() => setIsMeetingsModalOpen(false)}
+        meetings={scheduledMeetings}
+        onEditMeeting={(meeting) => {
+          setMeetingToEdit(meeting);
+          setIsMeetingsModalOpen(false);
+          setIsScheduleModalOpen(true);
+        }}
       />
 
       <DossierModal

@@ -128,13 +128,52 @@ interface ScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
   candidate: Candidate | null;
+  meeting?: {
+    key: string;
+    candidateId: string;
+    candidateName: string;
+    position: string;
+    date: string;
+    comment: string;
+    status: string;
+    source: 'timeline' | 'interviewDate';
+    entryIndex: number | null;
+  } | null;
   onSchedule: (date: string, time: string, interviewer: string) => void;
+}
+
+interface MeetingListModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  meetings: Array<{
+    key: string;
+    candidateId: string;
+    candidateName: string;
+    position: string;
+    date: string;
+    comment: string;
+    status: string;
+    source: 'timeline' | 'interviewDate';
+    entryIndex: number | null;
+  }>;
+  onEditMeeting: (meeting: {
+    key: string;
+    candidateId: string;
+    candidateName: string;
+    position: string;
+    date: string;
+    comment: string;
+    status: string;
+    source: 'timeline' | 'interviewDate';
+    entryIndex: number | null;
+  }) => void;
 }
 
 export const ScheduleModal: React.FC<ScheduleModalProps> = ({
   isOpen,
   onClose,
   candidate,
+  meeting,
   onSchedule
 }) => {
   const [date, setDate] = useState('2026-07-02');
@@ -142,9 +181,34 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({
   const [interviewer, setInterviewer] = useState('Akash Patel (AI Lead)');
   const [success, setSuccess] = useState(false);
 
+  const parseMeetingDate = (meetingDate: string) => {
+    const [datePart, timePart] = meetingDate.split(' at ');
+    let parsedDate = datePart;
+    let parsedTime = '14:30';
+
+    if (timePart) {
+      parsedTime = timePart;
+    }
+
+    try {
+      const parsed = new Date(parsedDate);
+      if (!isNaN(parsed.getTime())) {
+        parsedDate = parsed.toISOString().split('T')[0];
+      }
+    } catch {
+      parsedDate = '2026-07-02';
+    }
+
+    return { parsedDate, parsedTime };
+  };
+
   useEffect(() => {
-    if (isOpen && candidate) {
-      if (candidate.interviewDate && candidate.interviewDate !== 'TBD') {
+    if (isOpen) {
+      if (meeting?.date) {
+        const { parsedDate, parsedTime } = parseMeetingDate(meeting.date);
+        setDate(parsedDate);
+        setTime(parsedTime);
+      } else if (candidate?.interviewDate && candidate.interviewDate !== 'TBD') {
         try {
           const parsedDate = new Date(candidate.interviewDate);
           if (!isNaN(parsedDate.getTime())) {
@@ -155,12 +219,13 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({
         } catch (e) {
           setDate('2026-07-02');
         }
+        setTime('14:30');
       } else {
         setDate('2026-07-02');
+        setTime('14:30');
       }
-      setTime('14:30');
     }
-  }, [isOpen, candidate]);
+  }, [isOpen, meeting, candidate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -242,7 +307,7 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({
 
                 <button type="submit" className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-md">
                   <ClipboardCheck className="w-4 h-4" />
-                  <span>Confirm Schedule</span>
+                  <span>{meeting ? 'Confirm Reschedule' : 'Confirm Schedule'}</span>
                 </button>
               </form>
             )}
@@ -253,6 +318,77 @@ export const ScheduleModal: React.FC<ScheduleModalProps> = ({
   );
 };
 
+export const MeetingListModal: React.FC<MeetingListModalProps> = ({
+  isOpen,
+  onClose,
+  meetings,
+  onEditMeeting
+}) => {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-slate-900/20 backdrop-blur-[6px]" onClick={onClose} />
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-lg h-[560px] bg-white rounded-[32px] shadow-[0_40px_100px_rgba(15,23,42,0.25)] border border-slate-100 overflow-hidden p-6 z-10">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+              <h4 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-blue-500" />
+                <span>Scheduled Meetings</span>
+              </h4>
+              <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-slate-650"><X className="w-4 h-4" /></button>
+            </div>
+
+            <div className="mt-4 max-h-[460px] overflow-y-auto pr-2 space-y-4">
+              {meetings.length === 0 ? (
+                <div className="text-center py-10 text-slate-500 text-sm font-semibold">
+                  No meetings scheduled yet.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {meetings.map((meeting, index) => (
+                    <div key={`${meeting.candidateName}-${index}`} className="border border-slate-100 rounded-3xl p-4 bg-slate-50">
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Candidate</p>
+                            <h5 className="text-sm font-extrabold text-slate-900 mt-1 leading-snug">{meeting.candidateName}</h5>
+                            <p className="text-[11px] text-slate-500 font-semibold mt-1">{meeting.position}</p>
+                          </div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+                            {meeting.status}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-500 text-[10px] font-semibold">
+                          <div>
+                            <p className="text-slate-400 uppercase tracking-wider text-[9px]">Date & Time</p>
+                            <p className="mt-1 text-slate-700">{meeting.date}</p>
+                          </div>
+                          <div>
+                            <p className="text-slate-400 uppercase tracking-wider text-[9px]">Note</p>
+                            <p className="mt-1 text-slate-700">{meeting.comment || 'No details provided.'}</p>
+                          </div>
+                        </div>
+                        <div className="flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => onEditMeeting(meeting)}
+                            className="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[10px] font-bold uppercase tracking-wider transition-colors"
+                          >
+                            Reschedule
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
 
 
 
