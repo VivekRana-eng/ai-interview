@@ -83,7 +83,7 @@ export default function RecruiterDashboard() {
 
             {activeTab === 'Live Interviews' && <LiveMonitor />}
 
-            {activeTab === 'Evaluation Reports' && <EvaluationsTable />}
+            {activeTab === 'Evaluation Reports' && <EvaluationsTable showViewAll={false} itemsPerPage={20} showMeetingButton={true} showFilters={true} />}
 
             {activeTab === 'Integrity Dashboard' && (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
