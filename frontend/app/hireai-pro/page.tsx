@@ -9,9 +9,7 @@ import { KpiCards } from './components/kpi-cards';
 import { Charts } from './components/charts';
 import { KanbanBoard } from './components/kanban';
 import { InterviewsTable } from './components/interviews-table';
-import { LiveMonitor } from './components/live-monitor';
 import { InterviewCalendar } from './components/interview-calendar';
-import { AlertsPanel } from './components/alerts-panel';
 import { motion } from 'framer-motion';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 
@@ -107,9 +105,8 @@ export default function HireAiProDashboard() {
               <>
                 <KpiCards />
                 <Charts />
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <div className="w-full">
                   <InterviewCalendar />
-                  <AlertsPanel />
                 </div>
                 <InterviewsTable />
               </>
@@ -151,40 +148,9 @@ export default function HireAiProDashboard() {
 
             {activeTab === 'Candidates' && <KanbanBoard />}
 
-            {activeTab === 'Live Interviews' && <LiveMonitor />}
 
             {activeTab === 'Evaluation Reports' && <InterviewsTable />}
 
-            {activeTab === 'Integrity Dashboard' && (
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                <div className="xl:col-span-2">
-                  <AlertsPanel />
-                </div>
-                <div className="p-5 rounded-2xl bg-slate-950/40 border border-slate-900 shadow-lg flex flex-col justify-between">
-                  <div>
-                    <h4 className="text-xs font-bold text-white">Integrity Statistics</h4>
-                    <p className="text-[10px] text-slate-500 mt-0.5">Automated violations summary</p>
-                  </div>
-                  <div className="space-y-3.5 my-6 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-slate-400 font-medium">Eye Gaze Anomaly</span>
-                      <span className="font-bold text-white">12 Events</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400 font-medium">Tab-switching block</span>
-                      <span className="font-bold text-white">8 Events</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-400 font-medium">Voice similarity mismatch</span>
-                      <span className="font-bold text-white">2 Events</span>
-                    </div>
-                  </div>
-                  <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-[10px] text-indigo-400 font-semibold">
-                    Telemetry analysis captures and flags candidate desktop activities during assessment.
-                  </div>
-                </div>
-              </div>
-            )}
 
             {activeTab === 'Billing & Settings' && (
               <div className="p-6 bg-slate-950/40 border border-slate-900 rounded-2xl text-xs space-y-4">

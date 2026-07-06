@@ -9,9 +9,7 @@ import {
   Briefcase, 
   HelpCircle, 
   Users, 
-  Radio, 
   FileBarChart2, 
-  ShieldCheck, 
   Settings,
   Sparkles,
   X
@@ -25,14 +23,12 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { activeTab, setActiveTab } = useDashboardStore();
 
-  const menuItems = [
+  const menuItems: { name: string; icon: React.ComponentType<any>; badge?: string }[] = [
     { name: 'Dashboard', icon: LayoutDashboard },
     { name: 'Jobs', icon: Briefcase },
     { name: 'Question Bank', icon: HelpCircle },
     { name: 'Candidates', icon: Users },
-    { name: 'Live Interviews', icon: Radio, badge: 'Live' },
     { name: 'Evaluation Reports', icon: FileBarChart2 },
-    { name: 'Integrity Dashboard', icon: ShieldCheck, badge: 'Sec' },
     { name: 'Billing & Settings', icon: Settings },
   ];
 

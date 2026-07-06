@@ -181,6 +181,13 @@ export const Charts: React.FC = () => {
   const latestChartDate = dynamicOverviewData.reduce<Date | null>((latest, item) => {
     const itemDate = parseChartDate(item.name);
     if (!itemDate) return latest;
+    // Ignore future dates relative to the current system time to keep the 30-day window on current/past mock data
+    if (itemDate.getTime() > Date.now()) return latest;
+    if (!latest || itemDate.getTime() > latest.getTime()) return itemDate;
+    return latest;
+  }, null) || dynamicOverviewData.reduce<Date | null>((latest, item) => {
+    const itemDate = parseChartDate(item.name);
+    if (!itemDate) return latest;
     if (!latest || itemDate.getTime() > latest.getTime()) return itemDate;
     return latest;
   }, null);

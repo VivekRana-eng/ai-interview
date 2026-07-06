@@ -15,6 +15,10 @@ interface RecruiterState {
   isDarkMode: boolean;
   isJobOverlayOpen: boolean;
   questionBankTargetJobId: string | null;
+  selectedCandidateId: string | null;
+  candidateViewMode: 'list' | 'detail';
+  setSelectedCandidateId: (id: string | null) => void;
+  setCandidateViewMode: (mode: 'list' | 'detail') => void;
 
   // MongoDB Aggregated Analytics State
   kpiData: { activeJobs: number; totalCandidates: number; interviewsToday: number; integrityAlerts: number } | null;
@@ -73,6 +77,10 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   isDarkMode: false,
   isJobOverlayOpen: false,
   questionBankTargetJobId: null,
+  selectedCandidateId: null,
+  candidateViewMode: 'list',
+  setSelectedCandidateId: (id) => set({ selectedCandidateId: id }),
+  setCandidateViewMode: (mode) => set({ candidateViewMode: mode }),
 
   kpiData: null,
   overviewData: null,

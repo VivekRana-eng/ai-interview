@@ -6,9 +6,7 @@ import { Sidebar } from './components/sidebar';
 import { Navbar } from './components/navbar';
 import { KpiCards } from './components/kpi-cards';
 import { Charts } from './components/charts';
-import { LiveMonitor } from './components/live-monitor';
 import { InterviewCalendar } from './components/interview-calendar';
-import { AlertsPanel } from './components/alerts-panel';
 import { EvaluationsTable } from './components/evaluations-table';
 import { InteractiveFlow } from './components/interactive-flow';
 import { JobsPanel } from './components/jobs-panel';
@@ -57,14 +55,9 @@ export default function RecruiterDashboard() {
                 {/* Analytical Charts */}
                 <Charts />
 
-                {/* Interview Calendar and AI Alerts row */}
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                  <div className="xl:col-span-2">
-                    <InterviewCalendar />
-                  </div>
-                  <div className="xl:col-span-1">
-                    <AlertsPanel />
-                  </div>
+                {/* Interview Calendar */}
+                <div className="w-full">
+                  <InterviewCalendar />
                 </div>
 
                 {/* Evaluations Grid */}
@@ -81,21 +74,9 @@ export default function RecruiterDashboard() {
 
             {activeTab === 'Candidates' && <ResumeScreener />}
 
-            {activeTab === 'Live Interviews' && <LiveMonitor />}
 
             {activeTab === 'Evaluation Reports' && <EvaluationsTable showViewAll={false} itemsPerPage={20} showFilters={true} />}
 
-            {activeTab === 'Integrity Dashboard' && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <AlertsPanel />
-                </div>
-                <div className="p-6 rounded-[15px] bg-white border border-[#EEF1F6] shadow-[0_4px_16px_rgba(15,23,42,0.04)] text-xs space-y-4">
-                  <h4 className="font-bold text-[#111827]">Violation Analytics</h4>
-                  <p className="text-[#7B8AA3] font-semibold">Telemetry details logged during applicant tests.</p>
-                </div>
-              </div>
-            )}
 
             {activeTab === 'Billing & Settings' && (
               <div className="p-8 bg-white border border-[#EEF1F6] rounded-[15px] shadow-[0_4px_16px_rgba(15,23,42,0.04)] text-xs space-y-4">

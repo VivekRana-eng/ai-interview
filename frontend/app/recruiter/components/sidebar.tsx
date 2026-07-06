@@ -9,9 +9,7 @@ import {
   Briefcase, 
   HelpCircle, 
   Users, 
-  Radio, 
   FileBarChart2, 
-  ShieldCheck, 
   Sparkles,
   X
 } from 'lucide-react';
@@ -29,9 +27,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { name: 'Jobs', icon: Briefcase },
     { name: 'Question Bank', icon: HelpCircle },
     { name: 'Candidates', icon: Users },
-    { name: 'Live Interviews', icon: Radio },
-    { name: 'Evaluation Reports', icon: FileBarChart2 },
-    { name: 'Integrity Dashboard', icon: ShieldCheck }
+    { name: 'Evaluation Reports', icon: FileBarChart2 }
   ];
 
   return (

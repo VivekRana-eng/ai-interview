@@ -29,11 +29,21 @@ export const ResumeScreener: React.FC = () => {
     screenResume,
     filterJob,
     setFilterJob,
-    updateCandidate
+    updateCandidate,
+    selectedCandidateId,
+    candidateViewMode,
+    setSelectedCandidateId,
+    setCandidateViewMode
   } = useRecruiterStore();
 
-  const [activeCandidate, setActiveCandidate] = useState<Candidate | null>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'detail'>('list');
+  const activeCandidate = candidates.find(c => c.id === selectedCandidateId) || null;
+  const viewMode = candidateViewMode;
+  const setActiveCandidate = (cand: Candidate | null) => {
+    setSelectedCandidateId(cand ? cand.id : null);
+  };
+  const setViewMode = (mode: 'list' | 'detail') => {
+    setCandidateViewMode(mode);
+  };
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState<string>('');

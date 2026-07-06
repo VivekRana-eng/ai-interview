@@ -18,6 +18,7 @@ import { Candidate } from '../types';
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Meeting {
   id: string;
+  candidateId: string;
   candidateName: string;
   position: string;
   time: string;
@@ -68,6 +69,7 @@ const getCandidateMeetings = (candidates: Candidate[]): Record<string, Meeting[]
 
     const meeting: Meeting = {
       id: `${candidate.id}-${dateKey}`,
+      candidateId: candidate.id,
       candidateName: candidate.name,
       position: candidate.position,
       time: defaultTime,
@@ -110,7 +112,7 @@ const STATUS_META = {
 // ─── Component ────────────────────────────────────────────────────────────────
 export const InterviewCalendar: React.FC = () => {
   const today = new Date();
-  const { candidates } = useRecruiterStore();
+  const { candidates, setActiveTab, setSelectedCandidateId, setCandidateViewMode } = useRecruiterStore();
   const [viewYear,  setViewYear]  = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [selectedKey, setSelectedKey] = useState<string>(
@@ -297,7 +299,12 @@ export const InterviewCalendar: React.FC = () => {
                   {selectedMtgs.map((m) => (
                     <div
                       key={m.id}
-                      className="p-3 rounded-xl border border-slate-100 bg-slate-50/60 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all group"
+                      onClick={() => {
+                        setSelectedCandidateId(m.candidateId);
+                        setCandidateViewMode('detail');
+                        setActiveTab('Candidates');
+                      }}
+                      className="p-3 rounded-xl border border-slate-100 bg-slate-50/60 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all group cursor-pointer"
                     >
                       {/* Name + type */}
                       <div className="flex items-center justify-between gap-2">
