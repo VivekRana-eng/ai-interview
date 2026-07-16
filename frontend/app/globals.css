@@ -10,3 +10,267 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* ==========================================================================
+   Dark Mode Theme System
+   ========================================================================== */
+
+/* Main layout overrides */
+.dark body {
+  background-color: #080c14 !important;
+  color: #f8fafc !important;
+}
+
+.dark .bg-[#f7f9fc],
+.dark div.bg-[#f7f9fc] {
+  background-color: #080c14 !important;
+}
+
+.dark div.h-screen {
+  background-color: #080c14 !important;
+  color: #f8fafc !important;
+}
+
+.dark main {
+  background-color: #080c14 !important;
+}
+
+/* Card, Panel, and Container Overrides */
+.dark .bg-white,
+.dark div.bg-white,
+.dark section.bg-white {
+  background-color: #111a2e !important;
+  color: #f8fafc !important;
+}
+
+/* Form inputs & controls */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: #3b82f6 !important;
+  background-color: #1e293b !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+.dark select option {
+  background-color: #111a2e !important;
+  color: #f8fafc !important;
+}
+
+/* Header/Navbar Overrides */
+.dark header,
+.dark header.bg-white {
+  background-color: #0b1329 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Borders */
+.dark .border-[#EEF1F6],
+.dark .border-[#E6EBF2],
+.dark .border-slate-150,
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-[#e2e8f0] {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Text Overrides */
+.dark .text-slate-800,
+.dark .text-slate-900,
+.dark .text-[#111827],
+.dark .text-[#0F2744],
+.dark .text-slate-950 {
+  color: #f8fafc !important;
+}
+
+.dark .text-[#7B8AA3],
+.dark .text-[#718096],
+.dark .text-slate-400,
+.dark .text-slate-500,
+.dark .text-slate-600 {
+  color: #94a3b8 !important;
+}
+
+.dark .text-blue-600 {
+  color: #60a5fa !important;
+}
+
+/* Hover Overrides */
+.dark .hover\:bg-slate-50:hover,
+.dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-slate-200:hover,
+.dark .hover\:bg-indigo-50:hover,
+.dark .hover\:bg-slate-50 {
+  background-color: #1e293b !important;
+}
+
+/* Dropdown list container styles */
+.dark div.absolute.bg-white,
+.dark div.shadow-\[0_8px_24px_rgba\(15\,23\,42\,0\.08\)\] {
+  background-color: #111a2e !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Tables */
+.dark .bg-slate-50\/50 {
+  background-color: #15223f !important;
+}
+
+.dark tr.hover\:bg-\[\#fafbfc\]:hover {
+  background-color: #1b2845 !important;
+}
+
+.dark .hover\:bg-\[\#fafbfc\]:hover {
+  background-color: #1b2845 !important;
+}
+
+.dark td.text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: #15223f !important;
+}
+
+.dark .bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.15) !important;
+  color: #818cf8 !important;
+}
+
+.dark .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+}
+
+.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+}
+
+.dark .bg-rose-50 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+}
+
+.dark .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #fbbf24 !important;
+}
+
+/* Scrollbars in dark mode */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #080c14;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* ==========================================================================
+   Print Styles for Clean PDF Export
+   ========================================================================== */
+@media print {
+  html, body {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  /* Reset height/overflow locks on containers to prevent cutoff */
+  .h-screen,
+  .h-full,
+  .min-h-screen,
+  .overflow-hidden,
+  .overflow-x-hidden,
+  .overflow-y-auto,
+  .overflow-y-scroll,
+  div,
+  main,
+  section,
+  article {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    max-height: none !important;
+    position: static !important;
+  }
+  
+  /* Hide UI wrapper and layout elements */
+  aside,
+  header,
+  .no-print,
+  button,
+  .flex.border-b {
+    display: none !important;
+  }
+  
+  /* Reset margins and layouts */
+  .lg\:pl-\[228px\] {
+    padding-left: 0 !important;
+  }
+  
+  main {
+    padding: 0 !important;
+    background-color: white !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  
+  /* Keep standard card layouts readable on paper */
+  .bg-white, 
+  .dark .bg-white,
+  .dark div.bg-white,
+  .dark section.bg-white {
+    background-color: white !important;
+    color: black !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  
+  .text-slate-800,
+  .text-slate-900,
+  .dark .text-slate-800,
+  .dark .text-slate-900 {
+    color: black !important;
+  }
+  
+  .text-slate-400,
+  .text-slate-500,
+  .text-slate-655,
+  .dark .text-slate-400,
+  .dark .text-slate-500 {
+    color: #475569 !important;
+  }
+
+  .print-page-break {
+    break-before: page !important;
+  }
+}
+

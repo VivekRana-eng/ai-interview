@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Candidate } from '../types';
 import { Briefcase, Activity, Download, Calendar, ArrowLeft } from 'lucide-react';
+import { useRecruiterStore } from '../store';
 import { getDefaultExperiences } from './candidate-detail-data';
 import { InterviewPerformanceTab } from './interview-performance-tab';
 
@@ -19,7 +20,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
   onDownloadResume,
   onScheduleInterview
 }) => {
-  const [activeProfileTab, setActiveProfileTab] = useState<'experience' | 'interview'>('experience');
+  const { activeProfileTab, setActiveProfileTab } = useRecruiterStore();
   const initials = candidate.name.split(' ').map(n => n[0]).join('');
 
   // Hydrate experiences (at least 4) if empty
@@ -30,7 +31,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
   return (
     <div className="space-y-4 animate-fadeIn text-slate-800">
       {/* Back to list navigation / Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs font-bold">
+      <div className="flex items-center gap-2 text-xs font-bold no-print">
         <button onClick={onBackToList} className="flex items-center gap-1 text-slate-500 hover:text-blue-650 transition-colors">
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Candidates List</span>
@@ -69,7 +70,7 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
               <span>Download Resume</span>
             </button>
             {candidate.status === 'Interviewing' ? (
-              <button onClick={onScheduleInterview} className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95">
+              <button onClick={onScheduleInterview} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95">
                 <Calendar className="w-3.5 h-3.5" />
                 <span>Reschedule Interview</span>
               </button>

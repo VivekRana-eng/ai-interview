@@ -670,3 +670,205 @@ export const getDefaultInterviewPerformance = (candidate: Candidate): InterviewP
     ]
   };
 };
+
+export interface IntegrityEvent {
+  timestamp: string;
+  type: string;
+  severity: 'low' | 'medium' | 'high';
+  deduction: number;
+  questionNumber: number;
+  context: string;
+}
+
+export interface DimensionScore {
+  name: string;
+  score: number;
+  weight: number;
+  category: 'Core technical' | 'Communication' | 'Behavioural';
+}
+
+export interface TranscriptTurn {
+  questionNumber: number;
+  type: string;
+  complexity: 'Easy' | 'Medium' | 'Hard';
+  questionText: string;
+  answerText: string;
+  score: number;
+  responseTime: string;
+  timingAnomaly: boolean;
+}
+
+export interface DetailedEvaluationReport {
+  seniority: string;
+  duration: string;
+  percentile: string;
+  verdict: 'Clean' | 'Flagged' | 'Critical';
+  verdictDescription: string;
+  summary: string;
+  signalFlags: string[];
+  strengths: string[];
+  concerns: string[];
+  dimensions: DimensionScore[];
+  integrityScore: number;
+  integrityEvents: IntegrityEvent[];
+  integrityDeductionsBreakdown: {
+    tabSwitches: number;
+    gazeAverting: number;
+    multipleFaces: number;
+    total: number;
+  };
+  transcript: TranscriptTurn[];
+}
+
+export const getDetailedEvaluationReport = (candidate: Candidate): DetailedEvaluationReport => {
+  const match = candidate.aiMatchScore || 85;
+  const integrity = candidate.integrityScore !== undefined ? candidate.integrityScore : 100;
+  
+  let seniority = 'Mid-level';
+  if (match >= 90) seniority = 'Senior';
+  if (match >= 95) seniority = 'Lead / Principal';
+  if (match < 70) seniority = 'Junior';
+
+  const duration = '42 minutes';
+
+  let percentile = 'Top 15%';
+  if (match >= 95) percentile = 'Top 2%';
+  else if (match >= 90) percentile = 'Top 6%';
+  else if (match >= 85) percentile = 'Top 10%';
+  else if (match >= 75) percentile = 'Top 25%';
+  else percentile = 'Top 50%';
+
+  let verdict: 'Clean' | 'Flagged' | 'Critical' = 'Clean';
+  let verdictDescription = 'Candidate completed the assessment securely with no suspicious patterns.';
+  if (integrity < 70) {
+    verdict = 'Critical';
+    verdictDescription = 'Multiple serious violations detected: multiple faces and background voice activity.';
+  } else if (integrity < 90) {
+    verdict = 'Flagged';
+    verdictDescription = 'Minor anomalies flagged: browser tab switches and screen gaze averts.';
+  }
+
+  const positionName = candidate.position || 'Software Engineer';
+  const summary = `${candidate.name} demonstrated exceptional technical execution during their ${duration} automated screening for the ${positionName} position. Their explanation of key principles was articulate, well-structured, and rich with practical examples. In particular, their approach to scalability showed a strong systems-level maturity. There are minor areas of growth, but overall they represent a highly promising addition to the team.`;
+
+  const signalFlags = [
+    'Strong system design knowledge',
+    match >= 85 ? 'Exceptional concurrency patterns understanding' : 'Good familiarity with core architecture libraries',
+    'Hesitated briefly on thread isolation details',
+    'Well-structured verbal communication'
+  ];
+
+  const strengths = [
+    'Excellent understanding of asynchronous and concurrent processing models',
+    'Deep knowledge of relational indexing and distributed databases',
+    'Proactive approach to modular, self-healing system design patterns'
+  ];
+  
+  const concerns = [
+    'Slightly weaker on lower-level rendering pipeline specifics',
+    'Relies on standard templates for complex security configuration details'
+  ];
+
+  const dScores = {
+    tech1: Math.min(100, match + 5),
+    tech2: Math.min(100, Math.max(45, match + 3)),
+    tech3: Math.min(100, Math.max(45, match - 2)),
+    tech4: Math.min(100, Math.max(45, match + 1)),
+    tech5: Math.min(100, Math.max(45, match - 5)),
+    comm1: Math.min(100, Math.max(45, match + 4)),
+    comm2: Math.min(100, Math.max(45, match)),
+    comm3: Math.min(100, Math.max(45, match - 3)),
+    comm4: Math.min(100, Math.max(45, match + 2)),
+    behav1: Math.min(100, Math.max(45, match + 6)),
+    behav2: Math.min(100, Math.max(45, match + 2)),
+    behav3: Math.min(100, Math.max(45, match - 1))
+  };
+
+  const dimensions: DimensionScore[] = [
+    { name: 'System Architecture', score: dScores.tech1, weight: 15, category: 'Core technical' },
+    { name: 'Database Systems', score: dScores.tech2, weight: 10, category: 'Core technical' },
+    { name: 'Data Structures', score: dScores.tech3, weight: 10, category: 'Core technical' },
+    { name: 'Concurrency & Perf', score: dScores.tech4, weight: 10, category: 'Core technical' },
+    { name: 'API Design & gRPC', score: dScores.tech5, weight: 10, category: 'Core technical' },
+    { name: 'Technical Articulation', score: dScores.comm1, weight: 10, category: 'Communication' },
+    { name: 'Explanation Structure', score: dScores.comm2, weight: 5, category: 'Communication' },
+    { name: 'Active Listening', score: dScores.comm3, weight: 5, category: 'Communication' },
+    { name: 'Professional Tone', score: dScores.comm4, weight: 5, category: 'Communication' },
+    { name: 'Problem Solving Drive', score: dScores.behav1, weight: 10, category: 'Behavioural' },
+    { name: 'Adaptability', score: dScores.behav2, weight: 5, category: 'Behavioural' },
+    { name: 'Collaboration Mindset', score: dScores.behav3, weight: 5, category: 'Behavioural' }
+  ];
+
+  const integrityEvents: IntegrityEvent[] = [];
+  let tabSwitches = 0;
+  let gazeAverting = 0;
+  let multipleFaces = 0;
+
+  if (integrity < 100) {
+    const totalDeduction = 100 - integrity;
+    if (totalDeduction >= 25) {
+      multipleFaces += 1;
+      tabSwitches += 2;
+      gazeAverting += 3;
+      integrityEvents.push(
+        { timestamp: '10:14', type: 'Multiple Faces Detected', severity: 'high', deduction: 15, questionNumber: 3, context: 'During vector retrieval explanation' },
+        { timestamp: '14:22', type: 'Tab Switch', severity: 'medium', deduction: 5, questionNumber: 5, context: 'During query execution lifecycle' },
+        { timestamp: '18:05', type: 'Gaze Averted', severity: 'low', deduction: 3, questionNumber: 6, context: 'During race condition question' },
+        { timestamp: '24:50', type: 'Tab Switch', severity: 'medium', deduction: 5, questionNumber: 8, context: 'During cache invalidation question' }
+      );
+    } else {
+      tabSwitches += 1;
+      gazeAverting += 1;
+      integrityEvents.push(
+        { timestamp: '12:04', type: 'Tab Switch', severity: 'medium', deduction: 5, questionNumber: 4, context: 'During thread rendering step question' },
+        { timestamp: '22:30', type: 'Gaze Averted', severity: 'low', deduction: 3, questionNumber: 7, context: 'During lock contention explanation' }
+      );
+    }
+  }
+
+  const qList = (candidate.interviewPerformance?.qaList || getDefaultInterviewPerformance(candidate).qaList);
+  const transcript: TranscriptTurn[] = qList.map((qa, index) => {
+    let type = 'Core technical';
+    if (index === 0) type = 'System Design';
+    else if (index === 1) type = 'Core CS / Rendering';
+    else if (index === 2) type = 'Concurrency';
+    else if (index === 3) type = 'Scenario / Practice';
+
+    const complexity = index % 3 === 0 ? 'Hard' : index % 3 === 1 ? 'Easy' : 'Medium';
+    const timingAnomaly = index === 2;
+    const responseTime = index === 2 ? '2.5s' : `${Math.floor(Math.random() * 40) + 15}s`;
+
+    return {
+      questionNumber: index + 1,
+      type,
+      complexity,
+      questionText: qa.question,
+      answerText: qa.answer,
+      score: qa.score,
+      responseTime,
+      timingAnomaly
+    };
+  });
+
+  return {
+    seniority,
+    duration,
+    percentile,
+    verdict,
+    verdictDescription,
+    summary,
+    signalFlags,
+    strengths,
+    concerns,
+    dimensions,
+    integrityScore: integrity,
+    integrityEvents,
+    integrityDeductionsBreakdown: {
+      tabSwitches,
+      gazeAverting,
+      multipleFaces,
+      total: 100 - integrity
+    },
+    transcript
+  };
+};

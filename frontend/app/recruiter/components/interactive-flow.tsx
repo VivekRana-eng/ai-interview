@@ -372,9 +372,17 @@ export const InteractiveFlow: React.FC = () => {
             >
               {/* Profile column */}
               <div className="flex items-center gap-3.5 min-w-0 xl:min-w-[240px]">
-                <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-650 flex items-center justify-center font-bold text-xs border border-indigo-100">
-                  {cand.name.split(' ').map(n => n[0]).join('')}
-                </div>
+                {cand.avatarUrl ? (
+                  <img 
+                    src={cand.avatarUrl} 
+                    alt={cand.name} 
+                    className="w-9 h-9 rounded-full border border-slate-150 object-cover flex-shrink-0 bg-slate-50"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-indigo-50 text-indigo-650 flex items-center justify-center font-bold text-xs border border-indigo-100">
+                    {cand.name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                )}
                 <div>
                   <div className={tw.flexItemsGap2}>
                     <span className="font-extrabold text-slate-800 text-xs">{cand.name}</span>

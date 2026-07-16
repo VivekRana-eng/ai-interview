@@ -17,8 +17,10 @@ interface RecruiterState {
   questionBankTargetJobId: string | null;
   selectedCandidateId: string | null;
   candidateViewMode: 'list' | 'detail';
+  activeProfileTab: 'experience' | 'interview';
   setSelectedCandidateId: (id: string | null) => void;
   setCandidateViewMode: (mode: 'list' | 'detail') => void;
+  setActiveProfileTab: (tab: 'experience' | 'interview') => void;
 
   // MongoDB Aggregated Analytics State
   kpiData: { activeJobs: number; totalCandidates: number; interviewsToday: number; integrityAlerts: number } | null;
@@ -79,8 +81,10 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   questionBankTargetJobId: null,
   selectedCandidateId: null,
   candidateViewMode: 'list',
+  activeProfileTab: 'experience',
   setSelectedCandidateId: (id) => set({ selectedCandidateId: id }),
   setCandidateViewMode: (mode) => set({ candidateViewMode: mode }),
+  setActiveProfileTab: (tab) => set({ activeProfileTab: tab }),
 
   kpiData: null,
   overviewData: null,
@@ -96,6 +100,18 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
 
   initializeStore: async () => {
     try {
+      if (typeof window !== 'undefined') {
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+        set({ isDarkMode: isDark });
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+
       const [candRes, jobRes, alertRes] = await Promise.all([
         fetch(`${API_URL}/candidates`).then(r => r.json()),
         fetch(`${API_URL}/jobs`).then(r => r.json()),
@@ -559,8 +575,10 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
     if (typeof document !== 'undefined') {
       if (nextMode) {
         document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
       } else {
         document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
       }
     }
     return { isDarkMode: nextMode };

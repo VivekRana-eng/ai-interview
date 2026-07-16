@@ -13,10 +13,26 @@ type EvaluationsTableProps = {
 };
 
 export const EvaluationsTable: React.FC<EvaluationsTableProps> = ({ showViewAll = true, itemsPerPage = 5, showFilters = false }) => {
-  const { candidates, setActiveTab, filterJob, setFilterJob } = useRecruiterStore();
+  const { 
+    candidates, 
+    setActiveTab, 
+    filterJob, 
+    setFilterJob,
+    setSelectedCandidateId,
+    setCandidateViewMode,
+    setActiveProfileTab
+  } = useRecruiterStore();
+  
   const [currentPage, setCurrentPage] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState<string>('');
   const [stageFilter, setStageFilter] = React.useState<string>('All Stages');
+
+  const handleRowClick = (candId: string) => {
+    setSelectedCandidateId(candId);
+    setActiveProfileTab('interview');
+    setCandidateViewMode('detail');
+    setActiveTab('Candidates');
+  };
 
   const filteredCandidates = React.useMemo(() => {
     if (!showFilters) return candidates;
@@ -217,13 +233,25 @@ export const EvaluationsTable: React.FC<EvaluationsTableProps> = ({ showViewAll 
           </thead>
           <tbody className="divide-y divide-slate-100 text-xs font-semibold text-slate-700">
             {displayCandidates.map((cand) => (
-              <tr key={cand.id} className="hover:bg-slate-50/50 transition-colors">
+              <tr 
+                key={cand.id} 
+                onClick={() => handleRowClick(cand.id)}
+                className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors cursor-pointer"
+              >
                 
                 {/* Candidate name & avatar */}
                 <td className="py-4 pr-4 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500 border border-slate-150">
-                    {cand.name.split(' ').map(n => n[0]).join('')}
-                  </div>
+                  {cand.avatarUrl ? (
+                    <img 
+                      src={cand.avatarUrl} 
+                      alt={cand.name} 
+                      className="w-8 h-8 rounded-full border border-slate-150 object-cover flex-shrink-0 bg-slate-50"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 border border-slate-150">
+                      {cand.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                  )}
                   <div className="flex flex-col min-w-0">
                     <span className="font-bold text-slate-800 text-[11px]">{cand.name}</span>
                     <span className="text-[9px] text-slate-400 font-semibold truncate">{cand.email}</span>
