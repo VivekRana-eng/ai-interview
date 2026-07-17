@@ -274,3 +274,30 @@
   }
 }
 
+/* Twilio Webcam Feed Simulator Animations */
+@keyframes twilioScanner {
+  0%, 100% {
+    top: 5%;
+  }
+  50% {
+    top: 95%;
+  }
+}
+
+@keyframes twilioEqualizer {
+  0%, 100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-twilio-scanner {
+  animation: twilioScanner 3s ease-in-out infinite;
+}
+
+.animate-twilio-equalizer {
+  animation: twilioEqualizer 1s ease-in-out infinite;
+}
+

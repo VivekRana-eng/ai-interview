@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Candidate } from '../types';
 import { useRecruiterStore } from '../store';
 import { 
@@ -18,7 +18,11 @@ import {
   ShieldCheck, 
   Shield, 
   HelpCircle,
-  AlertOctagon
+  AlertOctagon,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { 
   getDetailedEvaluationReport, 
@@ -36,7 +40,7 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
   candidate
 }) => {
   const { updateCandidate } = useRecruiterStore();
-  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'integrity' | 'transcript'>('overview');
+  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'integrity' | 'transcript' | 'recording'>('overview');
   const [decisionSubmitted, setDecisionSubmitted] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
@@ -47,6 +51,69 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
   const [panelScoreOverride, setPanelScoreOverride] = useState<string>(String(candidate.aiMatchScore || ''));
   const [panelNotes, setPanelNotes] = useState<string>(candidate.summary || '');
   const [panelSubmitting, setPanelSubmitting] = useState<boolean>(false);
+
+  // Video Player States
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [videoDuration, setVideoDuration] = useState<number>(900); // 15 mins default
+  const [activeEventIndex, setActiveEventIndex] = useState<number | null>(null);
+
+  const parseTimestampToSeconds = (ts: string): number => {
+    const parts = ts.split(':').map(Number);
+    if (parts.length === 2) {
+      return parts[0] * 60 + parts[1];
+    }
+    return 0;
+  };
+
+  const formatSeconds = (totalSeconds: number): string => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        try {
+          videoRef.current.pause();
+        } catch (e) {}
+      } else {
+        videoRef.current.play().catch(err => console.log('Playback error:', err));
+      }
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  useEffect(() => {
+    let interval: any;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        if (videoRef.current && !videoRef.current.paused && videoRef.current.currentTime > 0) {
+          setCurrentTime(videoRef.current.currentTime);
+        } else {
+          setCurrentTime(prev => {
+            const next = prev + 0.25;
+            if (next >= videoDuration) {
+              setIsPlaying(false);
+              return 0;
+            }
+            return next;
+          });
+        }
+      }, 250);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, videoDuration]);
 
   useEffect(() => {
     setPanelRecommend(candidate.recommendation || 'Hire');
@@ -229,7 +296,8 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
             {[
               { id: 'overview', label: 'Overview' },
               { id: 'integrity', label: 'Integrity Report' },
-              { id: 'transcript', label: 'QA Transcript' }
+              { id: 'transcript', label: 'QA Transcript' },
+              { id: 'recording', label: 'Recording' }
             ].map(tab => {
               const isSelected = activeSubTab === tab.id;
               return (
@@ -580,6 +648,262 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
                   );
                 })}
               </div>
+            </div>
+          </div>
+
+          {/* TAB: RECORDING */}
+          <div className={`${activeSubTab === 'recording' ? 'block' : 'hidden print:block'} space-y-6`}>
+            {/* Twilio Video Embed container */}
+            <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-950 border border-slate-900 shadow-lg group flex items-center justify-center">
+              {/* Actual hidden HTML5 video element for timing track */}
+              <video 
+                ref={videoRef}
+                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                className="hidden"
+                loop
+                playsInline
+                muted={isMuted}
+                onTimeUpdate={() => {
+                  if (videoRef.current) {
+                    setCurrentTime(videoRef.current.currentTime);
+                  }
+                }}
+                onLoadedMetadata={() => {
+                  if (videoRef.current) {
+                    setVideoDuration(videoRef.current.duration || 900);
+                  }
+                }}
+              />
+
+              {/* MOCK WEBCAM VISUALS */}
+              <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-slate-950/95 overflow-hidden">
+                {/* Grid Overlay */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:30px_30px]" />
+
+                {/* Candidate avatar container representing webcam feed */}
+                <div className="relative flex flex-col items-center justify-center">
+                  <div className={`relative w-36 h-36 rounded-full border-4 border-slate-800 flex items-center justify-center shadow-2xl transition-all duration-700 bg-slate-900/60 ${
+                    isPlaying ? 'ring-8 ring-blue-500/20 scale-105 border-blue-500' : 'border-slate-800'
+                  }`}>
+                    {candidate.avatarUrl ? (
+                      <img 
+                        src={candidate.avatarUrl} 
+                        alt={candidate.name} 
+                        className={`w-full h-full rounded-full object-cover p-2.5 transition-all ${
+                          isPlaying ? 'animate-pulse' : ''
+                        }`}
+                      />
+                    ) : (
+                      <span className="text-3xl font-extrabold text-slate-700">{candidate.name.split(' ').map(n => n[0]).join('')}</span>
+                    )}
+
+                    {/* Face detection target box overlay */}
+                    {isPlaying && (
+                      <div className="absolute -inset-4 border-2 border-emerald-500/45 rounded-3xl pointer-events-none animate-twilio-scanner">
+                        {/* Brackets indicator */}
+                        <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-emerald-400" />
+                        <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-emerald-400" />
+                        <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-emerald-400" />
+                        <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-emerald-400" />
+                        
+                        {/* Status text */}
+                        <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-emerald-500 text-slate-950 font-extrabold text-[8px] uppercase tracking-widest px-2 py-0.5 rounded shadow-md">
+                          FACE DETECTED
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Candidate Name Watermark */}
+                  <span className="mt-4 text-xs font-extrabold tracking-wider text-slate-400 uppercase">
+                    Participant: {candidate.name}
+                  </span>
+                </div>
+
+                {/* Simulated Audio Waveform Equalizer (at the bottom) */}
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-end gap-1 h-8 z-10">
+                  {Array.from({ length: 24 }).map((_, idx) => {
+                    const randomDelay = (idx * 0.05).toFixed(2);
+                    const randomHeight = [16, 24, 8, 32, 12, 28, 20, 14, 18, 22][idx % 10];
+                    return (
+                      <div 
+                        key={idx}
+                        className={`w-1 rounded-t bg-blue-500/80 transition-all ${
+                          isPlaying ? 'animate-twilio-equalizer' : ''
+                        }`}
+                        style={{ 
+                          height: isPlaying ? '100%' : `${randomHeight}px`,
+                          maxHeight: '32px',
+                          animationDelay: `${randomDelay}s` 
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Status text */}
+                <div className="absolute bottom-4 left-4 z-10 text-[9px] font-extrabold tracking-widest uppercase text-slate-500 flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                  <span>{isPlaying ? 'REC FEED LIVE' : 'PLAYBACK PAUSED'}</span>
+                </div>
+              </div>
+
+              {/* Twilio Room Watermark Overlays */}
+              <div className="absolute top-4 left-4 z-10 bg-slate-950/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800 text-[10px] text-white flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                <span className="font-extrabold uppercase tracking-wider text-slate-350">Room:</span>
+                <span className="font-bold text-white text-[11px]">{candidate.name.replace(/\s+/g, '_')}_session_video</span>
+              </div>
+
+              <div className="absolute top-4 right-4 z-10 bg-slate-950/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800 text-[10px] text-slate-350 flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <span className="font-extrabold text-[9px]">LATENCY:</span>
+                  <span className="font-bold text-emerald-400">14ms</span>
+                </div>
+                <div className="w-px h-3 bg-slate-800" />
+                <div className="flex items-center gap-1">
+                  <span className="font-extrabold text-[9px]">QUALITY:</span>
+                  <span className="font-bold text-emerald-400">1080p HD</span>
+                </div>
+              </div>
+
+              {/* Central play button overlay when paused */}
+              {!isPlaying && (
+                <button 
+                  onClick={togglePlay}
+                  className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-blue-600/90 hover:bg-blue-600 text-white flex items-center justify-center shadow-2xl transition-all hover:scale-105 active:scale-95"
+                >
+                  <Play className="w-6 h-6 fill-current" />
+                </button>
+              )}
+            </div>
+
+            {/* Scrubber timeline and Event Flag Markers */}
+            <div className="space-y-4">
+              <div className="relative pt-6 pb-2">
+                {/* Overlaid Event Flag Markers */}
+                <div className="absolute top-0 left-0 w-full h-6 z-30 pointer-events-none">
+                  {report.integrityEvents.map((evt, idx) => {
+                    const evtSeconds = parseTimestampToSeconds(evt.timestamp);
+                    const positionRatio = videoDuration ? evtSeconds / videoDuration : 0;
+
+                    let colorClass = 'bg-blue-500 ring-blue-500/20';
+                    if (evt.severity === 'high') colorClass = 'bg-rose-500 ring-rose-500/20';
+                    if (evt.severity === 'medium') colorClass = 'bg-amber-500 ring-amber-500/20';
+
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setCurrentTime(evtSeconds);
+                          setActiveEventIndex(idx);
+                          setIsPlaying(true);
+                          if (videoRef.current) {
+                            try {
+                              videoRef.current.currentTime = evtSeconds;
+                              videoRef.current.play().catch(() => {});
+                            } catch (e) {}
+                          }
+                        }}
+                        className={`absolute -translate-x-1/2 w-4 h-4 rounded-full border-2 border-white dark:border-[#111a2e] ring-4 flex items-center justify-center transition-all cursor-pointer pointer-events-auto hover:scale-125 ${colorClass} ${
+                          activeEventIndex === idx ? 'scale-110 shadow-lg ring-8' : ''
+                        }`}
+                        style={{ left: `${Math.min(99, Math.max(1, positionRatio * 100))}%` }}
+                        title={`${evt.timestamp} - ${evt.type} (${evt.severity} severity)`}
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Scrubber Range Input */}
+                <div className="relative flex items-center w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800">
+                  <input 
+                    type="range"
+                    min={0}
+                    max={videoDuration}
+                    value={currentTime}
+                    onChange={(e) => {
+                      const newTime = Number(e.target.value);
+                      setCurrentTime(newTime);
+                      if (videoRef.current) {
+                        videoRef.current.currentTime = newTime;
+                      }
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                  />
+                  {/* Visual scrubber fill */}
+                  <div 
+                    className="h-full bg-blue-600 rounded-full transition-all duration-75 relative z-10"
+                    style={{ width: `${(currentTime / videoDuration) * 100}%` }}
+                  />
+                  {/* Scrubber thumb handle */}
+                  <div 
+                    className="w-4 h-4 rounded-full bg-white border-2 border-blue-600 absolute top-1/2 -translate-y-1/2 -ml-2 z-10 pointer-events-none"
+                    style={{ left: `${(currentTime / videoDuration) * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Controls and duration metrics bar */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/60 text-xs font-bold text-slate-700 dark:text-slate-300">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={togglePlay}
+                    className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 flex items-center justify-center shadow-sm text-slate-650 dark:text-slate-300 active:scale-95 transition-all"
+                  >
+                    {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
+                  </button>
+                  <button 
+                    onClick={toggleMute}
+                    className="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 flex items-center justify-center shadow-sm text-slate-650 dark:text-slate-300 active:scale-95 transition-all"
+                  >
+                    {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  </button>
+                  <span className="font-extrabold text-[11px] tabular-nums text-slate-500">
+                    {formatSeconds(currentTime)} / {formatSeconds(videoDuration)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">Timeline Indicators:</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                    <span className="text-[10px] text-slate-500 font-bold">High Risk</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                    <span className="text-[10px] text-slate-500 font-bold">Medium Risk</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                    <span className="text-[10px] text-slate-500 font-bold">Low Risk</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Active integrity warning display */}
+            {activeEventIndex !== null && report.integrityEvents[activeEventIndex] && (
+              <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 space-y-2 animate-fadeIn">
+                <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400">
+                  <AlertOctagon className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-extrabold uppercase tracking-wider">Integrity Event Selected: {report.integrityEvents[activeEventIndex].type}</span>
+                  <span className="text-[10px] font-extrabold bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded-full uppercase ml-auto">
+                    {report.integrityEvents[activeEventIndex].severity} severity
+                  </span>
+                </div>
+                <p className="text-xs text-slate-700 dark:text-slate-300 font-semibold leading-relaxed">
+                  {report.integrityEvents[activeEventIndex].context}
+                </p>
+                <div className="text-[10px] text-slate-400 font-bold">
+                  Deduction Applied: -{report.integrityEvents[activeEventIndex].deduction} pts &bull; Occurred at timestamp {report.integrityEvents[activeEventIndex].timestamp}
+                </div>
+              </div>
+            )}
+
+            {/* Help Callout */}
+            <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-2xl text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-semibold">
+              Tip: Click on the colored flag markers on the timeline scrubber track to jump the video directly to specific integrity events (e.g. tab switches, gaze averting anomalies) to visually audit the recording candidate stream.
             </div>
           </div>
 
