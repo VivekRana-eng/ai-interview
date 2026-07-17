@@ -637,19 +637,7 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
             </select>
           </div>
 
-          {/* Agrees with AI Recommendation Toggle */}
-          <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800/60">
-            <span className="text-xs font-extrabold text-slate-750 dark:text-slate-300">Agrees with AI Verdict</span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={panelAgrees}
-                onChange={(e) => setPanelAgrees(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-8 h-4.5 bg-slate-200 dark:bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-blue-600"></div>
-            </label>
-          </div>
+
 
           {/* Optional score override input */}
           <div className="space-y-1.5">
