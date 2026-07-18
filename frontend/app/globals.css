@@ -12,6 +12,26 @@
 }
 
 /* ==========================================================================
+   Global Border Removal
+   ========================================================================== */
+
+/* Remove all decorative borders from layout/card elements */
+div, section, article, aside, nav, header, footer,
+ul, li, span, p, h1, h2, h3, h4, h5, h6, a, table, thead, tbody, tr, td, th {
+  border-color: transparent !important;
+  border-width: 0 !important;
+}
+
+/* Restore borders on interactive / form elements so they still work */
+input, select, textarea, button {
+  border-width: 1px !important;
+}
+input:focus, select:focus, textarea:focus {
+  border-width: 1px !important;
+  outline: none !important;
+}
+
+/* ==========================================================================
    Dark Mode Theme System
    ========================================================================== */
 
