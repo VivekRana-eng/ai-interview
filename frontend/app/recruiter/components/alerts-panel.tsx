@@ -37,9 +37,9 @@ export const AlertsPanel: React.FC = () => {
   };
 
   return (
-    <div className="p-4 sm:p-5 md:p-6 rounded-[15px] bg-white border border-[#EEF1F6] shadow-[0_4px_16px_rgba(15,23,42,0.04)] flex flex-col gap-4 sm:gap-5 overflow-hidden" style={{ minWidth: 0 }}>
+    <div className="p-4 sm:p-5 md:p-6 rounded-[15px] bg-white dark:bg-[#0f172a] border border-slate-800 shadow-[0_4px_16px_rgba(15,23,42,0.04)] flex flex-col gap-4 sm:gap-5 overflow-hidden" style={{ minWidth: 0 }}>
       <div className="flex items-center justify-between pb-2 border-b border-[#EEF1F6]">
-        <h3 className="text-sm font-bold text-[#111827] truncate mr-2">
+        <h3 className="text-sm font-bold text-white truncate mr-2">
           AI Integrity Alerts
         </h3>
         <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-500 border border-rose-100 flex-shrink-0 whitespace-nowrap">

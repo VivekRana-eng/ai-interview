@@ -205,7 +205,7 @@ export const Charts: React.FC = () => {
     <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)] gap-4 md:gap-6">
 
       {/* 1. AI Recruitment Overview Area Chart */}
-      <div className="p-4 sm:p-5 md:p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+      <div className="p-4 sm:p-5 md:p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-800 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start mb-4 md:mb-6 min-w-0">
           <div>
             <h3 className="text-sm md:text-[15px] font-bold text-slate-900 leading-tight">AI Recruitment Overview</h3>
@@ -364,7 +364,7 @@ export const Charts: React.FC = () => {
       </div>
 
       {/* 2. Hiring Conversion Funnel */}
-      <div className="p-4 sm:p-5 md:p-6 rounded-2xl bg-white border border-slate-100/80 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+      <div className="p-4 sm:p-5 md:p-6 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-800 shadow-[0_2px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start mb-4">
           <div>
             <h3 className="text-sm md:text-[15px] font-bold text-slate-900 leading-tight">Hiring Conversion Funnel</h3>

@@ -101,7 +101,7 @@ export const KpiCards: React.FC = () => {
           <div
             key={card.title}
             className="
-              relative p-4 sm:p-5 rounded-[15px] bg-white border border-[#EEF1F6]
+              relative p-4 sm:p-5 rounded-[15px] bg-white dark:bg-[#0f172a] border border-slate-800
               shadow-[0_4px_16px_rgba(15,23,42,0.04)] flex flex-col justify-between min-h-[120px] sm:min-h-[130px]
             "
           >
@@ -111,7 +111,7 @@ export const KpiCards: React.FC = () => {
                 <div className={`p-1.5 rounded-lg border flex items-center justify-center ${card.iconColor}`}>
                   <Icon className={tw.iconSm} />
                 </div>
-                <span className="text-[11px] sm:text-xs font-semibold text-[#7B8AA3] leading-tight">
+                <span className="text-[11px] sm:text-xs font-semibold text-white leading-tight">
                   {card.title}
                 </span>
               </div>
@@ -126,10 +126,10 @@ export const KpiCards: React.FC = () => {
             {/* Bottom Section */}
             <div className="flex items-end justify-between gap-3 mt-3 min-w-0">
               <div className="flex flex-col">
-                <span className="text-2xl sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-none">
+                <span className="text-2xl sm:text-2xl font-extrabold text-white tracking-tight leading-none">
                   {card.value}
                 </span>
-                <span className="text-[10px] text-[#7B8AA3] font-semibold mt-1">
+                <span className="text-[10px] text-slate-300 font-semibold mt-1">
                   vs previous month
                 </span>
               </div>
