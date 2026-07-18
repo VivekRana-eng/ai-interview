@@ -80,8 +80,8 @@ export default function RecruiterDashboard() {
 
             {activeTab === 'Billing & Settings' && (
               <div className="p-8 bg-white dark:bg-[#0f172a] border border-slate-800 rounded-[15px] shadow-[0_4px_16px_rgba(15,23,42,0.04)] text-xs space-y-4">
-                <h3 className="text-sm font-bold text-white mb-2">Billing & Account Settings</h3>
-                <p className="text-slate-300 font-semibold">Review your enterprise billing periods, active limits and tokens.</p>
+                <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-2">Billing & Account Settings</h3>
+                <p className="text-slate-500 dark:text-slate-300 font-semibold">Review your enterprise billing periods, active limits and tokens.</p>
               </div>
             )}
           </motion.div>
