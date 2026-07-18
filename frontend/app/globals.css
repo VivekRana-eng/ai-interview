@@ -12,23 +12,17 @@
 }
 
 /* ==========================================================================
-   Global Border Removal
+   Global Border Color — Theme Aware
    ========================================================================== */
 
-/* Remove all decorative borders from layout/card elements */
-div, section, article, aside, nav, header, footer,
-ul, li, span, p, h1, h2, h3, h4, h5, h6, a, table, thead, tbody, tr, td, th {
-  border-color: transparent !important;
-  border-width: 0 !important;
+/* Light theme: all borders → gray-200 (#e5e7eb) */
+html:not(.dark) * {
+  border-color: #e5e7eb !important;
 }
 
-/* Restore borders on interactive / form elements so they still work */
-input, select, textarea, button {
-  border-width: 1px !important;
-}
-input:focus, select:focus, textarea:focus {
-  border-width: 1px !important;
-  outline: none !important;
+/* Dark theme: all borders → slate-800 (#1e293b) */
+html.dark * {
+  border-color: #1e293b !important;
 }
 
 /* ==========================================================================
