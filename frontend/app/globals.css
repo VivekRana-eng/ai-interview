@@ -15,6 +15,20 @@
    Dark Mode Theme System
    ========================================================================== */
 
+/* Base body light mode fallback */
+html:not(.dark) body,
+html:not(.dark) main {
+  background-color: #f7f9fc !important;
+}
+
+/* Light mode text contrast improvements */
+html:not(.dark) .text-\[\#7B8AA3\] {
+  color: #475569 !important;
+}
+html:not(.dark) .text-slate-400 {
+  color: #57657a !important;
+}
+
 /* Main layout overrides */
 .dark body {
   background-color: #080c14 !important;
