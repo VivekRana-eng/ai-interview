@@ -171,7 +171,7 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
       const element = document.getElementById('candidate-performance-content');
       if (element) {
         const html2pdf = (await import('html2pdf.js')).default;
-        const opt = {
+        const opt: any = {
           margin:       0.3,
           filename:     `${candidate.name.replace(/\s+/g, '_')}_Performance_Report.pdf`,
           image:        { type: 'jpeg', quality: 0.98 },
