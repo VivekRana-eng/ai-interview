@@ -24,7 +24,7 @@ export default function RecruiterDashboard() {
   }, [initializeStore]);
 
   return (
-    <div className="h-screen bg-white text-slate-800 flex overflow-hidden font-sans antialiased">
+    <div className="h-screen bg-white dark:bg-[#080c14] text-slate-800 dark:text-slate-100 flex overflow-hidden font-sans antialiased">
 
       {/* 1. Navigation Sidebar (Dark Mode) */}
       <Sidebar
@@ -39,7 +39,7 @@ export default function RecruiterDashboard() {
         <Navbar onMenuClick={() => setMobileSidebarOpen(true)} />
 
         {/* Viewport Frame */}
-        <main className={`flex-1 p-4 lg:p-8 space-y-6 lg:space-y-8 min-h-0 overflow-x-hidden ${isQuestionBankTab ? 'overflow-hidden' : 'overflow-y-auto'}`}>
+        <main className={`flex-1 p-4 lg:p-8 space-y-6 lg:space-y-8 min-h-0 overflow-x-hidden bg-white dark:bg-[#080c14] ${isQuestionBankTab ? 'overflow-hidden' : 'overflow-y-auto'}`}>
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 10 }}

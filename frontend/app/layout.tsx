@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import "./globals.css"
+import { ThemeProvider } from "./components/ThemeProvider"
 
 export const metadata: Metadata = {
   title: "SelectAI - Government Internship Selection",
@@ -12,8 +13,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className="bg-[#f7f9fc] text-[#0F2744] font-sans">{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className="bg-[#f7f9fc] text-[#0F2744] font-sans">
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   )
 }

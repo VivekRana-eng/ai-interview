@@ -9,6 +9,7 @@ import {
   buttonSecondary,
   headerShell,
 } from '@/lib/tailwindClasses'
+import { DarkModeToggle } from './DarkModeToggle'
 
 export function Header() {
   return (
@@ -29,6 +30,7 @@ export function Header() {
           </div>
         </Link>
         <nav className={tw.flexItemsGap2}>
+          <DarkModeToggle variant="default" />
           <Link href="/jobs" className="text-sm font-medium px-4 py-2 rounded-md bg-[#e6f7f2] text-[#1D9E75] hover:bg-[#d0f0e6] transition-colors">
             Jobs
           </Link>

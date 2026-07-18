@@ -339,13 +339,15 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   },
 
   clearNotifications: async () => {
+    // Optimistic update — clear UI immediately
+    set((state) => ({
+      alerts: state.alerts.map((a) => ({ ...a, resolved: true }))
+    }));
+    // Background sync with backend
     try {
-      await fetch(`${API_URL}/alerts/resolve-all`, {
-        method: 'PATCH'
-      });
-      await get().initializeStore();
+      await fetch(`${API_URL}/alerts/resolve-all`, { method: 'PATCH' });
     } catch (err) {
-      console.error('Failed to clear notifications in MongoDB:', err);
+      console.warn('Could not sync clear-all with server (alerts cleared locally):', err);
     }
   },
 

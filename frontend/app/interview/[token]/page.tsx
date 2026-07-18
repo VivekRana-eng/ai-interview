@@ -171,7 +171,7 @@ export default function InterviewPage({ params }: { params: { token: string } })
     'text-[#0F2744] bg-[#f7f9fc] border-[#e2e8f0]'
 
   return (
-    <div className="h-screen bg-[#f7f9fc] flex flex-col overflow-hidden">
+    <div className="h-screen bg-white dark:bg-[#080c14] flex flex-col overflow-hidden">
       {/* Top bar */}
       <div className="bg-white border-b border-[#e2e8f0] z-50 flex-shrink-0">
         <div className="h-14 grid grid-cols-[1fr_auto_1fr] items-center px-6 gap-4">

@@ -80,7 +80,7 @@ export default function ApplyPage({ params }: { params: { id: string } }) {
 
   if (error && !job) {
     return (
-      <div className="min-h-screen bg-[#f7f9fc] flex items-center justify-center text-[#dc2626]">
+      <div className="min-h-screen bg-white dark:bg-[#080c14] flex items-center justify-center text-[#dc2626]">
         {error}
       </div>
     )

@@ -80,7 +80,7 @@ export default function StatusPage({ params }: { params: { token: string } }) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#f7f9fc] flex items-center justify-center text-[#dc2626]">
+      <div className="min-h-screen bg-white dark:bg-[#080c14] flex items-center justify-center text-[#dc2626]">
         {error}
       </div>
     )
@@ -91,7 +91,7 @@ export default function StatusPage({ params }: { params: { token: string } }) {
   const currentStage = mapStatusToStage(appStatus, hasInterviewScore)
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc]">
+    <div className="min-h-screen bg-white dark:bg-[#080c14]">
       {/* Header */}
       <header className="bg-white border-t-[3px] border-t-[#0F2744] border-b border-[#e2e8f0]">
         <div className="max-w-[900px] mx-auto px-6 h-16 flex items-center justify-between">
