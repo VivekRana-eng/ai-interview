@@ -513,7 +513,7 @@ export const JobsPanel: React.FC = () => {
                         </span>
                         {getStatusBadge(job.status)}
                       </div>
-                      <h3 className="text-[15px] font-bold text-slate-800 tracking-tight leading-snug group-hover:text-blue-600 transition-colors">
+                      <h3 className="text-[15px] font-bold text-slate-800 dark:text-white tracking-tight leading-snug group-hover:text-blue-600 transition-colors">
                         {job.title}
                       </h3>
                     </div>

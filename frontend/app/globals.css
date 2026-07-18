@@ -16,12 +16,17 @@
    ========================================================================== */
 
 /* Light theme: all borders → gray-200 (#e5e7eb) */
-html:not(.dark) * {
+html:not(.dark) *:not(.always-slate-border) {
   border-color: #e5e7eb !important;
 }
 
 /* Dark theme: all borders → slate-800 (#1e293b) */
-html.dark * {
+html.dark *:not(.always-slate-border) {
+  border-color: #1e293b !important;
+}
+
+/* Maintain slate-800 border-color specifically for always-slate-border */
+.always-slate-border {
   border-color: #1e293b !important;
 }
 
@@ -116,7 +121,6 @@ html:not(.dark) .text-slate-400 {
 
 /* Text Overrides — ALL text white in dark mode */
 
-/* Primary / heading text → pure white */
 .dark .text-slate-950,
 .dark .text-slate-900,
 .dark .text-slate-800,
@@ -132,13 +136,8 @@ html:not(.dark) .text-slate-400 {
 .dark .text-[#0f172a],
 .dark .text-gray-900,
 .dark .text-gray-800,
-.dark .text-gray-700 {
-  color: #ffffff !important;
-}
-
-/* Secondary / muted text → light slate (readable but softer) */
+.dark .text-gray-700,
 .dark .text-slate-600,
-.dark .text-slate-655,
 .dark .text-slate-500,
 .dark .text-slate-455,
 .dark .text-slate-450,
@@ -152,7 +151,7 @@ html:not(.dark) .text-slate-400 {
 .dark .text-gray-600,
 .dark .text-gray-500,
 .dark .text-gray-400 {
-  color: #cbd5e1 !important;
+  color: #ffffff !important;
 }
 
 /* Body text / paragraph in dark mode */

@@ -165,14 +165,29 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
 
   const verdictStyle = getVerdictStyles(candidate.recommendation);
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     setDownloading(true);
-    setTimeout(() => {
-      if (typeof window !== 'undefined') {
+    try {
+      const element = document.getElementById('candidate-performance-content');
+      if (element) {
+        const html2pdf = (await import('html2pdf.js')).default;
+        const opt = {
+          margin:       0.3,
+          filename:     `${candidate.name.replace(/\s+/g, '_')}_Performance_Report.pdf`,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { scale: 2, useCORS: true, logging: false },
+          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        await html2pdf().set(opt).from(element).save();
+      } else {
         window.print();
       }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      window.print();
+    } finally {
       setDownloading(false);
-    }, 300);
+    }
   };
 
   const handleSubmitDecision = () => {
@@ -206,7 +221,7 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
 
 
   return (
-    <div className="space-y-6">
+    <div id="candidate-performance-content" className="space-y-6">
       
       {/* 1. REPORT HEADER */}
       <div className="bg-white dark:bg-[#111a2e] border border-slate-200/80 dark:border-slate-800/85 rounded-3xl p-5 lg:p-6 shadow-[0_4px_16px_rgba(15,23,42,0.03)] space-y-4">

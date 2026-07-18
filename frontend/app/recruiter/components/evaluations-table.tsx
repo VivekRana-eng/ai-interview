@@ -177,7 +177,7 @@ export const EvaluationsTable: React.FC<EvaluationsTableProps> = ({ showViewAll 
       {/* Table */}
       {/* Controls bar: viewing summary + per-page & sort */}
       <div className="w-full bg-slate-50/50 border border-slate-100 rounded-xl p-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 text-xs font-bold text-slate-600">
-        <div className="text-base font-extrabold text-slate-800">
+        <div className="text-base font-extrabold text-slate-800 dark:text-white">
           {sortedCandidates.length === 0 ? (
             <span>Viewing 0 of 0</span>
           ) : (
@@ -185,7 +185,7 @@ export const EvaluationsTable: React.FC<EvaluationsTableProps> = ({ showViewAll 
               Viewing {Math.min(sortedCandidates.length, (currentPage - 1) * itemsPerPageState + 1)} - {Math.min(sortedCandidates.length, currentPage * itemsPerPageState)} of {sortedCandidates.length}
             </span>
           )}
-          <div className="text-[12px] text-slate-800 font-semibold">All Candidates</div>
+          <div className="text-[12px] text-slate-800 dark:text-slate-200 font-semibold">All Candidates</div>
         </div>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">

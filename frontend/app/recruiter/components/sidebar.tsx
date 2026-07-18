@@ -121,18 +121,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </nav>
 
         <div className="relative z-10 p-4 border-t border-white/8 bg-[#0B1222]">
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#0D1528] px-3 py-3 shadow-[0_8px_20px_rgba(0,0,0,0.18)] backdrop-blur-md">
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-[#0D1528] px-3 py-3 shadow-[0_8px_20px_rgba(0,0,0,0.18)] backdrop-blur-md always-slate-border">
             <div className="relative">
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-violet-500 ring-2 ring-blue-400/60 flex items-center justify-center text-white font-bold text-sm">
                 JD
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-blue-500 ring-2 ring-white animate-pulse" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-blue-500 ring-2 ring-slate-800 animate-pulse" />
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-sm font-bold text-white truncate">John Doe</div>
               <div className="text-[11px] text-slate-400 truncate">Recruiting Director</div>
             </div>
-            <div className="text-[10px] font-semibold text-slate-200 bg-white/5 px-2 py-1 rounded-full border border-white/10">
+            <div className="text-[10px] font-semibold text-slate-200 bg-white/5 px-2 py-1 rounded-full border border-slate-800 always-slate-border">
               Online
             </div>
           </div>

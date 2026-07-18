@@ -75,10 +75,10 @@ export const CandidateList: React.FC<CandidateListProps> = ({
       {/* List Header Selector from Screenshot 1 */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50 p-4 rounded-xl border border-slate-100">
         <div>
-          <h3 className="text-base font-extrabold text-slate-800 leading-none">
+          <h3 className="text-base font-extrabold text-slate-800 dark:text-white leading-none">
             Viewing {startIndex + 1} - {Math.min(endIndex, candidates.length)} of {candidates.length}
           </h3>
-          <p className="text-xs text-slate-455 font-semibold mt-1">All Candidates</p>
+          <p className="text-xs text-slate-455 dark:text-slate-200 font-semibold mt-1">All Candidates</p>
         </div>
         
         <div className="flex items-center gap-4 text-xs font-bold text-slate-600">

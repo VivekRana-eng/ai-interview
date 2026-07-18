@@ -485,7 +485,7 @@ export const QuestionBankPanel: React.FC = () => {
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-slate-900">Jobs</h3>
+              <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">Jobs</h3>
               <p className="text-xs text-slate-500 font-medium">
                 Select a job to view its question set.
               </p>
@@ -527,7 +527,7 @@ export const QuestionBankPanel: React.FC = () => {
                             {job.department}
                           </span>
                         </div>
-                        <div className="mt-2 text-sm font-extrabold text-slate-900 leading-snug">
+                        <div className="mt-2 text-sm font-extrabold text-slate-900 dark:text-white leading-snug">
                           {job.title}
                         </div>
                         <div className="mt-2 flex items-center gap-3 text-xs font-medium text-slate-500">
@@ -575,7 +575,7 @@ export const QuestionBankPanel: React.FC = () => {
                           Question Bank
                         </span>
                       </div>
-                      <h3 className="mt-3 text-xl md:text-2xl font-extrabold tracking-tight text-slate-900 truncate">
+                      <h3 className="mt-3 text-xl md:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white truncate">
                         {selectedJob.title}
                       </h3>
                     </div>
