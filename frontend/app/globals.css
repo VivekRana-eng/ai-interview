@@ -100,25 +100,83 @@ html:not(.dark) .text-slate-400 {
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Text Overrides */
-.dark .text-slate-800,
+/* Text Overrides — ALL text white in dark mode */
+
+/* Primary / heading text → pure white */
+.dark .text-slate-950,
 .dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-805,
+.dark .text-slate-807,
+.dark .text-slate-700,
+.dark .text-slate-650,
+.dark .text-slate-655,
 .dark .text-[#111827],
 .dark .text-[#0F2744],
-.dark .text-slate-950 {
-  color: #f8fafc !important;
+.dark .text-[#1a365d],
+.dark .text-[#1e293b],
+.dark .text-[#0f172a],
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700 {
+  color: #ffffff !important;
 }
 
+/* Secondary / muted text → light slate (readable but softer) */
+.dark .text-slate-600,
+.dark .text-slate-655,
+.dark .text-slate-500,
+.dark .text-slate-455,
+.dark .text-slate-450,
+.dark .text-slate-400,
+.dark .text-slate-350,
 .dark .text-[#7B8AA3],
 .dark .text-[#718096],
-.dark .text-slate-400,
-.dark .text-slate-500,
-.dark .text-slate-600 {
-  color: #94a3b8 !important;
+.dark .text-[#94a3b8],
+.dark .text-[#64748b],
+.dark .text-[#475569],
+.dark .text-gray-600,
+.dark .text-gray-500,
+.dark .text-gray-400 {
+  color: #cbd5e1 !important;
 }
 
-.dark .text-blue-600 {
+/* Body text / paragraph in dark mode */
+.dark p,
+.dark li,
+.dark td,
+.dark th,
+.dark label,
+.dark span:not([class*="text-emerald"]):not([class*="text-rose"]):not([class*="text-amber"]):not([class*="text-green"]):not([class*="text-red"]):not([class*="text-yellow"]):not([class*="text-indigo"]):not([class*="text-purple"]):not([class*="text-pink"]):not([class*="text-blue"]):not([class*="text-cyan"]):not([class*="text-[#"]) {
+  color: inherit;
+}
+
+/* Force white on common heading tags in dark mode */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: #ffffff !important;
+}
+
+/* Specific hex text colors used across recruiter components */
+.dark .text-\[\#7B8AA3\],
+.dark .text-\[\#718096\] {
+  color: #cbd5e1 !important;
+}
+
+/* Blue link text */
+.dark .text-blue-600,
+.dark .text-blue-700,
+.dark .text-\[\#2563EB\] {
   color: #60a5fa !important;
+}
+
+/* Chart title text */
+.dark .text-slate-700 {
+  color: #ffffff !important;
 }
 
 /* Hover Overrides */
