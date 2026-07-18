@@ -923,7 +923,6 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
           </div>
 
         </div>
-      </div>
 
         {/* Right Column: Sticky Decision Panel */}
         <div id="decision-panel" className="lg:sticky lg:top-6 bg-white dark:bg-[#111a2e] border border-slate-200/80 dark:border-slate-800/85 rounded-3xl p-5 shadow-[0_4px_16px_rgba(15,23,42,0.03)] space-y-5 no-print">
@@ -975,8 +974,6 @@ export const InterviewPerformanceTab: React.FC<InterviewPerformanceTabProps> = (
               <option value="Hired">Hired</option>
             </select>
           </div>
-
-
 
           {/* Optional score override input */}
           <div className="space-y-1.5">
