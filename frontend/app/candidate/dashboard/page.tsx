@@ -1,0 +1,186 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Sidebar } from '../../recruiter/components/sidebar';
+import { Navbar } from '../../recruiter/components/navbar';
+import { useRecruiterStore } from '../../recruiter/store';
+import { motion } from 'framer-motion';
+
+// Import Candidate Sub-panels
+import { DashboardTab } from '../components/dashboard-tab';
+import { ProfileTab } from '../components/profile-tab';
+import { ApplicationsTab } from '../components/applications-tab';
+import { ResumeTab } from '../components/resume-tab';
+import { InterviewsTab } from '../components/interviews-tab';
+import { HistoryTab } from '../components/history-tab';
+import { FeedbackTab } from '../components/feedback-tab';
+import { MockTab } from '../components/mock-tab';
+import { InsightsTab } from '../components/insights-tab';
+import { NotificationsTab } from '../components/notifications-tab';
+import { SettingsTab } from '../components/settings-tab';
+
+export default function CandidateDashboard() {
+  const { activeTab, setActiveTab, initializeStore } = useRecruiterStore();
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  
+  // Dynamic Candidate Applications List state shared across tabs
+  const [applications, setApplications] = useState([
+    { id: 1, company: 'Google', logo: 'G', role: 'Staff UI Engineer', appliedDate: '2026-07-10', status: 'Scheduled', aiScore: 92, location: 'Mountain View, CA (Hybrid)' },
+    { id: 2, company: 'Stripe', logo: 'S', role: 'Senior Product Engineer', appliedDate: '2026-07-14', status: 'Under Review', aiScore: 88, location: 'San Francisco, CA (Remote)' },
+    { id: 3, company: 'Vercel', logo: 'V', role: 'React Framework Engineer', appliedDate: '2026-07-08', status: 'In Progress', aiScore: 95, location: 'New York, NY (Remote)' },
+    { id: 4, company: 'GitHub', logo: 'GH', role: 'Developer Relations Lead', appliedDate: '2026-07-02', status: 'Shortlisted', aiScore: 86, location: 'San Francisco, CA (Hybrid)' },
+    { id: 5, company: 'Netflix', logo: 'N', role: 'UI Architect', appliedDate: '2026-06-25', status: 'Offer', aiScore: 94, location: 'Los Gatos, CA (Onsite)' },
+    { id: 6, company: 'Amazon', logo: 'A', role: 'SDE-III Frontend', appliedDate: '2026-06-18', status: 'Rejected', aiScore: 78, location: 'Seattle, WA (Onsite)' }
+  ]);
+
+  // Toast confirmation trigger state
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Custom step override for dynamic interview setups
+  const [interviewStep, setInterviewStep] = useState<'list' | 1 | 2 | 3 | 4 | 5 | 6>('list');
+
+  useEffect(() => {
+    initializeStore();
+    setActiveTab('Dashboard');
+  }, [initializeStore, setActiveTab]);
+
+  const handleStartInterview = () => {
+    setInterviewStep(1);
+    setActiveTab('Scheduled Interviews');
+  };
+
+  const handleTabNavigate = (tabName: string) => {
+    setInterviewStep('list');
+    setActiveTab(tabName);
+  };
+
+  const handleApplyJob = (company: string, role: string, score: string, location: string) => {
+    const numericScore = parseInt(score.replace(/\D/g, '')) || 90;
+    
+    // Check if already applied
+    const isDup = applications.some(app => 
+      app.company.toLowerCase() === company.toLowerCase() && 
+      app.role.toLowerCase() === role.toLowerCase()
+    );
+
+    if (isDup) return;
+
+    const newApp = {
+      id: Date.now(),
+      company,
+      logo: company[0].toUpperCase(),
+      role,
+      appliedDate: new Date().toISOString().split('T')[0],
+      status: 'Under Review',
+      aiScore: numericScore,
+      location: location + ' (Applied via Portal)'
+    };
+
+    setApplications([newApp, ...applications]);
+    
+    // Trigger user toast notice
+    setToastMessage(`Applied successfully to ${role} at ${company}!`);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  return (
+    <div className="h-screen bg-white dark:bg-[#080c14] text-slate-800 dark:text-slate-100 flex overflow-hidden font-sans antialiased relative">
+      
+      {/* Dynamic Toast Feedback Overlay */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-[9999] bg-emerald-500 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 font-semibold text-xs animate-bounce">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+          </svg>
+          {toastMessage}
+        </div>
+      )}
+
+      {/* 1. Navigation Sidebar (Dark Mode) */}
+      <Sidebar
+        isOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
+      />
+
+      {/* 2. Main content area frame (Light Mode) */}
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-[228px] h-full">
+        
+        {/* Top Header Utilities */}
+        <Navbar onMenuClick={() => setMobileSidebarOpen(true)} />
+
+        {/* Viewport Frame */}
+        <main className="flex-1 p-4 lg:p-8 min-h-0 overflow-y-auto bg-slate-50/50 dark:bg-[#080c14]">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6 lg:space-y-8"
+          >
+            {activeTab === 'Dashboard' && (
+              <DashboardTab 
+                onNavigate={handleTabNavigate}
+                onStartInterview={handleStartInterview}
+                applications={applications}
+              />
+            )}
+            
+            {activeTab === 'My Profile' && (
+              <ProfileTab />
+            )}
+
+            {activeTab === 'My Applications' && (
+              <ApplicationsTab 
+                applications={applications}
+                setApplications={setApplications}
+              />
+            )}
+
+            {activeTab === 'Resume' && (
+              <ResumeTab />
+            )}
+
+            {activeTab === 'Scheduled Interviews' && (
+              <InterviewsTab 
+                key={interviewStep} 
+                initialStep={interviewStep} 
+              />
+            )}
+
+            {activeTab === 'Interview History' && (
+              <HistoryTab 
+                onNavigate={handleTabNavigate}
+              />
+            )}
+
+            {activeTab === 'AI Feedback' && (
+              <FeedbackTab />
+            )}
+
+            {activeTab === 'Mock Interviews' && (
+              <MockTab 
+                onStartMock={handleStartInterview}
+              />
+            )}
+
+            {activeTab === 'Career Insights' && (
+              <InsightsTab 
+                onApplyJob={handleApplyJob}
+                appliedJobKeys={applications.map(app => (app.company + '-' + app.role).toLowerCase())}
+              />
+            )}
+
+            {activeTab === 'Notifications' && (
+              <NotificationsTab />
+            )}
+
+            {activeTab === 'Settings' && (
+              <SettingsTab />
+            )}
+
+          </motion.div>
+        </main>
+      </div>
+    </div>
+  );
+}

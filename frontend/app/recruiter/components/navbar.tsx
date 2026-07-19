@@ -1,6 +1,7 @@
 'use client';
 import * as tw from '@/lib/tailwindClasses'
 
+import { useAuthStore } from '@/app/authStore';
 import React, { useState } from 'react';
 import { useRecruiterStore } from '../store';
 import { useTheme } from '@/app/components/ThemeProvider';
@@ -30,8 +31,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
 
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifsOpen, setNotifsOpen] = useState(false);
+  const { user, logout } = useAuthStore();
 
   const activeAlerts = alerts.filter(a => !a.resolved);
+
+  const userInitials = user ? user.name.split(' ').map(n => n[0]).join('') : 'JD';
+  const userName = user ? user.name : 'John Doe';
+  const userTitle = user ? user.title : 'Recruiting Director';
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 lg:px-8 bg-[#f7f9fc] dark:bg-[#0b1329] border-b border-[#EEF1F6] dark:border-[#1e293b]">
@@ -145,7 +151,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                               </button>
                             </div>
                           </div>
-                          <p className="text-[10.5px] text-slate-600 dark:text-slate-300 leading-relaxed mt-1">{alert.message}</p>
+                          <p className="text-[10.5px] text-slate-650 dark:text-slate-300 leading-relaxed mt-1">{alert.message}</p>
                         </div>
                       </div>
                     ))}
@@ -177,7 +183,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
           )}
         </div>
 
-
         {/* Profile Avatar */}
         <div className="relative">
           <button 
@@ -185,11 +190,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
             className="flex items-center gap-2 p-1 pl-2 pr-3 rounded-xl border border-[#E6EBF2] dark:border-[#1e293b] hover:bg-slate-50 dark:hover:bg-white/10 bg-white dark:bg-transparent transition-colors shadow-[0_4px_16px_rgba(15,23,42,0.04)]"
           >
             <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-[10px] font-bold text-white uppercase tracking-wider">
-              JD
+              {userInitials}
             </div>
             <div className="hidden sm:flex flex-col items-start leading-tight text-left">
-              <span className="text-xs font-bold text-[#111827] dark:text-white">John Doe</span>
-              <span className="text-[9px] text-[#7B8AA3] dark:text-slate-400 font-semibold">Recruiting Director</span>
+              <span className="text-xs font-bold text-[#111827] dark:text-white">{userName}</span>
+              <span className="text-[9px] text-[#7B8AA3] dark:text-slate-400 font-semibold">{userTitle}</span>
             </div>
             <ChevronDown className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 pl-0.5" />
           </button>
@@ -203,7 +208,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                 Profile Settings
               </button>
               <button 
-                onClick={() => { window.location.href = '/admin/login'; }}
+                onClick={() => { logout(); }}
                 className="w-full text-left px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-white/10 font-bold text-rose-500 dark:text-rose-400"
               >
                 Sign Out

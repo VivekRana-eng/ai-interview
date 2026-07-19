@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import "./globals.css"
 import { ThemeProvider } from "./components/ThemeProvider"
+import { AuthGuard } from "./components/AuthGuard"
 
 export const metadata: Metadata = {
   title: "SelectAI - Government Internship Selection",
@@ -16,7 +17,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="bg-[#f7f9fc] text-[#0F2744] font-sans">
         <ThemeProvider>
-          {children}
+          <AuthGuard>
+            {children}
+          </AuthGuard>
         </ThemeProvider>
       </body>
     </html>

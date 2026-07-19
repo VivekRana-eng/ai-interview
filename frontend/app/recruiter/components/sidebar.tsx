@@ -1,6 +1,7 @@
 'use client';
 import * as tw from '@/lib/tailwindClasses'
 
+import { useAuthStore } from '@/app/authStore';
 import React from 'react';
 import { useRecruiterStore } from '../store';
 import { motion } from 'framer-motion';
@@ -11,7 +12,15 @@ import {
   Users, 
   FileBarChart2, 
   Sparkles,
-  X
+  X,
+  User,
+  FileText,
+  Calendar,
+  History,
+  TrendingUp,
+  Bell,
+  Settings,
+  Tv
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -21,14 +30,34 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { activeTab, setActiveTab } = useRecruiterStore();
+  const { user } = useAuthStore();
+  const isCandidate = user?.role === 'candidate';
 
-  const menuItems = [
-    { name: 'Dashboard', icon: LayoutDashboard },
-    { name: 'Jobs', icon: Briefcase },
-    { name: 'Question Bank', icon: HelpCircle },
-    { name: 'Candidates', icon: Users },
-    { name: 'Evaluation Reports', icon: FileBarChart2 }
-  ];
+  const menuItems = isCandidate 
+    ? [
+        { name: 'Dashboard', icon: LayoutDashboard },
+        { name: 'My Profile', icon: User },
+        { name: 'My Applications', icon: Briefcase },
+        { name: 'Resume', icon: FileText },
+        { name: 'Scheduled Interviews', icon: Calendar },
+        { name: 'Interview History', icon: History },
+        { name: 'AI Feedback', icon: FileBarChart2 },
+        { name: 'Mock Interviews', icon: Tv },
+        { name: 'Career Insights', icon: TrendingUp },
+        { name: 'Notifications', icon: Bell },
+        { name: 'Settings', icon: Settings }
+      ]
+    : [
+        { name: 'Dashboard', icon: LayoutDashboard },
+        { name: 'Jobs', icon: Briefcase },
+        { name: 'Question Bank', icon: HelpCircle },
+        { name: 'Candidates', icon: Users },
+        { name: 'Evaluation Reports', icon: FileBarChart2 }
+      ];
+
+  const userInitials = user ? user.name.split(' ').map(n => n[0]).join('') : 'JD';
+  const userName = user ? user.name : 'John Doe';
+  const userTitle = user ? user.title : 'Recruiting Director';
 
   return (
     <>
@@ -64,11 +93,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   HireAI
                 </span>
                 <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-white/10 text-blue-200 uppercase tracking-wider scale-90 ring-1 ring-white/10">
-                  PRO
+                  {isCandidate ? 'PORTAL' : 'PRO'}
                 </span>
               </div>
               <span className="text-[10px] text-slate-400 font-semibold tracking-wide">
-                Next-Gen Recruitment
+                {isCandidate ? 'Candidate Portal' : 'Next-Gen Recruitment'}
               </span>
             </div>
           </div>
@@ -124,13 +153,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center gap-3 rounded-2xl border border-slate-800 bg-[#0D1528] px-3 py-3 shadow-[0_8px_20px_rgba(0,0,0,0.18)] backdrop-blur-md always-slate-border">
             <div className="relative">
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-violet-500 ring-2 ring-blue-400/60 flex items-center justify-center text-white font-bold text-sm">
-                JD
+                {userInitials}
               </div>
               <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-blue-500 ring-2 ring-slate-800 animate-pulse" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-bold text-white truncate">John Doe</div>
-              <div className="text-[11px] text-slate-400 truncate">Recruiting Director</div>
+              <div className="text-sm font-bold text-white truncate">{userName}</div>
+              <div className="text-[11px] text-slate-400 truncate">{userTitle}</div>
             </div>
             <div className="text-[10px] font-semibold text-slate-200 bg-white/5 px-2 py-1 rounded-full border border-slate-800 always-slate-border">
               Online
