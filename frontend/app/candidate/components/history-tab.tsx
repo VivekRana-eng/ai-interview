@@ -3,7 +3,11 @@
 import React from 'react';
 import { History, Award, Calendar, FileText } from 'lucide-react';
 
-export const HistoryTab: React.FC<{ onNavigate: (tab: string) => void }> = ({ onNavigate }) => {
+interface HistoryTabProps {
+  onViewFeedback: (item: any) => void;
+}
+
+export const HistoryTab: React.FC<HistoryTabProps> = ({ onViewFeedback }) => {
   const history = [
     { id: 1, company: 'Google', role: 'Staff UI Engineer', date: '2026-07-12', duration: '42 mins', status: 'Completed', score: 92 },
     { id: 2, company: 'Stripe', role: 'Senior Product Engineer', date: '2026-07-08', duration: '38 mins', status: 'Completed', score: 88 },
@@ -49,7 +53,7 @@ export const HistoryTab: React.FC<{ onNavigate: (tab: string) => void }> = ({ on
                   </td>
                   <td className="px-5 py-4 text-right">
                     <button 
-                      onClick={() => onNavigate('AI Feedback')}
+                      onClick={() => onViewFeedback(item)}
                       className="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-900 hover:bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-white rounded-xl transition-all inline-flex items-center gap-1 active:scale-95"
                     >
                       <FileText className="w-3.5 h-3.5" />

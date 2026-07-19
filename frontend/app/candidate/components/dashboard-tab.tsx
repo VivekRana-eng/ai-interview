@@ -274,12 +274,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartI
                 {recentApplications.map((app) => (
                   <tr key={app.id} className="hover:bg-slate-800/25 transition-colors group">
                     <td className="px-5 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-[#1a2640] border border-slate-200 dark:border-slate-800 flex items-center justify-center">
-                          {getCompanyLogo(app.company)}
-                        </div>
-                        <span className="text-xs font-bold text-slate-850 dark:text-white">{app.company}</span>
-                      </div>
+                      <span className="text-xs font-bold text-slate-855 dark:text-white">{app.company}</span>
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap">
                       <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{app.role}</span>

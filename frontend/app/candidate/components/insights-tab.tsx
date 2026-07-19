@@ -53,12 +53,45 @@ const getCompanyLogo = (company: string) => {
   }
 };
 
+import { useRecruiterStore } from '../../recruiter/store';
+
+const getCompanyForJob = (jobTitle: string, jobId: string | number) => {
+  const title = jobTitle.toLowerCase();
+  if (title.includes('machine learning') || title.includes('ai') || title.includes('researcher')) {
+    return { company: 'Google', logo: 'Google' };
+  }
+  if (title.includes('full stack') || title.includes('product engineer') || title.includes('stripe')) {
+    return { company: 'Stripe', logo: 'Stripe' };
+  }
+  if (title.includes('security') || title.includes('devsecops') || title.includes('vercel')) {
+    return { company: 'Vercel', logo: 'Vercel' };
+  }
+  if (title.includes('design') || title.includes('relations') || title.includes('github')) {
+    return { company: 'GitHub', logo: 'GitHub' };
+  }
+  if (title.includes('hr') || title.includes('architect') || title.includes('netflix')) {
+    return { company: 'Netflix', logo: 'Netflix' };
+  }
+  
+  const companies = [
+    { company: 'Google', logo: 'Google' },
+    { company: 'Stripe', logo: 'Stripe' },
+    { company: 'Vercel', logo: 'Vercel' },
+    { company: 'GitHub', logo: 'GitHub' },
+    { company: 'Netflix', logo: 'Netflix' },
+    { company: 'Amazon', logo: 'Amazon' }
+  ];
+  const index = typeof jobId === 'number' ? jobId : parseInt(String(jobId).replace(/\D/g, '')) || 0;
+  return companies[index % companies.length];
+};
+
 interface InsightsTabProps {
   onApplyJob: (company: string, role: string, score: string, location: string) => void;
   appliedJobKeys: string[];
 }
 
 export const InsightsTab: React.FC<InsightsTabProps> = ({ onApplyJob, appliedJobKeys }) => {
+  const { jobs } = useRecruiterStore();
   const skillGaps = [
     { skill: 'React Concurrent Mode', gap: 'Low Gap', level: 90, target: 95 },
     { skill: 'Docker & Microservices', gap: 'Medium Gap', level: 50, target: 80 },
@@ -76,13 +109,17 @@ export const InsightsTab: React.FC<InsightsTabProps> = ({ onApplyJob, appliedJob
     { title: 'Step 5: E2E Testing Suite', desc: 'Write comprehensive user flows using Playwright and Jest Testing Library to guarantee regression resistance.' }
   ];
 
-  const suggestedJobs = [
-    { company: 'GitHub', role: 'Developer Advocate Lead', score: '95% match', location: 'San Francisco, CA' },
-    { company: 'Vercel', role: 'Frontend Architect', score: '92% match', location: 'New York, NY' },
-    { company: 'Google', role: 'Staff UI Engineer', score: '90% match', location: 'Mountain View, CA' },
-    { company: 'Stripe', role: 'Senior Product Engineer', score: '88% match', location: 'San Francisco, CA' },
-    { company: 'Netflix', role: 'UI Architect', score: '86% match', location: 'Los Gatos, CA' }
-  ];
+  const suggestedJobs = jobs.map(job => {
+    const companyInfo = getCompanyForJob(job.title, job.id);
+    const index = typeof job.id === 'number' ? job.id : parseInt(String(job.id).replace(/\D/g, '')) || 0;
+    const score = 85 + (index % 13);
+    return {
+      company: companyInfo.company,
+      role: job.title,
+      score: `${score}% match`,
+      location: job.location
+    };
+  });
 
   return (
     <div className="space-y-6 text-left max-w-5xl mx-auto">
@@ -148,15 +185,12 @@ export const InsightsTab: React.FC<InsightsTabProps> = ({ onApplyJob, appliedJob
               >
                 <div className="flex justify-between items-center gap-2">
                   <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-[#1a2640] border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0">
-                      {getCompanyLogo(job.company)}
-                    </div>
-                    <span className="text-xs font-bold text-slate-850 dark:text-white truncate">{job.role}</span>
+                    <span className="text-xs font-bold text-slate-855 dark:text-white truncate">{job.role}</span>
                   </div>
                   <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-450 ring-1 ring-blue-500/15 shrink-0">{job.score}</span>
                 </div>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold pl-8">{job.company} &bull; {job.location}</p>
-                <div className="pl-8">
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">{job.company} &bull; {job.location}</p>
+                <div>
                   {appliedJobKeys.includes((job.company + '-' + job.role).toLowerCase()) ? (
                     <span className="text-[10px] text-emerald-500 font-bold inline-flex items-center gap-1 mt-0.5">
                       Applied &bull; Under Review

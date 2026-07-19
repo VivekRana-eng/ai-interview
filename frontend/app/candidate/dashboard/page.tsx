@@ -25,12 +25,11 @@ export default function CandidateDashboard() {
   
   // Dynamic Candidate Applications List state shared across tabs
   const [applications, setApplications] = useState([
-    { id: 1, company: 'Google', logo: 'G', role: 'Staff UI Engineer', appliedDate: '2026-07-10', status: 'Scheduled', aiScore: 92, location: 'Mountain View, CA (Hybrid)' },
-    { id: 2, company: 'Stripe', logo: 'S', role: 'Senior Product Engineer', appliedDate: '2026-07-14', status: 'Under Review', aiScore: 88, location: 'San Francisco, CA (Remote)' },
-    { id: 3, company: 'Vercel', logo: 'V', role: 'React Framework Engineer', appliedDate: '2026-07-08', status: 'In Progress', aiScore: 95, location: 'New York, NY (Remote)' },
-    { id: 4, company: 'GitHub', logo: 'GH', role: 'Developer Relations Lead', appliedDate: '2026-07-02', status: 'Shortlisted', aiScore: 86, location: 'San Francisco, CA (Hybrid)' },
-    { id: 5, company: 'Netflix', logo: 'N', role: 'UI Architect', appliedDate: '2026-06-25', status: 'Offer', aiScore: 94, location: 'Los Gatos, CA (Onsite)' },
-    { id: 6, company: 'Amazon', logo: 'A', role: 'SDE-III Frontend', appliedDate: '2026-06-18', status: 'Rejected', aiScore: 78, location: 'Seattle, WA (Onsite)' }
+    { id: 1, company: 'Google', logo: 'G', role: 'AI / Machine Learning Researcher', appliedDate: '2026-07-10', status: 'Scheduled', aiScore: 97, location: 'New Delhi (On-site)' },
+    { id: 2, company: 'Stripe', logo: 'S', role: 'Senior Full Stack Engineer', appliedDate: '2026-07-14', status: 'Under Review', aiScore: 94, location: 'Bengaluru (Hybrid)' },
+    { id: 3, company: 'Vercel', logo: 'V', role: 'Security Engineer (DevSecOps)', appliedDate: '2026-07-08', status: 'In Progress', aiScore: 89, location: 'Hyderabad (Remote)' },
+    { id: 4, company: 'GitHub', logo: 'GH', role: 'Product Design Lead', appliedDate: '2026-07-02', status: 'Shortlisted', aiScore: 91, location: 'Bengaluru (Hybrid)' },
+    { id: 5, company: 'Netflix', logo: 'N', role: 'HR Operations Specialist', appliedDate: '2026-06-25', status: 'Offer', aiScore: 80, location: 'New Delhi (On-site)' }
   ]);
 
   // Toast confirmation trigger state
@@ -44,6 +43,9 @@ export default function CandidateDashboard() {
     setActiveTab('Dashboard');
   }, [initializeStore, setActiveTab]);
 
+  // Selected history assessment for feedback view
+  const [selectedFeedbackItem, setSelectedFeedbackItem] = useState<any>(null);
+
   const handleStartInterview = () => {
     setInterviewStep(1);
     setActiveTab('Scheduled Interviews');
@@ -52,6 +54,11 @@ export default function CandidateDashboard() {
   const handleTabNavigate = (tabName: string) => {
     setInterviewStep('list');
     setActiveTab(tabName);
+  };
+
+  const handleViewFeedback = (item: any) => {
+    setSelectedFeedbackItem(item);
+    setActiveTab('AI Feedback');
   };
 
   const handleApplyJob = (company: string, role: string, score: string, location: string) => {
@@ -149,12 +156,12 @@ export default function CandidateDashboard() {
 
             {activeTab === 'Interview History' && (
               <HistoryTab 
-                onNavigate={handleTabNavigate}
+                onViewFeedback={handleViewFeedback}
               />
             )}
 
             {activeTab === 'AI Feedback' && (
-              <FeedbackTab />
+              <FeedbackTab selectedItem={selectedFeedbackItem} />
             )}
 
             {activeTab === 'Mock Interviews' && (

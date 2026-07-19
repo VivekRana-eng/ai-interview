@@ -53,6 +53,41 @@ const getCompanyLogo = (company: string) => {
   }
 };
 
+const getCompanyForJob = (jobTitle: string, jobId: string | number) => {
+  const title = jobTitle.toLowerCase();
+  if (title.includes('machine learning') || title.includes('ai') || title.includes('researcher')) {
+    return { company: 'Google', logo: 'Google' };
+  }
+  if (title.includes('full stack') || title.includes('product engineer') || title.includes('stripe')) {
+    return { company: 'Stripe', logo: 'Stripe' };
+  }
+  if (title.includes('security') || title.includes('devsecops') || title.includes('vercel')) {
+    return { company: 'Vercel', logo: 'Vercel' };
+  }
+  if (title.includes('design') || title.includes('relations') || title.includes('github')) {
+    return { company: 'GitHub', logo: 'GitHub' };
+  }
+  if (title.includes('hr') || title.includes('architect') || title.includes('netflix')) {
+    return { company: 'Netflix', logo: 'Netflix' };
+  }
+  
+  const companies = [
+    { company: 'Google', logo: 'Google' },
+    { company: 'Stripe', logo: 'Stripe' },
+    { company: 'Vercel', logo: 'Vercel' },
+    { company: 'GitHub', logo: 'GitHub' },
+    { company: 'Netflix', logo: 'Netflix' },
+    { company: 'Amazon', logo: 'Amazon' }
+  ];
+  const index = typeof jobId === 'number' ? jobId : parseInt(String(jobId).replace(/\D/g, '')) || 0;
+  return companies[index % companies.length];
+};
+
+const getMatchScore = (jobId: string | number) => {
+  const index = typeof jobId === 'number' ? jobId : parseInt(String(jobId).replace(/\D/g, '')) || 0;
+  return 85 + (index % 13); // Scores between 85% and 97%
+};
+
 const getDetailedData = (company: string, role: string) => {
   const normCompany = company.toLowerCase();
   
@@ -127,15 +162,18 @@ const getDetailedData = (company: string, role: string) => {
   return genericDetails;
 };
 
+import { useRecruiterStore } from '../../recruiter/store';
+
 interface ApplicationsTabProps {
   applications: any[];
   setApplications: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, setApplications }) => {
+  const { jobs } = useRecruiterStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
-  const [selectedApp, setSelectedApp] = useState<any | null>(null);
+  const [selectedJob, setSelectedJob] = useState<any | null>(null);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -143,17 +181,75 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
       case 'Scheduled': return 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-500 border-indigo-500/25';
       case 'Under Review': return 'bg-amber-50 dark:bg-amber-500/10 text-amber-500 border-amber-500/25';
       case 'In Progress': return 'bg-blue-50 dark:bg-blue-500/10 text-blue-500 border-blue-500/25';
-      case 'Shortlisted': return 'bg-teal-500/10 text-teal-500 border-teal-500/25';
+      case 'Shortlisted': return 'bg-teal-550/15 text-teal-450 border-teal-500/25';
       case 'Rejected': return 'bg-rose-50 dark:bg-rose-500/10 text-rose-500 border-rose-500/25';
       default: return 'bg-slate-500/10 text-slate-500 border-slate-500/25';
     }
   };
 
-  const filteredApps = applications.filter(app => {
-    const matchesSearch = app.role.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          app.company.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = statusFilter === 'All' || app.status === statusFilter;
-    return matchesSearch && matchesFilter;
+  const getJobBadgeStyle = (status: string) => {
+    switch (status) {
+      case 'Active': return 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 border-emerald-500/25';
+      case 'Hold': return 'bg-amber-50 dark:bg-amber-500/10 text-amber-500 border-amber-500/25';
+      case 'Closed': return 'bg-rose-50 dark:bg-rose-500/10 text-rose-500 border-rose-500/25';
+      case 'Draft': return 'bg-slate-50 dark:bg-slate-500/10 text-slate-500 border-slate-500/25';
+      default: return 'bg-slate-500/10 text-slate-500 border-slate-500/25';
+    }
+  };
+
+  const handleApply = (job: any, companyInfo: any) => {
+    if (applications.some(app => app.role.toLowerCase() === job.title.toLowerCase())) {
+      return;
+    }
+    const newApp = {
+      id: Date.now(),
+      company: companyInfo.company,
+      logo: companyInfo.logo === 'Google' ? 'G' : companyInfo.logo === 'Stripe' ? 'S' : companyInfo.logo === 'Vercel' ? 'V' : companyInfo.logo === 'GitHub' ? 'GH' : companyInfo.logo === 'Netflix' ? 'N' : companyInfo.logo[0],
+      role: job.title,
+      appliedDate: new Date().toISOString().split('T')[0],
+      status: 'Under Review',
+      aiScore: getMatchScore(job.id),
+      location: job.location,
+    };
+    setApplications(prev => [newApp, ...prev]);
+
+    // Show toast notification
+    const toast = document.createElement('div');
+    toast.className = "fixed bottom-5 right-5 z-[200] bg-slate-900 border border-slate-800 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-semibold animate-bounce";
+    toast.innerHTML = `
+      <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+      <span>Applied successfully to ${job.title} at ${companyInfo.company}!</span>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.remove();
+    }, 3500);
+  };
+
+  const processedJobs = jobs.map(job => {
+    const companyInfo = getCompanyForJob(job.title, job.id);
+    const appliedApp = applications.find(app => app.role.toLowerCase() === job.title.toLowerCase());
+    return {
+      ...job,
+      company: companyInfo.company,
+      logo: companyInfo.logo,
+      appliedApp,
+      aiScore: getMatchScore(job.id)
+    };
+  });
+
+  const filteredJobs = processedJobs.filter(job => {
+    const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          job.department.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (statusFilter === 'All') return matchesSearch;
+    if (statusFilter === 'Applied') return matchesSearch && !!job.appliedApp;
+    if (statusFilter === 'Active') return matchesSearch && job.status === 'Active' && !job.appliedApp;
+    if (statusFilter === 'Hold') return matchesSearch && job.status === 'Hold';
+    if (statusFilter === 'Closed') return matchesSearch && job.status === 'Closed';
+    if (statusFilter === 'Draft') return matchesSearch && job.status === 'Draft';
+    return matchesSearch;
   });
 
   return (
@@ -167,13 +263,13 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search applications..."
+            placeholder="Search jobs..."
             className="w-full text-xs pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-800/60 rounded-2xl focus:border-blue-500 focus:outline-none font-semibold text-slate-700 dark:text-slate-200"
           />
         </div>
 
         <div className="flex gap-2 w-full sm:w-auto overflow-x-auto hide-scrollbar">
-          {['All', 'Under Review', 'Scheduled', 'In Progress', 'Shortlisted', 'Offer', 'Rejected'].map((status) => (
+          {['All', 'Applied', 'Active', 'Hold', 'Closed', 'Draft'].map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
@@ -183,115 +279,146 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
                   : 'bg-slate-50 dark:bg-slate-100 dark:bg-slate-900/50 hover:bg-slate-100 dark:bg-slate-900 border border-slate-150 dark:border-slate-800/60 text-slate-500 dark:text-slate-400 hover:text-white'
               }`}
             >
-              {status}
+              {status === 'Hold' ? 'On Hold' : status}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Grid of Applications */}
+      {/* Grid of Jobs */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredApps.map((app) => (
-          <div 
-            key={app.id} 
-            className="bg-white border border-slate-200 dark:border-slate-200 dark:border-slate-800/85 rounded-3xl p-5 shadow-sm flex flex-col justify-between hover:border-slate-700/80 transition-all duration-300 relative overflow-hidden"
-          >
-            <div className="pointer-events-none absolute -top-10 -right-10 h-24 w-24 rounded-full bg-blue-500/5 blur-2xl" />
-            
-            <div>
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-[#1d2942] border border-slate-200 dark:border-slate-800 flex items-center justify-center shadow-sm">
-                    {getCompanyLogo(app.company)}
+        {filteredJobs.map((job) => {
+          const companyInfo = { company: job.company, logo: job.logo };
+          return (
+            <div 
+              key={job.id} 
+              className="bg-white border border-slate-200 dark:border-slate-200 dark:border-slate-800/85 rounded-3xl p-5 shadow-sm flex flex-col justify-between hover:border-slate-700/80 transition-all duration-300 relative overflow-hidden"
+            >
+              <div className="pointer-events-none absolute -top-10 -right-10 h-24 w-24 rounded-full bg-blue-500/5 blur-2xl" />
+              
+              <div>
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h4 className="text-sm font-bold text-slate-855 dark:text-white leading-tight">{job.title}</h4>
+                    <span className="text-xs text-blue-400 font-bold block mt-1">
+                      {job.company} &bull; <span className="text-slate-500 dark:text-slate-455">{job.location}</span>
+                    </span>
+                  </div>
+
+                  {job.appliedApp ? (
+                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${getStatusStyle(job.appliedApp.status)}`}>
+                      Applied &bull; {job.appliedApp.status}
+                    </span>
+                  ) : (
+                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${getJobBadgeStyle(job.status)}`}>
+                      {job.status === 'Hold' ? 'On Hold' : job.status}
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-xs font-semibold text-slate-550 dark:text-slate-400 line-clamp-2 mt-2 leading-relaxed">
+                  {job.description}
+                </p>
+
+                <div className="flex flex-wrap gap-1.5 my-3">
+                  {job.skillsRequired.map((skill, index) => (
+                    <span key={index} className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+
+                <hr className="border-slate-150 dark:border-slate-800/40 my-3" />
+
+                <div className="grid grid-cols-2 gap-4 text-xs font-semibold mt-3">
+                  <div>
+                    <span className="text-[10px] text-slate-500 block uppercase tracking-wider mb-0.5">Salary & Dept</span>
+                    <span className="text-slate-650 dark:text-slate-300 font-bold">{job.salaryRange} &bull; <span className="text-slate-450">{job.department}</span></span>
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-slate-800 dark:text-white leading-tight group-hover:text-blue-400">{app.role}</h4>
-                    <span className="text-xs text-blue-400 font-bold block mt-1">{app.company} &bull; <span className="text-slate-500 dark:text-slate-400">{app.location}</span></span>
+                    <span className="text-[10px] text-slate-500 block uppercase tracking-wider mb-0.5">AI Fit & Questions</span>
+                    <span className="text-blue-400 font-extrabold flex items-center gap-1">
+                      <Award className="w-3.5 h-3.5" />
+                      {job.aiScore}% Match &bull; <span className="text-slate-450 font-semibold">{job.aiQuestions?.length || 0} Qs</span>
+                    </span>
                   </div>
                 </div>
-
-                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${getStatusStyle(app.status)}`}>
-                  {app.status}
-                </span>
               </div>
 
-              <hr className="border-slate-150 dark:border-slate-800/40 my-3" />
-
-              <div className="grid grid-cols-2 gap-4 text-xs font-semibold mt-3">
-                <div>
-                  <span className="text-[10px] text-slate-500 block uppercase tracking-wider mb-0.5">Applied Date</span>
-                  <span className="text-slate-600 dark:text-slate-300 font-bold">{app.appliedDate}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-500 block uppercase tracking-wider mb-0.5">AI Match Match</span>
-                  <span className="text-blue-400 font-extrabold flex items-center gap-1">
-                    <Award className="w-3.5 h-3.5" />
-                    {app.aiScore}% Match
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 pt-4 border-t border-slate-150 dark:border-slate-800/40 flex gap-2">
-              <button 
-                onClick={() => setSelectedApp(app)}
-                className="flex-1 py-2.5 bg-slate-100 dark:bg-slate-900 hover:bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-white text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1 active:scale-95"
-              >
-                <span>View Details</span>
-                <ExternalLink className="w-3 h-3" />
-              </button>
-              {app.status === 'Scheduled' && (
-                <button className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-indigo-600/10 active:scale-95">
-                  Launch Interview
+              <div className="mt-5 pt-4 border-t border-slate-150 dark:border-slate-800/40 flex gap-2">
+                <button 
+                  onClick={() => setSelectedJob(job)}
+                  className="flex-1 py-2.5 bg-slate-100 dark:bg-slate-900 hover:bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-white text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1 active:scale-95"
+                >
+                  <span>View Details</span>
+                  <ExternalLink className="w-3 h-3" />
                 </button>
-              )}
-            </div>
 
-          </div>
-        ))}
+                {job.appliedApp ? (
+                  <button 
+                    disabled 
+                    className="flex-1 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 cursor-not-allowed"
+                  >
+                    Applied
+                  </button>
+                ) : job.status === 'Active' ? (
+                  <button 
+                    onClick={() => handleApply(job, companyInfo)}
+                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-md shadow-blue-600/10 active:scale-95"
+                  >
+                    Apply Now
+                  </button>
+                ) : (
+                  <button 
+                    disabled 
+                    className="flex-1 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 text-xs font-bold rounded-xl border border-slate-300 dark:border-slate-700 cursor-not-allowed"
+                  >
+                    Inactive
+                  </button>
+                )}
+              </div>
+
+            </div>
+          );
+        })}
       </div>
 
-      {/* Mock details Modal */}
-      {selectedApp && (() => {
-        const details = getDetailedData(selectedApp.company, selectedApp.role);
+      {/* Detail Modal */}
+      {selectedJob && (() => {
+        const details = getDetailedData(selectedJob.company, selectedJob.title);
         return (
           <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
             <div className="bg-white dark:bg-[#111a2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 lg:p-8 max-w-xl w-full space-y-5 shadow-2xl text-left relative overflow-y-auto max-h-[90vh]">
               
               <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800/60 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-slate-50 dark:bg-[#1d2942] border border-slate-200 dark:border-slate-800 flex items-center justify-center shadow-sm shrink-0">
-                    {getCompanyLogo(selectedApp.company)}
-                  </div>
                   <div>
-                    <span className="text-[9px] font-extrabold text-blue-500 uppercase tracking-widest block">Application Details</span>
-                    <h3 className="text-md font-bold text-slate-850 dark:text-white mt-0.5">{selectedApp.role}</h3>
-                    <p className="text-xs text-slate-500 font-semibold">{selectedApp.company} &bull; {selectedApp.location}</p>
+                    <span className="text-[9px] font-extrabold text-blue-500 uppercase tracking-widest block">Job Opportunity Details</span>
+                    <h3 className="text-md font-bold text-slate-850 dark:text-white mt-0.5">{selectedJob.title}</h3>
+                    <p className="text-xs text-slate-500 font-semibold">{selectedJob.company} &bull; {selectedJob.location}</p>
                   </div>
-                </div>
                 <button 
-                  onClick={() => setSelectedApp(null)}
+                  onClick={() => setSelectedJob(null)}
                   className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-all active:scale-95 shrink-0"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
               
-              <div className="space-y-4 text-xs text-slate-600 dark:text-slate-350 leading-relaxed font-semibold">
+              <div className="space-y-4 text-xs text-slate-650 dark:text-slate-350 leading-relaxed font-semibold">
                 
                 {/* AI Score Breakdown metrics */}
                 <div className="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-150 dark:border-slate-800/60 space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">AI Scorecard Breakdown</span>
-                    <span className="text-xs font-extrabold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-lg">{selectedApp.aiScore}% Match</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">AI Matching Evaluation</span>
+                    <span className="text-xs font-extrabold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-lg">{selectedJob.aiScore}% Match</span>
                   </div>
                   <div className="grid grid-cols-3 gap-3 text-center">
                     <div className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-xl">
-                      <span className="text-[9px] text-slate-400 block font-bold">Tech Skill</span>
+                      <span className="text-[9px] text-slate-400 block font-bold">Tech Fit</span>
                       <span className="text-xs font-bold text-indigo-400 mt-0.5 block">{details.breakdown.tech}%</span>
                     </div>
                     <div className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-xl">
-                      <span className="text-[9px] text-slate-400 block font-bold">System Design</span>
+                      <span className="text-[9px] text-slate-400 block font-bold">Sys Design</span>
                       <span className="text-xs font-bold text-blue-400 mt-0.5 block">{details.breakdown.sys}%</span>
                     </div>
                     <div className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-xl">
@@ -303,25 +430,35 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
 
                 {/* Role Description */}
                 <div className="space-y-1">
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-extrabold tracking-wider block">Role Summary</span>
-                  <p className="font-semibold text-slate-700 dark:text-slate-350">{details.summary}</p>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-extrabold tracking-wider block">Job Overview</span>
+                  <p className="font-semibold text-slate-700 dark:text-slate-350">{selectedJob.description}</p>
                 </div>
 
-                {/* Responsibilities */}
-                <div className="space-y-1.5">
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-extrabold tracking-wider block">Primary Responsibilities</span>
-                  <ul className="list-disc list-outside pl-4 space-y-1 text-slate-700 dark:text-slate-300">
-                    {details.responsibilities.map((r, i) => <li key={i}>{r}</li>)}
-                  </ul>
-                </div>
+                {/* About Job */}
+                {selectedJob.aboutJob && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-extrabold tracking-wider block">About the Position</span>
+                    <p className="font-semibold text-slate-700 dark:text-slate-350">{selectedJob.aboutJob}</p>
+                  </div>
+                )}
 
-                {/* Requirements */}
-                <div className="space-y-1.5">
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-extrabold tracking-wider block">Candidate Requirements</span>
-                  <ul className="list-disc list-outside pl-4 space-y-1 text-slate-700 dark:text-slate-300">
-                    {details.requirements.map((r, i) => <li key={i}>{r}</li>)}
-                  </ul>
-                </div>
+                {/* AI Summary */}
+                {selectedJob.aiSummary && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-extrabold tracking-wider block">AI Match Assessment Summary</span>
+                    <p className="font-semibold text-indigo-400/90">{selectedJob.aiSummary}</p>
+                  </div>
+                )}
+
+                {/* Screening Questions */}
+                {selectedJob.aiQuestions && selectedJob.aiQuestions.length > 0 && (
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-extrabold tracking-wider block">AI Screening Questions ({selectedJob.aiQuestions.length})</span>
+                    <ol className="list-decimal list-outside pl-4 space-y-1 text-slate-700 dark:text-slate-350">
+                      {selectedJob.aiQuestions.map((q: string, i: number) => <li key={i}>{q}</li>)}
+                    </ol>
+                  </div>
+                )}
 
                 {/* Benefits */}
                 <div className="space-y-1.5">
@@ -335,10 +472,10 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
 
               <div className="pt-2 border-t border-slate-200 dark:border-slate-800/60 flex gap-3">
                 <button 
-                  onClick={() => setSelectedApp(null)}
+                  onClick={() => setSelectedJob(null)}
                   className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold rounded-2xl transition-all shadow-md shadow-blue-600/10 active:scale-95"
                 >
-                  Close Application Details
+                  Close
                 </button>
               </div>
 
