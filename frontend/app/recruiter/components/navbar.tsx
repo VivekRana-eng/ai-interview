@@ -93,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
           </button>
 
           {notifsOpen && (
-            <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white dark:bg-[#111a2e] border border-[#EEF1F6] dark:border-[#1e293b] shadow-[0_16px_40px_rgba(15,23,42,0.12)] z-50 overflow-hidden">
+            <div className="absolute right-[-10px] sm:right-0 mt-2 w-[280px] sm:w-80 rounded-2xl bg-white dark:bg-[#111a2e] border border-[#EEF1F6] dark:border-[#1e293b] shadow-[0_16px_40px_rgba(15,23,42,0.12)] z-50 overflow-hidden">
               
               {/* Header */}
               <div className="flex justify-between items-center px-4 py-3 border-b border-[#EEF1F6] dark:border-[#1e293b] bg-slate-50/60 dark:bg-white/[0.03]">

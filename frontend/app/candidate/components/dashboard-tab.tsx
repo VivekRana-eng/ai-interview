@@ -259,7 +259,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartI
           </div>
 
           <div className="flex-1 overflow-x-auto min-h-0">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[650px]">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800/50 bg-slate-50 dark:bg-[#0d1424]">
                   <th className="px-5 py-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Company</th>
@@ -273,7 +273,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartI
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800/40">
                 {recentApplications.map((app) => (
                   <tr key={app.id} className="hover:bg-slate-800/25 transition-colors group">
-                    <td className="px-5 py-4">
+                    <td className="px-5 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-[#1a2640] border border-slate-200 dark:border-slate-800 flex items-center justify-center">
                           {getCompanyLogo(app.company)}
@@ -281,21 +281,21 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartI
                         <span className="text-xs font-bold text-slate-850 dark:text-white">{app.company}</span>
                       </div>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-5 py-4 whitespace-nowrap">
                       <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{app.role}</span>
                     </td>
-                    <td className="px-5 py-4 text-center">
-                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${getStatusStyle(app.status)}`}>
+                    <td className="px-5 py-4 text-center whitespace-nowrap">
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border whitespace-nowrap ${getStatusStyle(app.status)}`}>
                         {app.status}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-center">
+                    <td className="px-5 py-4 text-center whitespace-nowrap">
                       <span className="text-xs font-extrabold text-blue-400">{app.score}%</span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-5 py-4 whitespace-nowrap">
                       <span className="text-xs font-bold text-slate-500 dark:text-slate-400">{app.appliedDate}</span>
                     </td>
-                    <td className="px-5 py-4 text-right">
+                    <td className="px-5 py-4 text-right whitespace-nowrap">
                       <button 
                         onClick={() => onNavigate('My Applications')}
                         className="text-xs text-slate-500 dark:text-slate-400 hover:text-white font-bold px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-800/50 transition-all inline-flex items-center gap-1 active:scale-95"
