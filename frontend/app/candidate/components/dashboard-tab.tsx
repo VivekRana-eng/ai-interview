@@ -91,7 +91,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartI
   // Slice down dynamically from state
   const recentApplications = applications.slice(0, 4).map(app => ({
     id: app.id,
-    company: app.company,
     role: app.role,
     status: app.status,
     appliedDate: app.appliedDate,
@@ -193,7 +192,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartI
             </div>
 
             <h4 className="text-md font-bold text-slate-850 dark:text-white truncate">{candidateInfo.nextInterview.role}</h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-bold truncate mt-1">{candidateInfo.nextInterview.company}</p>
             
             <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-100 dark:bg-slate-900/60 rounded-2xl border border-slate-200 dark:border-slate-800/70 flex items-center justify-between">
               <div className="flex items-center gap-2">
