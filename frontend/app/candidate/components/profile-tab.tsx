@@ -43,8 +43,42 @@ export const ProfileTab: React.FC = () => {
 
   const [newSkill, setNewSkill] = useState('');
 
+  // Sync profile data to backend /api/candidates
+  const syncProfileToBackend = async (updatedProfile = profile) => {
+    try {
+      await fetch('/api/candidates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: updatedProfile.name,
+          email: updatedProfile.email,
+          phone: updatedProfile.phone,
+          location: updatedProfile.location,
+          position: updatedProfile.title,
+          skills: updatedProfile.skills,
+          experience: updatedProfile.experience.map(e => `${e.role} at ${e.company} (${e.period})`),
+          education: updatedProfile.education.map(e => `${e.degree} - ${e.school} (${e.period})`),
+          certifications: updatedProfile.certifications,
+          summary: updatedProfile.bio,
+          avatarUrl: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(updatedProfile.name)}`,
+          aiMatchScore: 96,
+          integrityScore: 98,
+          status: 'Interviewing',
+          recommendation: 'Strong Hire'
+        })
+      });
+    } catch (err) {
+      console.error('Error syncing candidate profile to backend:', err);
+    }
+  };
+
+  React.useEffect(() => {
+    syncProfileToBackend();
+  }, []);
+
   const handleSave = () => {
     setIsEditing(false);
+    syncProfileToBackend();
   };
 
   const handleAddSkill = (e: React.FormEvent) => {

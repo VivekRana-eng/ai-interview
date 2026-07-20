@@ -203,10 +203,11 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
     }
   };
 
-  const handleApply = (job: any, companyInfo: any) => {
+  const handleApply = async (job: any, companyInfo: any) => {
     if (applications.some(app => app.role.toLowerCase() === job.title.toLowerCase())) {
       return;
     }
+    const matchScore = getMatchScore(job.id);
     const newApp = {
       id: Date.now(),
       company: companyInfo.company,
@@ -214,10 +215,36 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
       role: job.title,
       appliedDate: new Date().toISOString().split('T')[0],
       status: 'Under Review',
-      aiScore: getMatchScore(job.id),
+      aiScore: matchScore,
       location: job.location,
     };
     setApplications(prev => [newApp, ...prev]);
+
+    // Sync candidate application to backend /api/candidates database
+    try {
+      await fetch('/api/candidates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Sarah Jenkins',
+          email: 'candidate@hireai.com',
+          phone: '+1 (555) 019-2834',
+          position: job.title,
+          location: job.location || 'San Francisco, CA',
+          avatarUrl: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Sarah%20Jenkins',
+          aiMatchScore: matchScore,
+          integrityScore: 98,
+          status: 'Applied',
+          recommendation: matchScore >= 90 ? 'Strong Hire' : matchScore >= 75 ? 'Hire' : 'Maybe',
+          interviewDate: 'TBD',
+          skills: job.skillsRequired || ['React', 'TypeScript', 'Next.js'],
+          salaryRangeText: job.salaryRange || '$140k - $180k',
+          summary: `Applied for ${job.title} on ${new Date().toLocaleDateString()}`
+        })
+      });
+    } catch (err) {
+      console.error('Error syncing application to backend:', err);
+    }
 
     // Show toast notification
     const toast = document.createElement('div');

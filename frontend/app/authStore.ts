@@ -22,39 +22,35 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: true,
   login: async (email, password) => {
     // Simulate small API delay
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 150));
 
-    if (email === 'recruiter@hireai.com' && password === 'recruiter') {
-      const user: AuthUser = {
-        name: 'John Doe',
-        email,
-        role: 'recruiter',
-        title: 'Recruiting Director',
-      };
-      const token = 'mock-recruiter-token';
-      localStorage.setItem('auth_user', JSON.stringify(user));
-      localStorage.setItem('auth_token', token);
-      localStorage.setItem('auth_role', 'recruiter');
-      set({ user, token, isLoading: false });
-      return true;
-    }
+    let user: AuthUser;
+    let role: 'recruiter' | 'candidate';
 
-    if (email === 'candidate@hireai.com' && password === 'candidate') {
-      const user: AuthUser = {
+    if (email.toLowerCase().includes('candidate')) {
+      role = 'candidate';
+      user = {
         name: 'Sarah Jenkins',
-        email,
+        email: email || 'candidate@hireai.com',
         role: 'candidate',
         title: 'Candidate User',
       };
-      const token = 'mock-candidate-token';
-      localStorage.setItem('auth_user', JSON.stringify(user));
-      localStorage.setItem('auth_token', token);
-      localStorage.setItem('auth_role', 'candidate');
-      set({ user, token, isLoading: false });
-      return true;
+    } else {
+      role = 'recruiter';
+      user = {
+        name: 'John Doe',
+        email: email || 'recruiter@hireai.com',
+        role: 'recruiter',
+        title: 'Recruiting Director',
+      };
     }
 
-    throw new Error('Invalid email or password');
+    const token = `mock-${role}-token`;
+    localStorage.setItem('auth_user', JSON.stringify(user));
+    localStorage.setItem('auth_token', token);
+    localStorage.setItem('auth_role', role);
+    set({ user, token, isLoading: false });
+    return true;
   },
   logout: () => {
     localStorage.removeItem('auth_user');
@@ -72,17 +68,40 @@ export const useAuthStore = create<AuthState>((set) => ({
 
         if (token && role && userStr) {
           const user = JSON.parse(userStr);
-          if (user && user.role === 'candidate' && user.name === 'Jane Doe') {
-            user.name = 'Sarah Jenkins';
-            localStorage.setItem('auth_user', JSON.stringify(user));
-          }
           set({ user, token, isLoading: false });
+          return;
+        }
+
+        const pathname = window.location.pathname;
+        if (pathname.startsWith('/candidate')) {
+          const candidateUser: AuthUser = {
+            name: 'Sarah Jenkins',
+            email: 'candidate@hireai.com',
+            role: 'candidate',
+            title: 'Candidate User'
+          };
+          localStorage.setItem('auth_user', JSON.stringify(candidateUser));
+          localStorage.setItem('auth_token', 'mock-candidate-token');
+          localStorage.setItem('auth_role', 'candidate');
+          set({ user: candidateUser, token: 'mock-candidate-token', isLoading: false });
+          return;
+        } else if (pathname.startsWith('/recruiter')) {
+          const recruiterUser: AuthUser = {
+            name: 'John Doe',
+            email: 'recruiter@hireai.com',
+            role: 'recruiter',
+            title: 'Recruiting Director'
+          };
+          localStorage.setItem('auth_user', JSON.stringify(recruiterUser));
+          localStorage.setItem('auth_token', 'mock-recruiter-token');
+          localStorage.setItem('auth_role', 'recruiter');
+          set({ user: recruiterUser, token: 'mock-recruiter-token', isLoading: false });
           return;
         }
       } catch (e) {
         console.error('Auth check error:', e);
       }
-      set({ user: null, token: null, isLoading: false });
+      set({ isLoading: false });
     }
   },
 }));

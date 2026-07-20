@@ -11,14 +11,18 @@ interface CandidateDetailProps {
   candidate: Candidate;
   onBackToList: () => void;
   onDownloadResume: () => void;
+  onViewResume?: () => void;
   onScheduleInterview: () => void;
+  onViewDossier?: () => void;
 }
 
 export const CandidateDetail: React.FC<CandidateDetailProps> = ({
   candidate,
   onBackToList,
   onDownloadResume,
-  onScheduleInterview
+  onViewResume,
+  onScheduleInterview,
+  onViewDossier
 }) => {
   const { activeProfileTab, setActiveProfileTab } = useRecruiterStore();
   const initials = candidate.name.split(' ').map(n => n[0]).join('');
@@ -64,7 +68,18 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto mt-1 md:mt-0">
-
+            {onViewDossier && (
+              <button onClick={onViewDossier} className="px-3.5 py-2 border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 active:scale-95">
+                <Activity className="w-3.5 h-3.5" />
+                <span>AI Report</span>
+              </button>
+            )}
+            {onViewResume && (
+              <button onClick={onViewResume} className="px-3.5 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 active:scale-95 bg-white">
+                <Briefcase className="w-3.5 h-3.5" />
+                <span>View Resume</span>
+              </button>
+            )}
             <button onClick={onDownloadResume} className="px-3.5 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 active:scale-95 bg-white">
               <Download className="w-3.5 h-3.5" />
               <span>Download Resume</span>

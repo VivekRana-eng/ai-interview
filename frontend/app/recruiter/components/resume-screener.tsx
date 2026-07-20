@@ -175,9 +175,40 @@ export const ResumeScreener: React.FC = () => {
     });
   };
 
-  const triggerDownload = () => {
-    if (!activeCandidate) return;
-    setDownloadSuccess(`Downloading resume for ${activeCandidate.name}...`);
+  const triggerDownload = (cand: Candidate | null = activeCandidate) => {
+    if (!cand) return;
+    const content = `==================================================
+RESUME OF ${cand.name.toUpperCase()}
+==================================================
+Position Applied: ${cand.position}
+Email: ${cand.email}
+Phone: ${cand.phone || '+1 (555) 019-2834'}
+Location: ${cand.location}
+Salary Expectation: ${cand.salaryRangeText || '$140k - $180k'}
+AI Match Score: ${cand.aiMatchScore}%
+Integrity Score: ${cand.integrityScore}%
+Status: ${cand.status}
+
+SKILLS:
+${(cand.skills || []).join(', ')}
+
+EXPERIENCE:
+${(cand.experience || []).join('\n')}
+
+SUMMARY:
+${cand.summary || 'Qualified candidate profile.'}
+==================================================`;
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${cand.name.replace(/\s+/g, '_')}_Resume.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setDownloadSuccess(`Downloaded resume for ${cand.name}`);
     setTimeout(() => setDownloadSuccess(null), 3000);
   };
 
@@ -291,8 +322,10 @@ export const ResumeScreener: React.FC = () => {
           <CandidateDetail
             candidate={activeCandidate}
             onBackToList={() => setViewMode('list')}
-            onDownloadResume={() => setIsResumeModalOpen(true)}
+            onDownloadResume={() => triggerDownload(activeCandidate)}
+            onViewResume={() => setIsResumeModalOpen(true)}
             onScheduleInterview={() => setIsScheduleModalOpen(true)}
+            onViewDossier={() => setIsDossierModalOpen(true)}
           />
         )
       )}

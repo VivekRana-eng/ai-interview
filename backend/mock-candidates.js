@@ -65,17 +65,18 @@ const roleTemplates = {
 };
 
 const candidateSpecs = [
+  { role: 'fullstack', name: 'Sarah Jenkins', position: 'Senior Frontend Engineer', location: 'San Francisco, CA', email: 'candidate@hireai.com', phone: '+1 (555) 019-2834', aiMatchScore: 96, integrityScore: 98, status: 'Interviewing', recommendation: 'Strong Hire', interviewDate: 'Jul 22, 2026', previousTrackRecord: 'clean' },
   { role: 'design', name: 'Sneha Verma', location: 'New Delhi, India', email: 'sneha.verma@selectai.gov.in', aiMatchScore: 90, integrityScore: 96, status: 'Interviewing', recommendation: 'Hire', interviewDate: 'Jun 26, 2026' },
   { role: 'security', name: 'Emma Watson', location: 'London, UK', email: 'emma.watson@selectai.io', aiMatchScore: 89, integrityScore: 86, status: 'Applied', recommendation: 'Maybe', interviewDate: 'Jun 21, 2026', previousTrackRecord: 'switched_tab' },
-  { role: 'ml', name: 'Alexander Wright', location: 'San Francisco, CA', email: 'alexander.wright@selectai.io', aiMatchScore: 97, integrityScore: 95, status: 'Interviewing', recommendation: 'Strong Hire', interviewDate: 'Jun 20, 2026' },
+  { role: 'ml', name: 'Daniel Kim', location: 'San Francisco, CA', email: 'daniel.kim@selectai.io', aiMatchScore: 97, integrityScore: 95, status: 'Interviewing', recommendation: 'Strong Hire', interviewDate: 'Jun 20, 2026' },
   { role: 'ml', name: 'Priya Nair', location: 'Bengaluru, India', email: 'priya.nair@selectai.io', aiMatchScore: 94, integrityScore: 92, status: 'Screening', recommendation: 'Hire', interviewDate: 'Jun 21, 2026' },
   { role: 'ml', name: 'Ethan Brooks', location: 'Seattle, WA', email: 'ethan.brooks@selectai.io', aiMatchScore: 90, integrityScore: 88, status: 'Applied', recommendation: 'Maybe', interviewDate: 'Jun 22, 2026', previousTrackRecord: 'switched_tab' }
 ];
 
 const generateRemaining = (count) => {
   const list = [];
-  const firstNames = ['Amit', 'Raj', 'Sunita', 'Michael', 'David', 'Neha', 'Vikram', 'Anil', 'Emily', 'Jessica'];
-  const lastNames = ['Sharma', 'Kumar', 'Gupta', 'Patel', 'Singh', 'Johnson', 'Davis', 'Taylor', 'Wilson', 'Sen'];
+  const firstNames = ['Amit', 'Raj', 'Sunita', 'Vikram', 'David', 'Neha', 'Anil', 'Emily', 'Jessica', 'Siddharth'];
+  const lastNames = ['Sharma', 'Kumar', 'Gupta', 'Patel', 'Singh', 'Johnson', 'Taylor', 'Wilson', 'Sen', 'Rao'];
   const roleKeys = ['ml', 'fullstack', 'security', 'qa', 'design'];
   const locations = ['New Delhi, India', 'Bengaluru, India', 'San Francisco, CA', 'Seattle, WA', 'London, UK', 'New York, NY', 'Washington, DC', 'Mumbai, India', 'Hyderabad, India'];
   const clearances = ['TS/SCI w Poly', 'Secret', 'None'];
@@ -90,7 +91,6 @@ const generateRemaining = (count) => {
     const template = roleTemplates[roleKey];
     const location = locations[i % locations.length];
     const score = 65 + (i * 7) % 31;
-    const clearance = clearances[i % clearances.length];
     const status = statuses[i % statuses.length];
     const rec = recommendations[i % recommendations.length];
     const previousTrackRecord = ['clean', 'switched_tab', 'cheated'][i % 3];
@@ -133,9 +133,10 @@ const INITIAL_CANDIDATES = [
     const template = roleTemplates[spec.role];
     return makeCandidate({
       name: spec.name,
-      position: template.position,
+      position: spec.position || template.position,
       location: spec.location,
       email: spec.email,
+      phone: spec.phone || '+1 (555) 019-2834',
       aiMatchScore: spec.aiMatchScore,
       integrityScore: spec.integrityScore,
       status: spec.status,

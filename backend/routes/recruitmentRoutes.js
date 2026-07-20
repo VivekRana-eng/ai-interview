@@ -286,18 +286,33 @@ router.get('/candidates', async (req, res) => {
 
 router.post('/candidates', async (req, res) => {
   try {
-    const candidate = new Candidate(req.body);
-    await candidate.save();
+    const { email, name } = req.body;
+    let candidate;
     
-    // Update candidates count for the associated job
-    if (candidate.position) {
-      await Job.findOneAndUpdate(
-        { title: candidate.position },
-        { $inc: { candidatesCount: 1 } }
-      );
+    // Check if candidate already exists by email or name to prevent duplicates
+    const query = [];
+    if (email) query.push({ email: email.toLowerCase() });
+    if (name) query.push({ name });
+
+    if (query.length > 0) {
+      candidate = await Candidate.findOne({ $or: query });
     }
 
-    res.status(201).json(candidate);
+    if (candidate) {
+      candidate = await Candidate.findByIdAndUpdate(candidate._id, req.body, { new: true });
+    } else {
+      candidate = new Candidate(req.body);
+      await candidate.save();
+      
+      if (candidate.position) {
+        await Job.findOneAndUpdate(
+          { title: candidate.position },
+          { $inc: { candidatesCount: 1 } }
+        );
+      }
+    }
+
+    res.status(200).json(candidate);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

@@ -118,29 +118,49 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
         fetch(`${API_URL}/alerts`).then(r => r.json())
       ]);
 
-      const mappedCands = Array.isArray(candRes) && candRes.length > 0
+      const rawMapped = Array.isArray(candRes) && candRes.length > 0
         ? candRes.map((c: any) => ({
-            id: c._id,
+            id: c._id || c.id,
             name: c.name,
-            position: c.position,
-            location: c.location,
-            email: c.email,
-            avatarUrl: c.avatarUrl || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + c.name,
-            aiMatchScore: c.aiMatchScore,
-            integrityScore: c.integrityScore,
-            status: c.status,
-            recommendation: c.recommendation,
-            interviewDate: c.interviewDate,
+            position: c.position || 'Software Engineer',
+            location: c.location || 'Remote',
+            email: c.email || '',
+            phone: c.phone || '+1 (555) 019-2834',
+            avatarUrl: c.avatarUrl || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + encodeURIComponent(c.name || 'Candidate'),
+            aiMatchScore: c.aiMatchScore ?? 90,
+            integrityScore: c.integrityScore ?? 95,
+            status: c.status || 'Applied',
+            recommendation: c.recommendation || 'Maybe',
+            interviewDate: c.interviewDate || 'TBD',
+            clearance: c.clearance || 'Secret',
+            experienceYears: c.experienceYears || '5+ yrs exp',
+            relocate: c.relocate || 'Willing to relocate',
+            salaryRangeText: c.salaryRangeText || c.salaryRange || '$140k - $180k',
+            connectedStatus: c.connectedStatus || 'CONNECTED',
+            postedTime: c.postedTime || 'Today',
+            postedDate: c.postedDate || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
             skills: c.skills || [],
             education: c.education || [],
             experience: c.experience || [],
             certifications: c.certifications || [],
-            strengths: c.strengths || [],
+            strengths: c.strengths || ['Strong technical fundamentals', 'High adaptability'],
             missingSkills: c.missingSkills || [],
             summary: c.summary || '',
-            previousTrackRecord: c.previousTrackRecord || 'clean'
+            previousTrackRecord: c.previousTrackRecord || 'clean',
+            hiringTimeline: c.hiringTimeline || [
+              { stage: 'Application Submitted', date: c.postedDate || 'Today', status: 'completed', comment: 'Application submitted successfully' }
+            ]
           }))
         : INITIAL_CANDIDATES;
+
+      const candMap = new Map<string, any>();
+      rawMapped.forEach(c => {
+        const key = (c.email || c.name || c.id).toLowerCase();
+        if (!candMap.has(key)) {
+          candMap.set(key, c);
+        }
+      });
+      const mappedCands = Array.from(candMap.values());
 
       const mappedAlerts = Array.isArray(alertRes) && alertRes.length > 0
         ? alertRes.map((a: any) => ({

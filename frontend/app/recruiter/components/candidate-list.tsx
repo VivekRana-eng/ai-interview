@@ -229,14 +229,30 @@ export const CandidateList: React.FC<CandidateListProps> = ({
               <div className="flex items-center justify-between md:justify-end gap-3 flex-shrink-0 border-t md:border-t-0 pt-3 md:pt-0 border-slate-50">
                 <div className="flex items-center gap-2">
                   <button 
-                    onClick={(e) => { e.stopPropagation(); alert(`Initiating chat with ${candidate.name}`); }}
-                    className="w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all"
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      if (candidate.email) {
+                        window.location.href = `mailto:${candidate.email}?subject=Interview%20Opportunity%20at%20SelectAI`;
+                      } else {
+                        alert(`Emailing ${candidate.name} at candidate@hireai.com`);
+                      }
+                    }}
+                    className="w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    title={`Email ${candidate.name} (${candidate.email})`}
                   >
                     <Mail className="w-3.5 h-3.5" />
                   </button>
                   <button 
-                    onClick={(e) => { e.stopPropagation(); alert(`Calling ${candidate.name} at ${candidate.phone}`); }}
-                    className="w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all"
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      if (candidate.phone) {
+                        window.location.href = `tel:${candidate.phone}`;
+                      } else {
+                        alert(`Calling ${candidate.name} at +1 (555) 019-2834`);
+                      }
+                    }}
+                    className="w-8 h-8 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                    title={`Call ${candidate.name} (${candidate.phone || '+1 (555) 019-2834'})`}
                   >
                     <Phone className="w-3.5 h-3.5" />
                   </button>

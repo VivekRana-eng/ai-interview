@@ -76,6 +76,30 @@ export async function submitApplication(jobId: string, formData: FormData) {
     } catch {
       console.warn('Audit log write skipped — RLS policy blocks anon writes')
     }
+    try {
+      await fetch('/api/candidates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.get('name') || 'Sarah Jenkins',
+          email: formData.get('email') || 'candidate@hireai.com',
+          phone: formData.get('phone') || '+1 (555) 019-2834',
+          position: 'Applied Candidate',
+          location: (formData.get('institution') as string) || 'San Francisco, CA',
+          avatarUrl: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent((formData.get('name') as string) || 'Sarah Jenkins')}`,
+          aiMatchScore: mockScore.s_total,
+          integrityScore: 98,
+          status: mockScore.s_total >= 55 ? 'Shortlisted' : 'Applied',
+          recommendation: mockScore.s_total >= 70 ? 'Strong Hire' : mockScore.s_total >= 55 ? 'Hire' : 'Maybe',
+          interviewDate: 'TBD',
+          skills: JSON.parse(formData.get('certifications') as string || '[]'),
+          summary: (formData.get('sop_text') as string) || ''
+        })
+      });
+    } catch {
+      // Best-effort sync
+    }
+
     return { success: true, token, applicationId: data.id }
   }
   return fetch(`${API}/api/v1/applications`, { method: 'POST', body: formData }).then(r => r.json())
