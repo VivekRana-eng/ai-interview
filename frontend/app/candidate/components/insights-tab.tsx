@@ -180,7 +180,7 @@ export const InsightsTab: React.FC<InsightsTabProps> = ({ onApplyJob, appliedJob
           <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
             {suggestedJobs.map((job) => (
               <div 
-                key={job.company + '-' + job.role}
+                key={job.role}
                 className="p-3 bg-slate-50 dark:bg-slate-900/60 border border-slate-150 dark:border-slate-800/60 rounded-2xl space-y-1.5 hover:border-blue-500/50 transition-colors"
               >
                 <div className="flex justify-between items-center gap-2">
@@ -189,9 +189,9 @@ export const InsightsTab: React.FC<InsightsTabProps> = ({ onApplyJob, appliedJob
                   </div>
                   <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-450 ring-1 ring-blue-500/15 shrink-0">{job.score}</span>
                 </div>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">{job.company} &bull; {job.location}</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">{job.location}</p>
                 <div>
-                  {appliedJobKeys.includes((job.company + '-' + job.role).toLowerCase()) ? (
+                  {appliedJobKeys.includes(job.role.toLowerCase()) ? (
                     <span className="text-[10px] text-emerald-500 font-bold inline-flex items-center gap-1 mt-0.5">
                       Applied &bull; Under Review
                     </span>

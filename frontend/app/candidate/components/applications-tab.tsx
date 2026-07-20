@@ -300,8 +300,8 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h4 className="text-sm font-bold text-slate-855 dark:text-white leading-tight">{job.title}</h4>
-                    <span className="text-xs text-blue-400 font-bold block mt-1">
-                      {job.company} &bull; <span className="text-slate-500 dark:text-slate-455">{job.location}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-bold block mt-1">
+                      {job.location}
                     </span>
                   </div>
 

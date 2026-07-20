@@ -5,9 +5,9 @@ import { Bell, Calendar, Award, FileText, CheckCircle } from 'lucide-react';
 
 export const NotificationsTab: React.FC = () => {
   const notifications = [
-    { id: 1, type: 'invite', title: 'Interview invitation confirmed', desc: 'Your technical screening for Staff UI Engineer with Google has been confirmed for July 19th at 4:30 PM.', date: '20 minutes ago', unread: true, icon: Calendar, color: 'text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10' },
+    { id: 1, type: 'invite', title: 'Interview invitation confirmed', desc: 'Your technical screening for Staff UI Engineer position has been confirmed for July 19th at 4:30 PM.', date: '20 minutes ago', unread: true, icon: Calendar, color: 'text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10' },
     { id: 2, type: 'report', title: 'Mock Interview report generated', desc: 'Your assessment scorecard for React Core Practice Module has been processed. Final Match: 92%.', date: 'Today, 11:32 AM', unread: true, icon: Award, color: 'text-blue-400 bg-blue-50 dark:bg-blue-500/10' },
-    { id: 3, type: 'status', title: 'Application status update', desc: 'Stripe has updated your Senior Product Engineer application status to "Under Review".', date: 'Yesterday', unread: false, icon: FileText, color: 'text-amber-400 bg-amber-50 dark:bg-amber-500/10' },
+    { id: 3, type: 'status', title: 'Application status update', desc: 'Your Senior Product Engineer application status was updated to "Under Review".', date: 'Yesterday', unread: false, icon: FileText, color: 'text-amber-400 bg-amber-50 dark:bg-amber-500/10' },
     { id: 4, type: 'system', title: 'System profile verified', desc: 'Your uploaded resume has been successfully indexed and parsed by the AI matching system.', date: '3 days ago', unread: false, icon: CheckCircle, color: 'text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10' }
   ];
 

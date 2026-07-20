@@ -180,7 +180,7 @@ export const InterviewsTab: React.FC<InterviewsTabProps> = ({ initialStep = 'lis
                       <div>
                         <span className="text-[10px] font-extrabold text-blue-400 block uppercase tracking-wider">{inv.type}</span>
                         <h4 className="text-sm font-bold text-slate-850 dark:text-white mt-0.5">{inv.role}</h4>
-                        <span className="text-xs text-slate-500 dark:text-slate-400 font-bold mt-1 block">{inv.company} &bull; {inv.date} &bull; {inv.time}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 font-bold mt-1 block">{inv.date} &bull; {inv.time}</span>
                       </div>
                     </div>
 

@@ -71,7 +71,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartI
     aiScore: 92,
     nextInterview: {
       role: 'Staff UI Engineer',
-      company: 'Google / YouTube Core',
       date: 'Today at 4:30 PM',
       countdown: 'Starts in 45m 12s'
     }
@@ -262,7 +261,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartI
             <table className="w-full text-left border-collapse min-w-[650px]">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800/50 bg-slate-50 dark:bg-[#0d1424]">
-                  <th className="px-5 py-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Company</th>
                   <th className="px-5 py-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Role</th>
                   <th className="px-5 py-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">Status</th>
                   <th className="px-5 py-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">AI Match</th>
@@ -273,9 +271,6 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartI
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800/40">
                 {recentApplications.map((app) => (
                   <tr key={app.id} className="hover:bg-slate-800/25 transition-colors group">
-                    <td className="px-5 py-4 whitespace-nowrap">
-                      <span className="text-xs font-bold text-slate-855 dark:text-white">{app.company}</span>
-                    </td>
                     <td className="px-5 py-4 whitespace-nowrap">
                       <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{app.role}</span>
                     </td>
@@ -374,7 +369,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartI
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
                 <div>
                   <h4 className="text-xs font-bold text-slate-700 dark:text-slate-200">Interview invitation confirmed</h4>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Staff UI Engineer role &bull; Google</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Staff UI Engineer role</p>
                   <span className="text-[9px] text-slate-500 font-bold block mt-1">20 minutes ago</span>
                 </div>
               </div>

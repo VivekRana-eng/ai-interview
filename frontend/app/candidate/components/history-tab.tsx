@@ -28,7 +28,6 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({ onViewFeedback }) => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-800/50 bg-slate-50 dark:bg-[#0d1424]">
-                <th className="px-5 py-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Company</th>
                 <th className="px-5 py-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Role</th>
                 <th className="px-5 py-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date</th>
                 <th className="px-5 py-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Duration</th>
@@ -39,10 +38,7 @@ export const HistoryTab: React.FC<HistoryTabProps> = ({ onViewFeedback }) => {
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800/40 text-xs font-semibold">
               {history.map((item) => (
                 <tr key={item.id} className="hover:bg-slate-800/25 transition-colors">
-                  <td className="px-5 py-4">
-                    <span className="font-bold text-slate-850 dark:text-white">{item.company}</span>
-                  </td>
-                  <td className="px-5 py-4 text-slate-700 dark:text-slate-200">{item.role}</td>
+                  <td className="px-5 py-4 text-slate-700 dark:text-slate-200 font-bold">{item.role}</td>
                   <td className="px-5 py-4 text-slate-500 dark:text-slate-400">{item.date}</td>
                   <td className="px-5 py-4 text-slate-500 dark:text-slate-400">{item.duration}</td>
                   <td className="px-5 py-4 text-center">

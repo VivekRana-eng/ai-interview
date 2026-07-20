@@ -25,11 +25,11 @@ export default function CandidateDashboard() {
   
   // Dynamic Candidate Applications List state shared across tabs
   const [applications, setApplications] = useState([
-    { id: 1, company: 'Google', logo: 'G', role: 'AI / Machine Learning Researcher', appliedDate: '2026-07-10', status: 'Scheduled', aiScore: 97, location: 'New Delhi (On-site)' },
-    { id: 2, company: 'Stripe', logo: 'S', role: 'Senior Full Stack Engineer', appliedDate: '2026-07-14', status: 'Under Review', aiScore: 94, location: 'Bengaluru (Hybrid)' },
-    { id: 3, company: 'Vercel', logo: 'V', role: 'Security Engineer (DevSecOps)', appliedDate: '2026-07-08', status: 'In Progress', aiScore: 89, location: 'Hyderabad (Remote)' },
-    { id: 4, company: 'GitHub', logo: 'GH', role: 'Product Design Lead', appliedDate: '2026-07-02', status: 'Shortlisted', aiScore: 91, location: 'Bengaluru (Hybrid)' },
-    { id: 5, company: 'Netflix', logo: 'N', role: 'HR Operations Specialist', appliedDate: '2026-06-25', status: 'Offer', aiScore: 80, location: 'New Delhi (On-site)' }
+    { id: 1, role: 'AI / Machine Learning Researcher', appliedDate: '2026-07-10', status: 'Scheduled', aiScore: 97, location: 'New Delhi (On-site)' },
+    { id: 2, role: 'Senior Full Stack Engineer', appliedDate: '2026-07-14', status: 'Under Review', aiScore: 94, location: 'Bengaluru (Hybrid)' },
+    { id: 3, role: 'Security Engineer (DevSecOps)', appliedDate: '2026-07-08', status: 'In Progress', aiScore: 89, location: 'Hyderabad (Remote)' },
+    { id: 4, role: 'Product Design Lead', appliedDate: '2026-07-02', status: 'Shortlisted', aiScore: 91, location: 'Bengaluru (Hybrid)' },
+    { id: 5, role: 'HR Operations Specialist', appliedDate: '2026-06-25', status: 'Offer', aiScore: 80, location: 'New Delhi (On-site)' }
   ]);
 
   // Toast confirmation trigger state
@@ -66,7 +66,6 @@ export default function CandidateDashboard() {
     
     // Check if already applied
     const isDup = applications.some(app => 
-      app.company.toLowerCase() === company.toLowerCase() && 
       app.role.toLowerCase() === role.toLowerCase()
     );
 
@@ -74,8 +73,6 @@ export default function CandidateDashboard() {
 
     const newApp = {
       id: Date.now(),
-      company,
-      logo: company[0].toUpperCase(),
       role,
       appliedDate: new Date().toISOString().split('T')[0],
       status: 'Under Review',
@@ -86,7 +83,7 @@ export default function CandidateDashboard() {
     setApplications([newApp, ...applications]);
     
     // Trigger user toast notice
-    setToastMessage(`Applied successfully to ${role} at ${company}!`);
+    setToastMessage(`Applied successfully to ${role}!`);
     setTimeout(() => setToastMessage(null), 4000);
   };
 
@@ -173,7 +170,7 @@ export default function CandidateDashboard() {
             {activeTab === 'Career Insights' && (
               <InsightsTab 
                 onApplyJob={handleApplyJob}
-                appliedJobKeys={applications.map(app => (app.company + '-' + app.role).toLowerCase())}
+                appliedJobKeys={applications.map(app => app.role.toLowerCase())}
               />
             )}
 

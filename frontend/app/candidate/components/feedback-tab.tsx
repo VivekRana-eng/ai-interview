@@ -193,7 +193,7 @@ export const FeedbackTab: React.FC<FeedbackTabProps> = ({ selectedItem }) => {
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-855 dark:text-white">AI Evaluation Scorecard</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">{item.company} &bull; {item.role} Evaluation Assessment</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">{item.role} Evaluation Assessment</p>
           </div>
         </div>
 
