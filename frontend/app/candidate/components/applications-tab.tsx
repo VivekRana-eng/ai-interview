@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Briefcase, Search, ExternalLink, Calendar, Award, CheckCircle, X } from 'lucide-react';
 
 const getCompanyLogo = (company: string) => {
@@ -174,6 +175,11 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -384,10 +390,10 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
       </div>
 
       {/* Detail Modal */}
-      {selectedJob && (() => {
+      {mounted && selectedJob && (() => {
         const details = getDetailedData(selectedJob.company, selectedJob.title);
-        return (
-          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+        return createPortal(
+          <div className="fixed inset-0 z-[50] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
             <div className="bg-white dark:bg-[#111a2e] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 lg:p-8 max-w-xl w-full space-y-5 shadow-2xl text-left relative overflow-y-auto max-h-[90vh]">
               
               <div className="flex justify-between items-start border-b border-slate-200 dark:border-slate-800/60 pb-4">
@@ -480,7 +486,8 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({ applications, 
               </div>
 
             </div>
-          </div>
+          </div>,
+          document.body
         );
       })()}
 
