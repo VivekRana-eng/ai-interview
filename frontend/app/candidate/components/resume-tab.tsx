@@ -112,7 +112,7 @@ export const ResumeTab: React.FC = () => {
 
     candidateInfo.experience.forEach(exp => {
       lines.push(`${exp.role} - ${exp.company} (${exp.period})`);
-      lines.push(`  * ${exp.description}`);
+      // lines.push(`  * ${exp.description}`);
     });
 
     lines.push(``);
