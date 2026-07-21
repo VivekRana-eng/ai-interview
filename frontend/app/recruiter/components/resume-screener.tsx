@@ -99,9 +99,9 @@ export const ResumeScreener: React.FC = () => {
           workExperienceDetails: [
             { role: candidate.position, company: 'Freelance / Open Source', duration: '2023 - Present', description: ['Contributed to key codebases.'] }
           ],
-          interviewDate: 'Jun 28, 2026',
+          interviewDate: 'Jul 22, 2026 at 11:30',
           postedTime: 'Today',
-          postedDate: 'Jun 28, 2026'
+          postedDate: 'Jul 22, 2026'
         };
         setActiveCandidate(hydrated);
         setIsUploadModalOpen(false);

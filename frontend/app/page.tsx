@@ -187,32 +187,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Quick Access Portal Buttons */}
-          <div className="mt-6 pt-5 border-t border-slate-200/60 dark:border-slate-800/60 space-y-2">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block text-center">
-              Quick Workspace Direct Access
-            </span>
-            <div className="grid grid-cols-2 gap-2.5 pt-1">
-              <button
-                onClick={async () => {
-                  await login('recruiter@hireai.com', 'recruiter');
-                  router.push('/recruiter');
-                }}
-                className="py-2.5 px-3 bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-900/30 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
-              >
-                <span>👔 Recruiter Portal</span>
-              </button>
-              <button
-                onClick={async () => {
-                  await login('candidate@hireai.com', 'candidate');
-                  router.push('/candidate/dashboard');
-                }}
-                className="py-2.5 px-3 bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-900/30 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
-              >
-                <span>👤 Candidate Portal</span>
-              </button>
-            </div>
-          </div>
+
 
 
         </div>

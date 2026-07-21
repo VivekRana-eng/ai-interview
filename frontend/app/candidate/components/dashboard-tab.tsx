@@ -61,15 +61,29 @@ const getCompanyLogo = (company: string) => {
   }
 };
 
+import { useRecruiterStore } from '../../recruiter/store';
+
 export const DashboardTab: React.FC<DashboardTabProps> = ({ onNavigate, onStartInterview, applications = [] }) => {
-  // Mock Candidate Details
+  const { candidates, initializeStore } = useRecruiterStore();
+
+  React.useEffect(() => {
+    initializeStore();
+  }, [initializeStore]);
+
+  const storeScheduledCandidate = candidates.find(c => c.status === 'Interviewing' || (c.interviewDate && c.interviewDate !== 'TBD'));
+
+  // Candidate Details
   const candidateInfo = {
     name: 'Sarah Jenkins',
     avatar: '', // Fallback initials
     title: 'Senior Frontend Engineer candidate',
     resumeCompletion: 85,
     aiScore: 92,
-    nextInterview: {
+    nextInterview: storeScheduledCandidate ? {
+      role: `${storeScheduledCandidate.position} — ${storeScheduledCandidate.name}`,
+      date: storeScheduledCandidate.interviewDate || 'Today at 2:30 PM',
+      countdown: 'Interview Scheduled'
+    } : {
       role: 'Staff UI Engineer',
       date: 'Today at 4:30 PM',
       countdown: 'Starts in 45m 12s'

@@ -25,20 +25,115 @@ import {
   X
 } from 'lucide-react';
 
+import { useRecruiterStore } from '../../recruiter/store';
+
 interface InterviewsTabProps {
   initialStep?: 'list' | 1 | 2 | 3 | 4 | 5 | 6;
 }
 
+const formatTime24to12 = (time24: string) => {
+  if (!time24) return '2:30 PM';
+  const parts = time24.trim().split(':');
+  if (parts.length < 2) return time24;
+  let hours = parseInt(parts[0], 10);
+  const minutes = parts[1];
+  if (isNaN(hours)) return time24;
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  return `${hours}:${minutes} ${ampm}`;
+};
+
+const formatInterviewDateTime = (rawDate: string, index: number) => {
+  const defaultDates = [
+    'Jul 21, 2026',
+    'Jul 23, 2026',
+    'Jul 26, 2026',
+    'Jul 28, 2026',
+    'Aug 01, 2026',
+    'Aug 04, 2026'
+  ];
+  const staggeredTimes = [
+    '10:00 AM (45m)',
+    '11:30 AM (45m)',
+    '1:45 PM (45m)',
+    '3:15 PM (45m)',
+    '4:45 PM (45m)'
+  ];
+
+  // Replace old placeholder dates (like Jun 28) with dynamic staggered upcoming dates
+  const isPlaceholder = !rawDate || rawDate === 'TBD' || rawDate.startsWith('Jun ');
+
+  if (isPlaceholder) {
+    return {
+      date: defaultDates[index % defaultDates.length],
+      time: staggeredTimes[index % staggeredTimes.length]
+    };
+  }
+
+  if (rawDate.includes(' at ')) {
+    const [dPart, tPart] = rawDate.split(' at ');
+    const timeFormatted = formatTime24to12(tPart);
+    return {
+      date: dPart,
+      time: `${timeFormatted} (45m)`
+    };
+  }
+
+  return {
+    date: rawDate,
+    time: staggeredTimes[index % staggeredTimes.length]
+  };
+};
+
 export const InterviewsTab: React.FC<InterviewsTabProps> = ({ initialStep = 'list' }) => {
   const [step, setStep] = useState<'list' | 1 | 2 | 3 | 4 | 5 | 6>(initialStep);
-  
-  // List of Scheduled Interviews
+  const { candidates, initializeStore } = useRecruiterStore();
+
+  useEffect(() => {
+    initializeStore();
+  }, [initializeStore]);
+
+  // Dynamically map candidates scheduled from Recruiter Dashboard
+  const dynamicInterviews = candidates
+    .filter(cand => 
+      cand.status === 'Interviewing' || 
+      (cand.interviewDate && cand.interviewDate !== 'TBD') ||
+      (cand.hiringTimeline && cand.hiringTimeline.some((t: any) => t.stage?.toLowerCase().includes('interview')))
+    )
+    .map((cand, idx) => {
+      const timelineEntry = cand.hiringTimeline?.find((e: any) => e.stage?.toLowerCase().includes('interview'));
+      const rawDate = cand.interviewDate && cand.interviewDate !== 'TBD' 
+        ? cand.interviewDate 
+        : (timelineEntry?.date || '');
+
+      const { date: datePart, time: timePart } = formatInterviewDateTime(rawDate, idx);
+
+      return {
+        id: `store-${cand.id}`,
+        role: `${cand.position} (${cand.name})`,
+        company: 'SelectAI Portal',
+        date: datePart,
+        time: timePart,
+        type: 'AI Technical Interview',
+        status: 'Active'
+      };
+    });
+
+  const defaultScheduledInterviews = [
+    { id: 'def-1', role: 'Staff UI Engineer (Sarah Jenkins)', company: 'Google', date: 'Today, 2026-07-19', time: '4:30 PM (45m)', type: 'AI Technical Interview', status: 'Active' },
+    { id: 'def-2', role: 'React Framework Engineer', company: 'Vercel', date: '2026-07-22', time: '11:00 AM (30m)', type: 'AI Technical Screening', status: 'Scheduled' },
+    { id: 'def-3', role: 'Senior Product Engineer', company: 'Stripe', date: '2026-07-25', time: '2:00 PM (60m)', type: 'System Architecture Screening', status: 'Scheduled' },
+    { id: 'def-4', role: 'DevSecOps Specialist', company: 'GitHub', date: '2026-07-28', time: '10:00 AM (45m)', type: 'Security Protocols Assessment', status: 'Scheduled' },
+    { id: 'def-5', role: 'Machine Learning Specialist', company: 'OpenAI', date: '2026-08-02', time: '3:30 PM (90m)', type: 'Neural Architectures Deep-Dive', status: 'Scheduled' }
+  ];
+
+  // Combine store interviews at top + default list
   const scheduledInterviews = [
-    { id: 1, role: 'Staff UI Engineer', company: 'Google', date: 'Today, 2026-07-19', time: '4:30 PM (45m)', type: 'AI Technical Interview', status: 'Active' },
-    { id: 2, role: 'React Framework Engineer', company: 'Vercel', date: '2026-07-22', time: '11:00 AM (30m)', type: 'AI Technical Screening', status: 'Scheduled' },
-    { id: 3, role: 'Senior Product Engineer', company: 'Stripe', date: '2026-07-25', time: '2:00 PM (60m)', type: 'System Architecture Screening', status: 'Scheduled' },
-    { id: 4, role: 'DevSecOps Specialist', company: 'GitHub', date: '2026-07-28', time: '10:00 AM (45m)', type: 'Security Protocols Assessment', status: 'Scheduled' },
-    { id: 5, role: 'Machine Learning Specialist', company: 'OpenAI', date: '2026-08-02', time: '3:30 PM (90m)', type: 'Neural Architectures Deep-Dive', status: 'Scheduled' }
+    ...dynamicInterviews,
+    ...defaultScheduledInterviews.filter(def => 
+      !dynamicInterviews.some(dyn => dyn.role.toLowerCase().includes(def.role.toLowerCase()))
+    )
   ];
 
   // Step 2: System Check Verification State

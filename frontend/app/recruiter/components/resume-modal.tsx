@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Candidate } from '../types';
 import { X, Download, Printer, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,6 +18,11 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({
   onClose,
   candidate
 }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (!candidate) return null;
 
   const experiences =
@@ -151,10 +157,12 @@ ${400 + streamLength}
     URL.revokeObjectURL(url);
   };
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           {/* Print-specific overrides */}
           <style>{`
             @media print {
@@ -175,7 +183,7 @@ ${400 + streamLength}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-slate-950/70 backdrop-blur-md no-print"
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-md no-print"
             onClick={onClose}
           />
 
@@ -184,36 +192,36 @@ ${400 + streamLength}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative w-full max-w-3xl max-h-[90vh] bg-[#0f1521] border border-slate-700/60 rounded-3xl shadow-2xl overflow-hidden z-10 flex flex-col no-print"
+            className="relative w-full max-w-3xl max-h-[90vh] bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden z-10 flex flex-col no-print"
           >
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-700/60 flex items-center justify-between bg-[#131c2e]/80">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/90">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-blue-400" />
+                <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Resume Document Preview</h3>
-                  <p className="text-[10px] text-slate-400 font-semibold">{resumeFileName}</p>
+                  <h3 className="text-sm font-bold text-slate-900">Resume Document Preview</h3>
+                  <p className="text-[10px] text-slate-500 font-semibold">{resumeFileName}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleDownload}
-                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all cursor-pointer"
+                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download PDF</span>
                 </button>
                 <button
                   onClick={handlePrint}
-                  className="p-1.5 text-slate-400 hover:text-white rounded-xl transition-all cursor-pointer"
+                  className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
                 >
                   <Printer className="w-4 h-4" />
                 </button>
                 <button
                   onClick={onClose}
-                  className="p-1.5 text-slate-400 hover:text-white rounded-xl transition-all cursor-pointer"
+                  className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -221,15 +229,15 @@ ${400 + streamLength}
             </div>
 
             {/* Resume Content */}
-            <div id="resume-sheet" className="p-8 overflow-y-auto space-y-6 text-slate-200 text-xs">
+            <div id="resume-sheet" className="p-8 overflow-y-auto space-y-6 text-slate-800 text-xs bg-white">
 
               {/* Header */}
-              <div className="border-b border-slate-700/60 pb-5 flex justify-between items-start">
+              <div className="border-b border-slate-200 pb-5 flex justify-between items-start">
                 <div>
-                  <h1 className="text-xl font-black text-white tracking-tight">{candidate.name}</h1>
-                  <p className="text-xs font-bold text-blue-400 mt-0.5">{candidate.position}</p>
+                  <h1 className="text-xl font-black text-slate-900 tracking-tight">{candidate.name}</h1>
+                  <p className="text-xs font-bold text-blue-600 mt-0.5">{candidate.position}</p>
                 </div>
-                <div className="text-right text-[11px] text-slate-400 font-medium space-y-0.5">
+                <div className="text-right text-[11px] text-slate-500 font-medium space-y-0.5">
                   <p>{candidate.email}</p>
                   <p>{candidate.phone || ''}</p>
                   <p>{candidate.location}</p>
@@ -241,7 +249,7 @@ ${400 + streamLength}
                 <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">
                   Professional Summary
                 </h4>
-                <p className="text-slate-300 leading-relaxed font-normal">{summaryText}</p>
+                <p className="text-slate-700 leading-relaxed font-normal">{summaryText}</p>
               </div>
 
               {/* Skills */}
@@ -253,7 +261,7 @@ ${400 + streamLength}
                   {skills.map((skill, i) => (
                     <span
                       key={i}
-                      className="px-2.5 py-1 bg-slate-800 border border-slate-700 text-slate-300 font-semibold rounded-lg text-[10px]"
+                      className="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-700 font-semibold rounded-lg text-[10px]"
                     >
                       {skill}
                     </span>
@@ -269,18 +277,18 @@ ${400 + streamLength}
                 {experiences.map((exp, i) => (
                   <div
                     key={i}
-                    className="space-y-1.5 bg-slate-800/50 p-3.5 rounded-xl border border-slate-700/60"
+                    className="space-y-1.5 bg-slate-50 p-3.5 rounded-xl border border-slate-200/80"
                   >
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-white text-[11px]">
+                      <span className="font-bold text-slate-900 text-[11px]">
                         {exp.role} &mdash;{' '}
-                        <span className="text-blue-400">{exp.company}</span>
+                        <span className="text-blue-600 font-semibold">{exp.company}</span>
                       </span>
-                      <span className="text-[10px] text-slate-400 font-semibold">{exp.duration}</span>
+                      <span className="text-[10px] text-slate-500 font-semibold">{exp.duration}</span>
                     </div>
                     <ul className="list-disc list-outside pl-4 space-y-0.5">
                       {exp.description.map((bullet, bIdx) => (
-                        <li key={bIdx} className="text-[11px] text-slate-400">
+                        <li key={bIdx} className="text-[11px] text-slate-600">
                           {bullet}
                         </li>
                       ))}
@@ -297,8 +305,8 @@ ${400 + streamLength}
                   </h4>
                   {educationList.map((edu, i) => (
                     <div key={i} className="text-[11px]">
-                      <p className="font-bold text-white">{edu.degree}</p>
-                      <p className="text-slate-400">
+                      <p className="font-bold text-slate-900">{edu.degree}</p>
+                      <p className="text-slate-500">
                         {edu.school} ({edu.year})
                       </p>
                     </div>
@@ -309,7 +317,7 @@ ${400 + streamLength}
                     Certifications
                   </h4>
                   {certifications.map((cert, i) => (
-                    <p key={i} className="text-[11px] text-slate-300 font-medium">
+                    <p key={i} className="text-[11px] text-slate-700 font-medium">
                       &bull; {cert}
                     </p>
                   ))}
@@ -320,6 +328,7 @@ ${400 + streamLength}
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
