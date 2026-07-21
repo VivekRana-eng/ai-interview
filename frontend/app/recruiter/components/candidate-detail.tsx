@@ -67,29 +67,30 @@ export const CandidateDetail: React.FC<CandidateDetailProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto mt-1 md:mt-0">
-           
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
             {onViewResume && (
-              <button onClick={onViewResume} className="px-3.5 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 active:scale-95 bg-white">
-                <Briefcase className="w-3.5 h-3.5" />
+              <button 
+                onClick={onViewResume} 
+                className="flex-1 sm:flex-none px-3 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 bg-white shadow-sm"
+              >
+                <Briefcase className="w-3.5 h-3.5 text-blue-600" />
                 <span>View Resume</span>
               </button>
             )}
-            <button onClick={onDownloadResume} className="px-3.5 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 active:scale-95 bg-white">
-              <Download className="w-3.5 h-3.5" />
+            <button 
+              onClick={onDownloadResume} 
+              className="flex-1 sm:flex-none px-3 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 active:scale-95 bg-white shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5 text-blue-600" />
               <span>Download Resume</span>
             </button>
-            {candidate.status === 'Interviewing' ? (
-              <button onClick={onScheduleInterview} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95">
-                <Calendar className="w-3.5 h-3.5" />
-                <span>Reschedule Interview</span>
-              </button>
-            ) : (
-              <button onClick={onScheduleInterview} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95">
-                <Calendar className="w-3.5 h-3.5" />
-                <span>Schedule Interview</span>
-              </button>
-            )}
+            <button 
+              onClick={onScheduleInterview} 
+              className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 active:scale-95"
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>{candidate.status === 'Interviewing' ? 'Reschedule Interview' : 'Schedule Interview'}</span>
+            </button>
           </div>
         </div>
 
