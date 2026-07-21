@@ -23,9 +23,41 @@ const SCREENSHOT_CANDIDATES: Partial<Candidate>[] = [
     connectedStatus: 'CONNECTED',
     postedTime: 'Today',
     postedDate: 'Jul 20, 2026',
-    skills: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Redux', 'Zustand', 'GraphQL', 'Node.js'],
+    skills: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Redux / Zustand', 'GraphQL', 'Node.js', 'Jest', 'Playwright'],
     missingSkills: ['Rust'],
-    strengths: ['UI Architecture', 'Performance Optimization', 'Design Systems', 'State Management']
+    strengths: ['UI Architecture', 'Performance Optimization', 'Design Systems', 'State Management'],
+    summary: 'High-performing UI Developer & Architect with 6+ years of experience specializing in Next.js, React, TypeScript, and state management. Proven track record of scaling high-throughput Web applications with pixel-perfect UI/UX standards.',
+    certifications: ['AWS Certified Developer - Associate', 'Meta Frontend Developer Professional Certificate'],
+    workExperienceDetails: [
+      {
+        role: 'Senior React Developer',
+        company: 'BluePeak Systems',
+        duration: '2023 - Present',
+        description: [
+          'Led a team of 4 frontend engineers to architect high-performance dashboard UI in Next.js.',
+          'Improved Core Web Vitals score by 45%.',
+          'Drove adoption of TypeScript across the frontend codebase, reducing runtime errors by 60%.'
+        ]
+      },
+      {
+        role: 'Frontend Engineer',
+        company: 'CloudShield Tech',
+        duration: '2020 - 2023',
+        description: [
+          'Maintained enterprise component library used across 12 product lines.',
+          'Achieved 98% test coverage using React Testing Library.',
+          'Built accessible UI components compliant with WCAG 2.1 AA standards.'
+        ]
+      }
+    ],
+    educationDetails: [
+      {
+        degree: 'B.Tech in Computer Science',
+        school: 'IIT Delhi',
+        year: '2016 - 2020',
+        grade: 'Intelligent Systems / Application Development'
+      }
+    ]
   },
   {
     name: 'Priya Nair',

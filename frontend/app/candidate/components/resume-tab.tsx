@@ -37,13 +37,21 @@ export const ResumeTab: React.FC = () => {
         role: 'Senior React Developer',
         company: 'BluePeak Systems',
         period: '2023 - Present',
-        description: 'Led a team of 4 frontend engineers to architect high-performance dashboard UI in Next.js. Improved Core Web Vitals score by 45%.'
+        bullets: [
+          'Led a team of 4 frontend engineers to architect high-performance dashboard UI in Next.js.',
+          'Improved Core Web Vitals score by 45%.',
+          'Drove adoption of TypeScript across the frontend codebase, reducing runtime errors by 60%.'
+        ]
       },
       {
         role: 'Frontend Engineer',
         company: 'CloudShield Tech',
         period: '2020 - 2023',
-        description: 'Maintained enterprise component library used across 12 product lines. Achieved 98% test coverage using React Testing Library.'
+        bullets: [
+          'Maintained enterprise component library used across 12 product lines.',
+          'Achieved 98% test coverage using React Testing Library.',
+          'Built accessible UI components compliant with WCAG 2.1 AA standards.'
+        ]
       }
     ],
     education: [
@@ -296,15 +304,17 @@ ${400 + streamLength}
       {/* ─── RESUME PREVIEW MODAL ─── */}
       {isPreviewOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-3xl max-h-[90vh] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-            
+          <div className="relative w-full max-w-3xl max-h-[90vh] bg-[#0f1521] border border-slate-700/60 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
+            <div className="px-6 py-4 border-b border-slate-700/60 flex items-center justify-between bg-[#131c2e]/80">
               <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-blue-600" />
+                <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-blue-400" />
+                </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Resume Document Preview</h3>
-                  <p className="text-[10px] text-slate-500 font-semibold">{resume?.name}</p>
+                  <h3 className="text-sm font-bold text-white">Resume Document Preview</h3>
+                  <p className="text-[10px] text-slate-400 font-semibold">{resume?.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -317,13 +327,13 @@ ${400 + streamLength}
                 </button>
                 <button
                   onClick={() => window.print()}
-                  className="p-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-white rounded-xl transition-all cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-white rounded-xl transition-all cursor-pointer"
                 >
                   <Printer className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setIsPreviewOpen(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-xl transition-all cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-white rounded-xl transition-all cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -331,15 +341,15 @@ ${400 + streamLength}
             </div>
 
             {/* Resume Content Sheet */}
-            <div className="p-8 overflow-y-auto space-y-6 text-slate-800 dark:text-slate-200 text-xs">
-              
+            <div className="p-8 overflow-y-auto space-y-6 text-slate-200 text-xs">
+
               {/* Header */}
-              <div className="border-b border-slate-200 dark:border-slate-800 pb-5 flex justify-between items-start">
+              <div className="border-b border-slate-700/60 pb-5 flex justify-between items-start">
                 <div>
-                  <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{candidateInfo.name}</h1>
-                  <p className="text-xs font-bold text-blue-600 dark:text-blue-400 mt-0.5">{candidateInfo.title}</p>
+                  <h1 className="text-xl font-black text-white tracking-tight">{candidateInfo.name}</h1>
+                  <p className="text-xs font-bold text-blue-400 mt-0.5">{candidateInfo.title}</p>
                 </div>
-                <div className="text-right text-[11px] text-slate-500 font-medium space-y-0.5">
+                <div className="text-right text-[11px] text-slate-400 font-medium space-y-0.5">
                   <p>{candidateInfo.email}</p>
                   <p>{candidateInfo.phone}</p>
                   <p>{candidateInfo.location}</p>
@@ -348,16 +358,16 @@ ${400 + streamLength}
 
               {/* Summary */}
               <div className="space-y-1.5">
-                <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Professional Summary</h4>
-                <p className="text-slate-600 dark:text-slate-300 leading-relaxed font-normal">{candidateInfo.summary}</p>
+                <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Professional Summary</h4>
+                <p className="text-slate-300 leading-relaxed font-normal">{candidateInfo.summary}</p>
               </div>
 
               {/* Skills */}
               <div className="space-y-2">
-                <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Technical Skills</h4>
+                <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Technical Skills</h4>
                 <div className="flex flex-wrap gap-1.5">
                   {candidateInfo.skills.map((skill, i) => (
-                    <span key={i} className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-lg text-[10px]">
+                    <span key={i} className="px-2.5 py-1 bg-slate-800 border border-slate-700 text-slate-300 font-semibold rounded-lg text-[10px]">
                       {skill}
                     </span>
                   ))}
@@ -366,14 +376,18 @@ ${400 + streamLength}
 
               {/* Experience */}
               <div className="space-y-3">
-                <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Work Experience</h4>
+                <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Work Experience</h4>
                 {candidateInfo.experience.map((exp, i) => (
-                  <div key={i} className="space-y-1 bg-slate-50 dark:bg-slate-850/40 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <div key={i} className="space-y-1.5 bg-slate-800/50 p-3.5 rounded-xl border border-slate-700/60">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-900 dark:text-white">{exp.role} &mdash; <span className="text-blue-600 dark:text-blue-400">{exp.company}</span></span>
+                      <span className="font-bold text-white text-[11px]">{exp.role} &mdash; <span className="text-blue-400">{exp.company}</span></span>
                       <span className="text-[10px] text-slate-400 font-semibold">{exp.period}</span>
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">{exp.description}</p>
+                    <ul className="list-disc list-outside pl-4 space-y-0.5">
+                      {exp.bullets.map((b, bIdx) => (
+                        <li key={bIdx} className="text-[11px] text-slate-400">{b}</li>
+                      ))}
+                    </ul>
                   </div>
                 ))}
               </div>
@@ -381,18 +395,18 @@ ${400 + streamLength}
               {/* Education & Certs */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Education</h4>
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Education</h4>
                   {candidateInfo.education.map((edu, i) => (
                     <div key={i} className="text-[11px]">
-                      <p className="font-bold text-slate-900 dark:text-white">{edu.degree}</p>
-                      <p className="text-slate-500">{edu.school} ({edu.period})</p>
+                      <p className="font-bold text-white">{edu.degree}</p>
+                      <p className="text-slate-400">{edu.school} ({edu.period})</p>
                     </div>
                   ))}
                 </div>
                 <div className="space-y-2">
-                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Certifications</h4>
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">Certifications</h4>
                   {candidateInfo.certifications.map((cert, i) => (
-                    <p key={i} className="text-[11px] text-slate-600 dark:text-slate-300 font-medium">&bull; {cert}</p>
+                    <p key={i} className="text-[11px] text-slate-300 font-medium">&bull; {cert}</p>
                   ))}
                 </div>
               </div>
