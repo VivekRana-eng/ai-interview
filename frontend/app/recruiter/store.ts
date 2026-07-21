@@ -101,9 +101,8 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
   initializeStore: async () => {
     try {
       if (typeof window !== 'undefined') {
-        const savedTheme = localStorage.getItem('theme');
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const isDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+        const savedTheme = localStorage.getItem('theme') || localStorage.getItem('selectai-theme');
+        const isDark = savedTheme === 'dark';
         set({ isDarkMode: isDark });
         if (isDark) {
           document.documentElement.classList.add('dark');
@@ -598,9 +597,11 @@ export const useRecruiterStore = create<RecruiterState>((set, get) => ({
       if (nextMode) {
         document.documentElement.classList.add('dark');
         localStorage.setItem('theme', 'dark');
+        localStorage.setItem('selectai-theme', 'dark');
       } else {
         document.documentElement.classList.remove('dark');
         localStorage.setItem('theme', 'light');
+        localStorage.setItem('selectai-theme', 'light');
       }
     }
     return { isDarkMode: nextMode };

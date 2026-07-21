@@ -22,18 +22,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light')
   const [mounted, setMounted] = useState(false)
 
-  // On mount, read saved preference (or system preference)
+  // On mount, read saved preference
   useEffect(() => {
-    const saved = localStorage.getItem('selectai-theme') as Theme | null
-    if (saved === 'dark' || saved === 'light') {
-      setTheme(saved)
-      document.documentElement.classList.toggle('dark', saved === 'dark')
+    const saved = localStorage.getItem('selectai-theme') || localStorage.getItem('theme')
+    const isDark = saved === 'dark'
+    setTheme(isDark ? 'dark' : 'light')
+    if (isDark) {
+      document.documentElement.classList.add('dark')
     } else {
-      // Fall back to system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      const initial: Theme = prefersDark ? 'dark' : 'light'
-      setTheme(initial)
-      document.documentElement.classList.toggle('dark', initial === 'dark')
+      document.documentElement.classList.remove('dark')
     }
     setMounted(true)
   }, [])
